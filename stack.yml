@@ -1,0 +1,101 @@
+# stack.yml — Deploy Portainer / Docker Swarm + Traefik
+#
+# Pré-requisitos no servidor:
+#   1. Rede externa: docker network create --driver overlay traefik-public
+#   2. Traefik já rodando com entrypoints 'web' (80) e 'websecure' (443)
+#   3. Stack do PostgreSQL OU usar o serviço chassi-db abaixo (bind volume)
+#
+# Deploy via Portainer: importar este arquivo como stack, editar variáveis de ambiente.
+# Deploy via CLI:
+#   docker stack deploy -c stack.yml sgo-cliente-a
+
+version: "3.9"
+
+services:
+  chassi-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sgo}
+      POSTGRES_USER: ${POSTGRES_USER:-sgo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_secure_password}
+    volumes:
+      - chassi-db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+
+  chassi-backend:
+    image: ghcr.io/altrsconsult/chassi-backend:latest
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-sgo}:${POSTGRES_PASSWORD:-changeme_secure_password}@chassi-db:5432/${POSTGRES_DB:-sgo}
+      JWT_SECRET: ${JWT_SECRET:-changeme_very_long_secret_for_production}
+      NEXUS_URL: ${NEXUS_URL:-}
+      CHASSIS_URL: https://${DOMAIN}
+      DOCKER_ENV: "true"
+    volumes:
+      - chassi-modules:/app/modules_storage
+      - chassi-uploads:/app/uploads
+    networks:
+      - internal
+      - traefik-public
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-api.entrypoints=websecure"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-api.tls=true"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-api.tls.certresolver=letsencrypt"
+        - "traefik.http.services.${STACK_NAME:-sgo}-api.loadbalancer.server.port=3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  chassi-frontend:
+    image: ghcr.io/altrsconsult/chassi-frontend:latest
+    networks:
+      - internal
+      - traefik-public
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-frontend.rule=Host(`${DOMAIN}`)"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-frontend.entrypoints=websecure"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-frontend.tls=true"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-frontend.tls.certresolver=letsencrypt"
+        - "traefik.http.services.${STACK_NAME:-sgo}-frontend.loadbalancer.server.port=80"
+        # Redirect HTTP → HTTPS
+        - "traefik.http.routers.${STACK_NAME:-sgo}-http.rule=Host(`${DOMAIN}`)"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-http.entrypoints=web"
+        - "traefik.http.routers.${STACK_NAME:-sgo}-http.middlewares=${STACK_NAME:-sgo}-redirect"
+        - "traefik.http.middlewares.${STACK_NAME:-sgo}-redirect.redirectscheme.scheme=https"
+
+networks:
+  internal:
+    driver: overlay
+    internal: true
+  traefik-public:
+    external: true
+
+volumes:
+  chassi-db-data:
+    driver: local
+  chassi-modules:
+    driver: local
+  chassi-uploads:
+    driver: local

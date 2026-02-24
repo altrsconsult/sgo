@@ -1,0 +1,11 @@
+{
+  "slug": "boilerplate",
+  "name": "Boilerplate",
+  "description": "Módulo base para criar novos módulos SGO",
+  "version": "1.0.0",
+  "icon": "Package",
+  "color": "#6366f1",
+  "permissions": [],
+  "hasWidget": true,
+  "serverPort": 5001
+}

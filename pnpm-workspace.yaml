@@ -1,0 +1,7 @@
+packages:
+  - "chassi/frontend"
+  - "chassi/backend"
+  - "nexus/frontend"
+  - "nexus/backend"
+  - "modules/*"
+  - "packages/*"

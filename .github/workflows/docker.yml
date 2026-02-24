@@ -1,0 +1,104 @@
+name: Docker Build & Push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'chassi/**'
+      - 'packages/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - '.github/workflows/docker.yml'
+
+env:
+  REGISTRY: ghcr.io
+  ORG: altrsconsult
+
+jobs:
+  # Build e push da imagem do backend
+  chassi-backend:
+    name: Chassi Backend
+    runs-on: ubuntu-latest
+    if: >
+      contains(github.event.head_commit.modified, 'chassi/backend/') ||
+      contains(github.event.head_commit.modified, 'packages/') ||
+      contains(github.event.head_commit.modified, '.github/workflows/docker.yml')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrair metadata Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build e Push (amd64 apenas)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: chassi/Dockerfile.backend
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Build e push da imagem do frontend
+  chassi-frontend:
+    name: Chassi Frontend
+    runs-on: ubuntu-latest
+    if: >
+      contains(github.event.head_commit.modified, 'chassi/frontend/') ||
+      contains(github.event.head_commit.modified, 'packages/') ||
+      contains(github.event.head_commit.modified, '.github/workflows/docker.yml')
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrair metadata Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build e Push (amd64 apenas)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: chassi/Dockerfile.frontend
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

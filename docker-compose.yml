@@ -1,0 +1,59 @@
+# docker-compose.yml — desenvolvimento local com Docker Desktop
+# Comando: docker compose up -d
+# Para desenvolvimento de módulos: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+services:
+  # Banco de dados PostgreSQL
+  chassi-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sgo
+      POSTGRES_USER: sgo
+      POSTGRES_PASSWORD: sgodev
+    ports:
+      - "5432:5432"
+    volumes:
+      - chassi-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Hono/Drizzle
+  chassi-backend:
+    build:
+      context: .
+      dockerfile: chassi/Dockerfile.backend
+    restart: unless-stopped
+    depends_on:
+      chassi-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://sgo:sgodev@chassi-db:5432/sgo
+      JWT_SECRET: dev-secret-change-in-production
+      DOCKER_ENV: "true"
+    ports:
+      - "3001:3001"
+    volumes:
+      - chassi-modules:/app/modules_storage
+      - chassi-uploads:/app/uploads
+
+  # Frontend React (Nginx)
+  chassi-frontend:
+    build:
+      context: .
+      dockerfile: chassi/Dockerfile.frontend
+    restart: unless-stopped
+    depends_on:
+      - chassi-backend
+    ports:
+      - "3000:80"
+
+volumes:
+  chassi-db-data:
+  chassi-modules:
+  chassi-uploads:

@@ -1,0 +1,10 @@
+{
+  "name": "sgo",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @sgo/chassi-backend dev & pnpm --filter @sgo/chassi-frontend dev",
+    "build:chassi": "pnpm --filter @sgo/chassi-frontend build && pnpm --filter @sgo/chassi-backend build",
+    "docker:up": "docker compose up",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up"
+  }
+}

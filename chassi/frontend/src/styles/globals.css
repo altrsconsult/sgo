@@ -1,0 +1,96 @@
+/**
+ * Estilos específicos do Chassi (complementam o @sgo/ui/globals.css)
+ */
+
+/* Importa design tokens CSS variables */
+@import './design-tokens.css';
+
+/* Previne scroll horizontal indesejado */
+html, body {
+  @apply overflow-x-hidden;
+}
+
+/* Evita risco branco (cursor/outline) na margem ao exibir módulo em iframe */
+main:has(iframe),
+main:has(iframe) > div {
+  outline: none !important;
+  caret-color: transparent;
+}
+main:has(iframe) iframe {
+  outline: none !important;
+}
+main:has(iframe) *:not(input):not(textarea):not([contenteditable="true"]) {
+  caret-color: transparent;
+}
+main:has(iframe) input,
+main:has(iframe) textarea,
+main:has(iframe) [contenteditable="true"] {
+  caret-color: revert;
+}
+
+/* Animações de transição de página (usa tokens de duração) */
+.page-enter {
+  opacity: 0;
+  transform: translateY(var(--space-md));
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--transition-duration-standard) var(--transition-easing-easeOut),
+              transform var(--transition-duration-standard) var(--transition-easing-easeOut);
+}
+
+/* Estilos do Launcher (grid de módulos com espaçamento do token) */
+.launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: calc(var(--space-lg) + var(--space-sm));
+}
+
+/* Card de módulo no Launcher */
+.module-card {
+  @apply transition-all duration-200 cursor-pointer;
+}
+
+.module-card:hover {
+  @apply shadow-lg -translate-y-1;
+}
+
+/* Ícone do card de módulo: cor definida pelo módulo (manifest) via variável --module-icon-bg (fallback: token primário) */
+.module-card-icon {
+  display: flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm), 0 0 0 2px rgb(255 255 255 / 0.2);
+  color: white;
+  background-color: var(--module-icon-bg, var(--color-primary));
+  transition: all var(--transition-duration-standard) var(--transition-easing-easeOut);
+}
+
+/* Fallback: cores por hash do slug quando o módulo não define cor (agora usa design tokens) */
+.module-icon-color-0 { background-color: var(--color-module-icon-1); }
+.module-icon-color-1 { background-color: var(--color-module-icon-2); }
+.module-icon-color-2 { background-color: var(--color-module-icon-3); }
+.module-icon-color-3 { background-color: var(--color-module-icon-5); }
+.module-icon-color-4 { background-color: var(--color-module-icon-6); }
+.module-icon-color-5 { background-color: var(--color-module-icon-7); }
+.module-icon-color-6 { background-color: var(--color-module-icon-4); }
+
+/* Sidebar responsiva */
+@media (max-width: 768px) {
+  .sidebar {
+    @apply fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full transition-transform duration-300;
+  }
+
+  .sidebar.open {
+    @apply translate-x-0;
+  }
+
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-black/50 z-40;
+  }
+}

@@ -1,0 +1,20 @@
+# docker-compose.dev.yml — override para desenvolvimento de módulos
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#
+# Este arquivo configura o chassi-backend para descobrir módulos
+# rodando na máquina host via host.docker.internal (Docker Desktop: Windows/Mac).
+# O dev roda o módulo localmente (pnpm dev no módulo) e o chassi o detecta automaticamente.
+
+services:
+  chassi-backend:
+    environment:
+      # Ativa descoberta de módulos via host.docker.internal (portas 5001-5099)
+      DOCKER_ENV: "true"
+      # Permite recarregar sem rebuild durante desenvolvimento
+      NODE_ENV: development
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Monta source do backend para hot-reload (com tsx watch)
+      - ./chassi/backend/src:/app/src
+    command: npx tsx watch src/index.ts

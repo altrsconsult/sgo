@@ -1,0 +1,49 @@
+# Dependências
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Banco de dados local
+*.db
+*.db-shm
+*.db-wal
+
+# Dados persistentes (volumes Docker)
+uploads/
+modules_storage/
+
+# Logs
+*.log
+logs/
+
+# Cache e temporários
+.cache/
+.turbo/
+.vite/
+*.tmp
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deploy packages (gerados localmente)
+deploy/*.zip
+
+# Nexus simulator (apenas dev)
+nexus-simulator.html

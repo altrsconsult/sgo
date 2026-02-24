@@ -1,0 +1,231 @@
+/**
+ * Design Tokens — SGO Chassis
+ * Gerado a partir de design-tokens.yaml
+ *
+ * Esta camada defini variáveis CSS que substituem valores hardcoded.
+ * Suporta tema claro (padrão) e escuro (aplicado via data-theme="dark").
+ */
+
+/* ============================================================================
+   TEMA CLARO (padrão)
+   ============================================================================ */
+:root {
+  /* CORES SEMÂNTICAS */
+  --color-primary: #3b82f6;
+  --color-primary-light: #60a5fa;
+  --color-primary-dark: #1e40af;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #6b7280;
+  --color-secondary-light: #9ca3af;
+  --color-secondary-dark: #374151;
+  --color-secondary-foreground: #ffffff;
+
+  --color-success: #22c55e;
+  --color-success-light: #86efac;
+  --color-success-dark: #15803d;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fcd34d;
+  --color-warning-dark: #b45309;
+
+  --color-info: #06b6d4;
+  --color-info-light: #22d3ee;
+  --color-info-dark: #0891b2;
+
+  --color-destructive: #ef4444;
+  --color-destructive-light: #fca5a5;
+  --color-destructive-dark: #7f1d1d;
+
+  --color-accent: #ec4899;
+  --color-accent-light: #f472b6;
+  --color-accent-dark: #831843;
+  --color-accent-emerald: #11ddad; /* Cor de destaque para links (brand color ALTRS) */
+
+  /* Neutrals */
+  --color-foreground: #0f172a;
+  --color-background: #ffffff;
+  --color-muted-base: #f3f4f6;
+  --color-muted-foreground: #6b7280;
+  --color-card: #ffffff;
+  --color-border: #e5e7eb;
+  --color-ring: #3b82f6;
+
+  /* MÓDULO ÍCONES (cores semânticas) */
+  --color-module-icon-1: var(--color-primary);
+  --color-module-icon-2: var(--color-success);
+  --color-module-icon-3: var(--color-warning);
+  --color-module-icon-4: var(--color-secondary);
+  --color-module-icon-5: #8b5cf6;
+  --color-module-icon-6: #ec4899;
+  --color-module-icon-7: #06b6d4;
+
+  /* ESPAÇAMENTO */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+
+  /* TIPOGRAFIA */
+  --font-family-base: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  --font-family-mono: 'Fira Code', 'Courier New', monospace;
+
+  --font-size-xs: 12px;
+  --font-line-height-xs: 16px;
+
+  --font-size-sm: 14px;
+  --font-line-height-sm: 20px;
+
+  --font-size-base: 16px;
+  --font-line-height-base: 24px;
+
+  --font-size-lg: 18px;
+  --font-line-height-lg: 28px;
+
+  --font-size-xl: 20px;
+  --font-line-height-xl: 28px;
+
+  --font-size-2xl: 24px;
+  --font-line-height-2xl: 32px;
+
+  --font-size-3xl: 30px;
+  --font-line-height-3xl: 36px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* RAIOS DE BORDA */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* SOMBRAS */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  /* ANIMAÇÕES */
+  --transition-duration-fast: 150ms;
+  --transition-duration-standard: 200ms;
+  --transition-duration-slow: 300ms;
+  --transition-easing-easeOut: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-easing-easeInOut: cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* ============================================================================
+   TEMA ESCURO (prefers-color-scheme: dark)
+   ============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Redefine cores para tema escuro */
+    --color-foreground: #f1f5f9;
+    --color-background: #020617;
+    --color-muted-base: #1e293b;
+    --color-muted-foreground: #94a3b8;
+    --color-card: #1e293b;
+    --color-border: #334155;
+    --color-ring: #3b82f6;
+  }
+}
+
+/* ============================================================================
+   ALIASES DE COMPONENTES (mapeiam tokens para elementos específicos)
+   ============================================================================ */
+
+/* Botão primário */
+.component-button-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-duration-standard) var(--transition-easing-easeOut);
+}
+
+.component-button-primary:hover {
+  background-color: var(--color-primary-light);
+}
+
+.component-button-primary:active {
+  background-color: var(--color-primary-dark);
+}
+
+/* Card */
+.component-card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Input */
+.component-input {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-base);
+  line-height: var(--font-line-height-base);
+}
+
+/* Badge */
+.component-badge {
+  background-color: var(--color-muted-base);
+  color: var(--color-muted-foreground);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   ALIASES SEMÂNTICAS DE ESPAÇAMENTO (para facilitar uso em componentes)
+   ============================================================================ */
+
+/* Tipografia padrão */
+.text-heading-1 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--font-line-height-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-heading-2 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--font-line-height-2xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-heading-3 {
+  font-size: var(--font-size-xl);
+  line-height: var(--font-line-height-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-body {
+  font-size: var(--font-size-base);
+  line-height: var(--font-line-height-base);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-small {
+  font-size: var(--font-size-sm);
+  line-height: var(--font-line-height-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-caption {
+  font-size: var(--font-size-xs);
+  line-height: var(--font-line-height-xs);
+  font-weight: var(--font-weight-regular);
+}

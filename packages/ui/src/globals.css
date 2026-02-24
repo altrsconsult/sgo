@@ -1,0 +1,232 @@
+/**
+ * SGO Core 2.0 - Design System Global Styles
+ * 
+ * Este arquivo define as variáveis CSS do tema e os estilos base.
+ * Importado por todos os apps que usam o @sgo/ui.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Fonte Padrão */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Background — amarelado bem suave, leve, menos sólido (creme claro) */
+    --background: 55 25% 97%;
+    --foreground: 220 13% 18%;
+
+    /* Cards — amarelado suave, leve */
+    --card: 52 22% 94%;
+    --card-foreground: 220 13% 18%;
+
+    /* Popover/Dropdown */
+    --popover: 52 22% 94%;
+    --popover-foreground: 220 13% 18%;
+
+    /* Cor Primária (Azul SGO - Default) */
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
+
+    /* Cor Secundária — amarelado suave, não cinza */
+    --secondary: 52 20% 92%;
+    --secondary-foreground: 50 12% 28%;
+
+    /* Muted — amarelado muito suave */
+    --muted: 52 18% 93%;
+    --muted-foreground: 48 10% 42%;
+
+    /* Accent (hover, seleção) */
+    --accent: 52 20% 92%;
+    --accent-foreground: 220 13% 18%;
+
+    /* Destructive (ações perigosas) */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+
+    /* Bordas e Inputs — amarelado suave, leve (menos sólido) */
+    --border: 50 18% 90%;
+    --input: 50 18% 90%;
+
+    /* Foco */
+    --ring: 220 70% 50%;
+
+    /* Border Radius padrão */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Off-black próximo a #101419 (azul muito escuro, intenso) */
+    --background: 213 22% 8%;
+    --foreground: 210 20% 98%;
+
+    /* Cards (Dark) */
+    --card: 213 22% 8%;
+    --card-foreground: 210 20% 98%;
+
+    /* Popover (Dark) */
+    --popover: 213 22% 8%;
+    --popover-foreground: 210 20% 98%;
+
+    /* Primary (Dark) */
+    --primary: 210 20% 98%;
+    --primary-foreground: 220 70% 50%;
+
+    /* Secondary (Dark) */
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+
+    /* Muted (Dark) */
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+
+    /* Accent (Dark) */
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+
+    /* Destructive (Dark) */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+
+    /* Bordas (Dark) */
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+
+    /* Foco (Dark) */
+    --ring: 216 12.2% 83.9%;
+  }
+
+  /* =========================================
+     TEMAS CUSTOMIZADOS
+     ========================================= */
+  
+  /* Tema Minimal: Grayscale, contraste suave, sem branco/preto puro */
+  .theme-minimal {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 15%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 15%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 0 0% 15%;
+    
+    /* Primary: Preto absoluto */
+    --primary: 0 0% 0%; 
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 15%;
+
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 15%;
+    
+    --destructive: 0 0% 20%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+    --ring: 0 0% 0%;
+    
+    --radius: 0.25rem; /* Levemente arredondado, quase quadrado */
+  }
+
+  .theme-minimal.dark {
+    /* Off-black próximo a #101419 (neutro na mesma luminosidade) */
+    --background: 213 18% 8%;
+    --foreground: 0 0% 98%;
+    --card: 213 18% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 213 18% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 0% 80%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 80%;
+  }
+
+  /* Tema Group (ALTRS/GetVoice): Executive, Sophisticated, Dark by default */
+  /* Inspirado em altrs.com.br (Black/White high-end) e getvoice.online */
+  .theme-group {
+    /* Off-black próximo a #101419 (executivo) */
+    --background: 213 22% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 213 22% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 213 22% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary: Branco Puro ou um leve tom metálico/prata para botões */
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    /* Secondary: Um tom cinza muito escuro para elementos de suporte */
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    /* Ring: Um brilho sutil */
+    --ring: 240 4.9% 83.9%;
+    
+    --radius: 0rem; /* Sharp edges for executive feel */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar customizada */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}

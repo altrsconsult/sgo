@@ -1,0 +1,101 @@
+import { serve } from '@hono/node-server';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+
+import { env } from './lib/env.js';
+import { authRoutes } from './routes/auth.js';
+import { usersRoutes } from './routes/users.js';
+import { groupsRoutes } from './routes/groups.js';
+import { modulesRoutes } from './routes/modules.js';
+import { permissionsRoutes } from './routes/permissions.js';
+import { moduleConfigRoutes } from './routes/module-config.js';
+import { moduleDataRoutes } from './routes/module-data.js';
+import { storageRoutes } from './routes/storage.js';
+import { ticketsRoutes } from './routes/tickets.js';
+import { auditRoutes } from './routes/audit.js';
+import { webhooksRoutes } from './routes/webhooks.js';
+import { settingsRoutes } from './routes/settings.js';
+import { setupRoutes } from './routes/setup.js';
+import { publicRoutes } from './routes/public.js';
+import { pulseRoutes } from './routes/pulse.js';
+import { nexusRoutes } from './routes/nexus.js';
+import { uploadModuleRoutes } from './routes/upload-module.js';
+import { installFromLinkRoutes } from './routes/install-from-link.js';
+import { healthRoutes } from './routes/health.js';
+
+import { loadInstalledModules } from './services/moduleLoader.js';
+import { devModulesSync } from './services/devModulesSync.js';
+import { startNexusPulse } from './services/nexusPulse.js';
+import { reportToNexusCentral } from './services/nexusReport.js';
+import { seedDevData } from './db/seed.js';
+import { db } from './db/index.js';
+import { users } from './db/schema.js';
+
+const app = new Hono();
+
+// Middlewares globais
+app.use('*', cors({ origin: '*', allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
+app.use('*', logger());
+
+// Health check sem autenticação (Traefik/Docker usam este endpoint)
+app.route('/api/health', healthRoutes);
+
+// Rotas públicas (sem auth)
+app.route('/api/public', publicRoutes);
+app.route('/api/setup', setupRoutes);
+app.route('/api/pulse', pulseRoutes);
+
+// Rotas autenticadas
+app.route('/api/auth', authRoutes);
+app.route('/api/users', usersRoutes);
+app.route('/api/groups', groupsRoutes);
+app.route('/api/modules', modulesRoutes);
+app.route('/api/permissions', permissionsRoutes);
+app.route('/api/module-config', moduleConfigRoutes);
+app.route('/api/module-data', moduleDataRoutes);
+app.route('/api/storage', storageRoutes);
+app.route('/api/tickets', ticketsRoutes);
+app.route('/api/audit', auditRoutes);
+app.route('/api/webhooks', webhooksRoutes);
+app.route('/api/settings', settingsRoutes);
+app.route('/api/upload-module', uploadModuleRoutes);
+app.route('/api/install-from-link', installFromLinkRoutes);
+
+// Rotas M2M para o Nexus Central
+app.route('/api/nexus', nexusRoutes);
+
+// Inicia servidor imediatamente (antes de inicializar o DB)
+// Evita timeouts de health check durante inicialização
+serve({ fetch: app.fetch, port: env.port }, () => {
+  console.log(`Chassi backend rodando na porta ${env.port} [${env.nodeEnv}]`);
+
+  // Inicialização assíncrona em background
+  initializeAsync();
+});
+
+async function initializeAsync() {
+  try {
+    // Seed em desenvolvimento se não houver usuário admin
+    if (env.nodeEnv !== 'production') {
+      const adminCount = await db.query.users.findMany({ where: (u, { eq }) => eq(u.role, 'admin') });
+      if (adminCount.length === 0) {
+        await seedDevData();
+        console.log('Dados de desenvolvimento criados.');
+      }
+    }
+
+    // Carrega módulos instalados
+    await loadInstalledModules();
+    console.log('Módulos instalados carregados.');
+
+    // Sincronização de módulos em desenvolvimento
+    devModulesSync();
+
+    // Modo gerenciado: registra no Nexus e inicia pulse
+    await reportToNexusCentral();
+    await startNexusPulse();
+  } catch (err) {
+    console.error('Erro durante inicialização:', err);
+  }
+}
