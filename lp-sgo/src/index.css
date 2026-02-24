@@ -1478,6 +1478,22 @@ section {
 }
 
 /* ========================================
+   LOGO
+   ======================================== */
+
+.lp-sgo-logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.lp-sgo-logo:hover .lp-sgo-logo-img {
+  opacity: 1;
+}
+
+/* ========================================
    DEV CTA — Card de bifurcação pós-hero
    ======================================== */
 
@@ -1621,6 +1637,129 @@ section {
 }
 
 /* ========================================
+   DEVS PAGE — Code block melhorado
+   ======================================== */
+
+.sgo-dev-code-block {
+  max-width: 780px;
+  margin: 0 auto;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  overflow: hidden;
+}
+
+.sgo-dev-code-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  transition: background 0.15s ease;
+}
+
+.sgo-dev-code-line:last-child {
+  border-bottom: none;
+}
+
+.sgo-dev-code-line:hover {
+  background: hsl(var(--primary) / 0.05);
+}
+
+.sgo-dev-code-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  min-width: 24px;
+}
+
+.sgo-dev-code-prompt {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: hsl(var(--primary));
+  font-weight: 600;
+}
+
+.sgo-dev-code-text {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+/* ========================================
+   DEVS PAGE — Seção IA feature
+   ======================================== */
+
+.sgo-ai-feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* ========================================
+   DEVS PAGE — CTA final GitHub
+   ======================================== */
+
+.sgo-cta-final-dev {
+  padding: 5rem 2rem;
+  background: hsl(var(--card));
+  border-top: 1px solid hsl(var(--border));
+}
+
+.sgo-cta-final-dev-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sgo-cta-final-dev-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.sgo-cta-final-dev-desc {
+  color: hsl(var(--muted-foreground));
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 2.5rem;
+}
+
+.sgo-cta-final-dev-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   VALUE CARD — variante problema (sem ícone colorido)
+   ======================================== */
+
+.sgo-value-card--problem .sgo-value-card-icon {
+  color: hsl(var(--muted-foreground));
+}
+
+/* ========================================
+   PRICING — highlight da frase chave
+   ======================================== */
+
+.sgo-pricing-highlight {
+  display: block;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid hsl(var(--primary));
+  background: hsl(var(--primary) / 0.06);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: hsl(var(--primary));
+  line-height: 1.5;
+}
+
+/* ========================================
    SCROLLBAR CUSTOM
    ======================================== */
 
@@ -1683,6 +1822,24 @@ section {
   .sgo-dev-cta-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .sgo-ai-feature {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sgo-cta-final-dev-actions {
+    flex-direction: column;
+  }
+
+  .sgo-dev-code-line {
+    padding: 0.75rem 1rem;
+  }
+
+  .sgo-dev-code-text {
+    font-size: 0.75rem;
+    word-break: break-all;
   }
 
   .lp-sgo-nav {

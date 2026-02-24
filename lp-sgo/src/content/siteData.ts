@@ -30,9 +30,9 @@ export const siteData = {
 
   // Card de bifurcação pós-hero — direciona devs/integradores para a página correta
   devCta: {
-    eyebrow: "Você é desenvolvedor ou integrador?",
+    eyebrow: "Você é integrador ou desenvolvedor?",
     title: "Adicione o SGO ao seu portfólio de serviços",
-    description: "Se você já entrega Chatwoot, agentes de IA ou automações para clientes, o SGO é o sistema de gestão que estava faltando no seu stack. Boilerplate open-source, IA-friendly e pronto para customizar.",
+    description: "Se você já integra sistemas open-source para clientes — omnichannel, automação de processos, agentes de IA — o SGO é a camada de gestão que fecha o ecossistema. Boilerplate aberto, documentação IA-friendly.",
     cta: "Ver como funciona para integradores",
     link: "/devs",
   },
@@ -45,14 +45,14 @@ export const siteData = {
         id: "01",
         label: "PROPRIEDADE TOTAL",
         title: "O sistema é seu, não nosso",
-        description: "Quando você implanta o SGO, o sistema pertence ao seu negócio. Seus dados ficam no seu servidor, sua marca aparece para seus usuários e você nunca fica refém de uma assinatura para continuar operando.",
+        description: "Quando você implanta o SGO, o sistema pertence ao seu negócio. Seus dados podem ficar no seu próprio servidor se quiser — sem depender de terceiros para continuar operando. O que você contrata é o trabalho de implantação e desenvolvimento, não o direito de usar.",
         icon: "shield-check"
       },
       {
         id: "02",
         label: "PRONTO PARA OPERAR",
-        title: "Da instalação ao uso em dias",
-        description: "Não é um protótipo que cresce junto com os problemas. É uma plataforma estável, com autenticação, controle de usuários, permissões e módulos prontos. Você entra operando, não testando.",
+        title: "Plataforma validada, não protótipo",
+        description: "Autenticação, controle de usuários, permissões, painel administrativo — tudo funciona desde o primeiro dia. O integrador foca nos módulos do seu negócio, não em resolver infraestrutura.",
         icon: "layers"
       },
       {
@@ -67,22 +67,22 @@ export const siteData = {
 
   howItWorks: {
     title: "Como acontece na prática",
-    subtitle: "Da conversa ao sistema rodando",
+    subtitle: "Do primeiro contato ao sistema rodando",
     steps: [
       {
         number: "01",
         title: "Entendemos sua operação",
-        description: "Antes de qualquer código, conversamos sobre como seu negócio funciona: quem usa o sistema, quais informações precisam estar acessíveis, quais processos você quer automatizar. O sistema nasce do seu contexto.",
+        description: "Antes de qualquer código, mapeamos como seu negócio funciona: quem usa o sistema, quais informações precisam estar acessíveis, quais processos você quer digitalizar. O sistema nasce do seu contexto.",
       },
       {
         number: "02",
-        title: "Implantamos e configuramos tudo",
-        description: "A ALTRS cuida da instalação no seu servidor, configuração de usuários, permissões e dos módulos que fazem sentido para você agora. Você começa a usar enquanto evoluímos juntos.",
+        title: "Implantação e configuração",
+        description: "O integrador cuida de tudo: instalação, configuração de usuários, permissões e dos módulos que fazem sentido para você agora. O sistema roda em servidores virtuais acessíveis — com custo baixo e às vezes até gratuito — sem complicação técnica do seu lado.",
       },
       {
         number: "03",
         title: "Você decide o próximo passo",
-        description: "Quer continuar em parceria? Desenvolvemos novos módulos conforme sua operação cresce. Prefere assumir independentemente? O código é aberto e qualquer desenvolvedor consegue continuar. Sem amarras.",
+        description: "Quer continuar em parceria? Novos módulos entram conforme sua operação cresce. Prefere assumir de forma independente? O código é aberto e qualquer desenvolvedor consegue continuar. Sem amarras, sem lock-in.",
       }
     ]
   },
@@ -146,7 +146,8 @@ export const siteData = {
   pricing: {
     title: "Como funciona comercialmente",
     subtitle: "Transparente desde o início",
-    description: "Não temos assinatura mensal obrigatória para manter o sistema funcionando. O SGO roda no seu servidor e opera de forma independente. O que você contrata é o trabalho de implantação, desenvolvimento e suporte — não o direito de usar.",
+    description: "Sem assinatura mensal obrigatória para o sistema continuar funcionando. O que você contrata é o trabalho de implantação, desenvolvimento e suporte — não o direito de usar.",
+    highlight: "O que você contrata é o trabalho — não o direito de usar.",
     models: [
       {
         id: "modular",
@@ -234,26 +235,34 @@ export const siteData = {
 
   devs: {
     hero: {
-      title: "SGO para integradores",
-      subtitle: "Você já entrega ferramentas poderosas para seus clientes. O SGO é o sistema de gestão que fecha o ciclo."
+      badge: "Para integradores e desenvolvedores",
+      headline: {
+        part1: "O SISTEMA QUE",
+        part2: "FECHA O",
+        part3: "ECOSSISTEMA"
+      },
+      subtitle: "Você já integra sistemas open-source para seus clientes. O SGO é a camada de gestão central que faltava — com whitelabel nativo, módulos customizáveis e documentação feita para trabalhar com IA.",
+      ctaPrimary: "Ver repositório no GitHub",
+      ctaLink: "https://github.com/altrsconsult/sgo",
+      ctaSecondary: "Como funciona",
     },
 
     // O gap que o integrador conhece bem
     problem: {
-      title: "Um problema que você provavelmente já viveu",
-      subtitle: "O cliente tem tudo — menos um lugar central para gerir",
+      title: "Um cenário que você provavelmente já viveu",
+      subtitle: "O cliente tem tudo instalado — menos um lugar central para gerir",
       items: [
         {
-          title: "Você implantou o Chatwoot",
+          title: "Você implantou o omnichannel",
           description: "O atendimento está rodando. Mas o cliente pergunta: 'onde fico de olho nos dados dos meus usuários? Onde configuro quem acessa o quê?'"
         },
         {
-          title: "Você configurou os agentes de IA",
-          description: "As automações estão funcionando. Mas cada sistema tem seu próprio painel, seu próprio login, e o cliente fica perdido entre abas."
+          title: "Você entregou a automação de processos",
+          description: "Os fluxos estão salvando horas por semana. Mas o cliente ainda usa planilha para gerir a operação porque não tem sistema integrado."
         },
         {
-          title: "Você entregou o N8N",
-          description: "Os fluxos estão salvando horas por semana. Mas o cliente ainda usa planilha para gerir a operação porque não tem sistema integrado."
+          title: "Você implantou os agentes de IA",
+          description: "A inteligência está trabalhando. Mas cada ferramenta tem seu próprio painel, seu próprio login — e o cliente fica perdido entre abas sem visão centralizada."
         }
       ]
     },
@@ -285,11 +294,11 @@ export const siteData = {
     quickStart: {
       title: "Do zero ao módulo rodando",
       steps: [
-        "Clone o repositório: git clone https://github.com/altrsconsult/sgo",
-        "Suba o chassi local: docker compose up -d",
+        "Clone: git clone https://github.com/altrsconsult/sgo",
+        "Suba o chassi: docker compose up -d  (Docker Desktop)",
         "Copie o boilerplate: cp -r modules/boilerplate modules/meu-modulo",
         "Desenvolva: pnpm --filter @sgo/module-meu-modulo dev",
-        "O módulo aparece automaticamente no chassi local (porta 3000)"
+        "O módulo aparece automaticamente no chassi em localhost:3000"
       ]
     },
 

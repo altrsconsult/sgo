@@ -11,6 +11,9 @@ export function PricingSection() {
         <h2 className="sgo-section-title">{siteData.pricing.title}</h2>
         <p className="sgo-section-subtitle">{siteData.pricing.subtitle}</p>
         <p className="sgo-section-desc">{siteData.pricing.description}</p>
+        {'highlight' in siteData.pricing && (
+          <span className="sgo-pricing-highlight">{(siteData.pricing as any).highlight}</span>
+        )}
       </div>
 
       <div className="sgo-pricing-grid">

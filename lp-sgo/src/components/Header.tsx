@@ -1,5 +1,5 @@
 /**
- * Header — Navegação fixa com logo e links
+ * Header — Navegação fixa com logo SVG e links
  */
 
 import { Link, useLocation } from "react-router-dom";
@@ -12,8 +12,20 @@ export function Header() {
     <header className="lp-sgo-header">
       <div className="lp-sgo-header-inner">
         <Link to="/" className="lp-sgo-logo">
-          {siteData.siteName}
-          <span className="lp-sgo-logo-dot">.</span>
+          {/* Logo SVG — versão escura para o tema dark da LP */}
+          <img
+            src="/logo-light.svg"
+            alt={siteData.siteName}
+            className="lp-sgo-logo-img"
+            onError={(e) => {
+              // Fallback para texto se logo não carregar
+              (e.target as HTMLImageElement).style.display = 'none';
+              (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style');
+            }}
+          />
+          <span className="lp-sgo-logo-fallback" style={{ display: 'none' }}>
+            {siteData.siteName}<span className="lp-sgo-logo-dot">.</span>
+          </span>
         </Link>
 
         <nav className="lp-sgo-nav">
