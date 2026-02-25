@@ -81,7 +81,7 @@ O mercado de sistemas de gestão cobra assinatura mensal pelo **direito de usar*
 
 ## Selos & Certificações
 
-> **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** e **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — duas certificações voluntárias e independentes que avaliam segurança, build, processos e governança com critérios rigorosos da indústria. SGO está em roadmap para **Silver (89%)**. [Ver certificação Best Practices →](https://www.bestpractices.dev/projects/12038)
+> **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** e **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — duas certificações voluntárias e independentes que avaliam segurança, build, processos e governança com critérios rigorosos da indústria.
 
 ### 🔐 Segurança & Conformidade
 
@@ -222,9 +222,7 @@ O SGO é construído pela comunidade. Quer participar?
 
 - 🐛 **Bugs e melhorias** — [abra uma issue](https://github.com/altrsconsult/sgo/issues)
 - 🧩 **Módulos e chassi** — veja [CONTRIBUTING.md](CONTRIBUTING.md)
-- ⭐ **Se o SGO te ajudou** — [deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers); ajuda outros devs a descobrirem o projeto
-
-Ambiente inclusivo e respeitoso.
+- ⭐ **[Deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers)** — ajuda a divulgar o projeto para mais devs e integradores
 
 ---
 
@@ -241,6 +239,6 @@ Ambiente inclusivo e respeitoso.
 
 **[ALTRS Consultoria](https://altrs.com.br)** &nbsp;·&nbsp; [sgo.altrs.net](https://sgo.altrs.net) &nbsp;·&nbsp; [contato@altrs.com.br](mailto:contato@altrs.com.br)
 
-*Feito com propósito. Código aberto. Sistema seu, para sempre.*
+*Feito com propósito — ecossistema de abundância onde todos ganham: o técnico prospera entregando serviço, não vendendo acesso. Código aberto — sem lock-in: o cliente paga pelo que você faz, não pelo sistema que ele usa.*
 
 </div>
