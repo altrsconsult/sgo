@@ -15,17 +15,17 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@hono/zod-validator": "^0.4.3",
+    "@hono/zod-validator": "^0.7.6",
     "@sgo/sdk": "workspace:*",
     "adm-zip": "^0.5.16",
-    "bcryptjs": "^3.0.3",
-    "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.38.3",
+"bcryptjs": "^3.0.3",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
     "hono": "^4.6.14",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.18.1",
     "pg": "^8.13.1",
-    "zod": "^3.24.1"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
