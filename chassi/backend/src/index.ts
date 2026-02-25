@@ -23,6 +23,7 @@ import { nexusRoutes } from './routes/nexus.js';
 import { uploadModuleRoutes } from './routes/upload-module.js';
 import { installFromLinkRoutes } from './routes/install-from-link.js';
 import { healthRoutes } from './routes/health.js';
+import { moduleAssetsRoutes } from './routes/module-assets.js';
 
 import { loadInstalledModules } from './services/moduleLoader.js';
 import { devModulesSync } from './services/devModulesSync.js';
@@ -30,7 +31,6 @@ import { startNexusPulse } from './services/nexusPulse.js';
 import { reportToNexusCentral } from './services/nexusReport.js';
 import { seedDevData } from './db/seed.js';
 import { db } from './db/index.js';
-import { users } from './db/schema.js';
 
 const app = new Hono();
 
@@ -40,6 +40,9 @@ app.use('*', logger());
 
 // Health check sem autenticação (Traefik/Docker usam este endpoint)
 app.route('/api/health', healthRoutes);
+
+// Assets de módulos instalados (ZIP) — iframe standalone; sem auth para o browser carregar
+app.route('/modules-assets', moduleAssetsRoutes);
 
 // Rotas públicas (sem auth)
 app.route('/api/public', publicRoutes);
@@ -65,26 +68,18 @@ app.route('/api/install-from-link', installFromLinkRoutes);
 // Rotas M2M para o Nexus Central
 app.route('/api/nexus', nexusRoutes);
 
-// Inicia servidor imediatamente (antes de inicializar o DB)
-// Evita timeouts de health check durante inicialização
-serve({ fetch: app.fetch, port: env.port }, () => {
-  console.log(`Chassi backend rodando na porta ${env.port} [${env.nodeEnv}]`);
-
-  // Inicialização assíncrona em background
-  initializeAsync();
-});
+// Em dev: garante seed antes de aceitar conexões para /api/setup/status retornar installed
+async function ensureDevSeed() {
+  if (env.nodeEnv === 'production') return;
+  const adminCount = await db.query.users.findMany({ where: (u, { eq }) => eq(u.role, 'admin') });
+  if (adminCount.length === 0) {
+    await seedDevData();
+    console.log('Dados de desenvolvimento criados (admin/admin123).');
+  }
+}
 
 async function initializeAsync() {
   try {
-    // Seed em desenvolvimento se não houver usuário admin
-    if (env.nodeEnv !== 'production') {
-      const adminCount = await db.query.users.findMany({ where: (u, { eq }) => eq(u.role, 'admin') });
-      if (adminCount.length === 0) {
-        await seedDevData();
-        console.log('Dados de desenvolvimento criados.');
-      }
-    }
-
     // Carrega módulos instalados
     await loadInstalledModules();
     console.log('Módulos instalados carregados.');
@@ -99,3 +94,15 @@ async function initializeAsync() {
     console.error('Erro durante inicialização:', err);
   }
 }
+
+async function main() {
+  await ensureDevSeed();
+  serve({ fetch: app.fetch, port: env.port }, () => {
+    console.log(`Chassi backend rodando na porta ${env.port} [${env.nodeEnv}]`);
+    initializeAsync();
+  });
+}
+main().catch((err) => {
+  console.error('Falha ao iniciar:', err);
+  process.exit(1);
+});

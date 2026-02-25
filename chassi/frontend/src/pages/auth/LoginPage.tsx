@@ -5,6 +5,7 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Inpu
 import { useLogin } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Logo } from "@/components/Logo";
+import { CHASSIS_VERSION } from "@/version";
 
 /**
  * Página de Login unificada.
@@ -123,17 +124,9 @@ export function LoginPage() {
         </CardContent>
       </Card>
       
-      <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-muted-foreground">
-        SGO feito sob medida por ©{" "}
-        <a
-          href="https://sgo.altrs.net"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-inherit no-underline hover:text-[var(--color-accent-emerald)] transition-colors"
-        >
-          ALTRS Consult
-        </a>
-        {" "}- v3.0.0
+      {/* Rodapé neutro: mesma versão exibida no badge do usuário (open source) */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-xs text-muted-foreground font-mono">
+        SGO {CHASSIS_VERSION}
       </div>
     </div>
   );

@@ -1,0 +1,40 @@
+{
+  "name": "Exemplo SGO",
+  "font": "Inter",
+  "light": {
+    "background": "55 25% 97%",
+    "foreground": "220 13% 18%",
+    "card": "52 22% 94%",
+    "cardForeground": "220 13% 18%",
+    "primary": "220 70% 50%",
+    "primaryForeground": "210 20% 98%",
+    "secondary": "52 20% 92%",
+    "secondaryForeground": "50 12% 28%",
+    "muted": "52 18% 93%",
+    "mutedForeground": "48 10% 42%",
+    "accent": "52 20% 92%",
+    "accentForeground": "220 13% 18%",
+    "border": "50 18% 90%",
+    "input": "50 18% 90%",
+    "ring": "220 70% 50%",
+    "radius": "0.5rem"
+  },
+  "dark": {
+    "background": "213 22% 8%",
+    "foreground": "210 20% 98%",
+    "card": "213 22% 8%",
+    "cardForeground": "210 20% 98%",
+    "primary": "220 70% 50%",
+    "primaryForeground": "210 20% 98%",
+    "secondary": "215 27.9% 16.9%",
+    "secondaryForeground": "210 20% 98%",
+    "muted": "215 27.9% 16.9%",
+    "mutedForeground": "217.9 10.6% 64.9%",
+    "accent": "220 70% 22%",
+    "accentForeground": "210 20% 98%",
+    "border": "215 27.9% 16.9%",
+    "input": "215 27.9% 16.9%",
+    "ring": "220 70% 50%",
+    "radius": "0.5rem"
+  }
+}

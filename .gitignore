@@ -47,3 +47,8 @@ deploy/*.zip
 
 # Nexus simulator (apenas dev)
 nexus-simulator.html
+
+# Lab de módulos (clientes) — não sobe no repo público; pode ter repo privado próprio
+modules-lab/*
+!modules-lab/.gitignore
+!modules-lab/README.md

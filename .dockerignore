@@ -1,0 +1,23 @@
+# Evita enviar node_modules ao daemon Docker (resolve "unknown file mode" no Windows)
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Build outputs (serão gerados dentro do container)
+dist/
+**/dist/
+build/
+**/build/
+*.tsbuildinfo
+
+# Git (opcional, reduz contexto)
+.git/
+
+# Ambiente e dados locais
+.env
+.env.*
+uploads/
+modules_storage/
+.cache/
+.turbo/
+.vite/

@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { tickets, ticketMessages } from '../db/schema.js';
+import { tickets, ticketMessages, type User } from '../db/schema.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { requireAdmin } from '../middleware/requireAdmin.js';
 
-export const ticketsRoutes = new Hono();
+type AuthVariables = { Variables: { user: User } };
+export const ticketsRoutes = new Hono<AuthVariables>();
 
 ticketsRoutes.use('*', authenticate);
 
@@ -18,15 +19,21 @@ ticketsRoutes.get('/', async (c) => {
   return c.json(all);
 });
 
-// GET /api/tickets/:id
+// GET /api/tickets/:id — dono do ticket ou admin pode ver; retorna ticket com mensagens
 ticketsRoutes.get('/:id', async (c) => {
   const id = Number(c.req.param('id'));
+  const user = c.get('user');
   const ticket = await db.query.tickets.findFirst({
     where: eq(tickets.id, id),
-    with: { messages: { orderBy: (m, { asc }) => [asc(m.createdAt)] } },
+    with: { messages: true },
   });
   if (!ticket) return c.json({ error: 'Ticket não encontrado' }, 404);
-  return c.json(ticket);
+  const isOwner = ticket.userId === user.id;
+  const isAdmin = user.role === 'admin';
+  if (!isOwner && !isAdmin) return c.json({ error: 'Acesso negado' }, 403);
+  const messages = (ticket as { messages?: { id: number; message: string; userId: number | null; createdAt?: Date | null; created_at?: Date | null }[] }).messages ?? [];
+  messages.sort((a, b) => new Date((a.createdAt ?? a.created_at) ?? 0).getTime() - new Date((b.createdAt ?? b.created_at) ?? 0).getTime());
+  return c.json({ ...ticket, messages });
 });
 
 // POST /api/tickets

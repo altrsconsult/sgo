@@ -114,5 +114,5 @@ export { Modal, type ModalProps } from "./components/modal";
 
 // Componentes — ORGANISMS
 export { NavBar, type NavBarProps } from "./components/navbar";
-export { Sidebar, type SidebarProps } from "./components/sidebar";
+export { Sidebar, useSidebar, type SidebarProps } from "./components/sidebar";
 export { DataTable } from "./components/data-table";

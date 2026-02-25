@@ -8,14 +8,14 @@ const PULSE_INTERVAL_MS = 60 * 1000; // envia pulse a cada 1 minuto
 // Obtém ou cria installation ID único persistido no banco
 async function getOrCreateInstallationId(): Promise<string> {
   const existing = await db.query.nexusInstallations.findFirst();
-  if (existing) return existing.installationId;
+  if (existing) return (existing as { installationId: string }).installationId;
 
   const id = randomUUID();
   await db.insert(nexusInstallations).values({
     installationId: id,
     version: process.env.npm_package_version || '4.0.0',
     hostname: new URL(env.nexusUrl || 'http://localhost').hostname,
-  }).onConflictDoNothing();
+  } as never).onConflictDoNothing();
 
   return id;
 }

@@ -3,13 +3,15 @@ import { zValidator } from '@hono/zod-validator';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { users } from '../db/schema.js';
+import { users, auditLogs, type User } from '../db/schema.js';
 import { signToken } from '../lib/jwt.js';
 import { LoginSchema } from '@sgo/sdk';
 import { authenticate } from '../middleware/authenticate.js';
 import { loginLimiter } from '../middleware/rateLimiter.js';
 
-export const authRoutes = new Hono();
+/** Contexto com usuário autenticado (middleware authenticate) */
+type AuthVariables = { Variables: { user: User } };
+export const authRoutes = new Hono<AuthVariables>();
 
 // POST /api/auth/login
 authRoutes.post('/login', loginLimiter, zValidator('json', LoginSchema), async (c) => {
@@ -29,6 +31,16 @@ authRoutes.post('/login', loginLimiter, zValidator('json', LoginSchema), async (
   }
 
   const token = signToken({ userId: user.id, username: user.username, role: user.role });
+
+  await db.insert(auditLogs).values({
+    userId: user.id,
+    userName: user.name,
+    action: 'login',
+    entityType: 'user',
+    entityId: String(user.id),
+    ipAddress: c.req.header('x-forwarded-for') ?? c.req.header('x-real-ip') ?? null,
+    userAgent: c.req.header('user-agent') ?? null,
+  });
 
   const { password: _pw, ...userWithoutPassword } = user;
   return c.json({ token, user: userWithoutPassword });

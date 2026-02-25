@@ -23,9 +23,23 @@ async function tryFetchManifest(port: number): Promise<Record<string, unknown> |
       signal: AbortSignal.timeout(1000),
     });
     if (!response.ok) return null;
-    return await response.json();
+    return (await response.json()) as Record<string, unknown>;
   } catch {
     return null;
+  }
+}
+
+/** Verifica se o módulo expõe remoteEntry.js (Federation). Se 404, é standalone (iframe). */
+async function hasRemoteEntry(port: number): Promise<boolean> {
+  const host = getDiscoveryHost();
+  try {
+    const res = await fetch(`http://${host}:${port}/assets/remoteEntry.js`, {
+      signal: AbortSignal.timeout(1000),
+      method: 'HEAD',
+    });
+    return res.ok;
+  } catch {
+    return false;
   }
 }
 
@@ -44,8 +58,11 @@ export async function devModulesSync() {
         const parsed = ModuleManifestSchema.parse(manifest);
         foundSlugs.push(parsed.slug);
 
-        // remoteEntry sempre usa localhost pois é o browser que carrega (não o backend)
-        const remoteEntry = `http://localhost:${port}/assets/remoteEntry.js`;
+        // URL sempre localhost pois é o browser que carrega; standalone = iframe na base do dev server
+        const hasFederation = await hasRemoteEntry(port);
+        const remoteEntry = hasFederation
+          ? `http://localhost:${port}/assets/remoteEntry.js`
+          : `http://localhost:${port}/`;
 
         await db.insert(modules).values({
           slug: parsed.slug,
@@ -57,7 +74,7 @@ export async function devModulesSync() {
           active: true,
           type: 'dev',
           remoteEntry,
-        }).onConflictDoUpdate({
+        } as never).onConflictDoUpdate({
           target: modules.slug,
           set: {
             name: parsed.name,
@@ -65,7 +82,7 @@ export async function devModulesSync() {
             remoteEntry,
             active: true,
             updatedAt: new Date(),
-          },
+          } as never,
         });
       } catch {
         // Manifest inválido, ignorar esta porta
@@ -79,7 +96,7 @@ export async function devModulesSync() {
 
     for (const mod of devModules) {
       if (!foundSlugs.includes(mod.slug)) {
-        await db.update(modules).set({ active: false }).where(
+        await db.update(modules).set({ active: false } as never).where(
           and(eq(modules.slug, mod.slug), eq(modules.type, 'dev'))
         );
       }

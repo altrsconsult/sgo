@@ -4,8 +4,8 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-# Copia arquivos de configuração do workspace
-COPY pnpm-workspace.yaml package.json ./
+# Copia configuração do workspace (tsconfig base para extends)
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml tsconfig.json ./
 COPY packages/ packages/
 
 # Copia o frontend e suas dependências

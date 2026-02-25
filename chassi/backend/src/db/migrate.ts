@@ -1,10 +1,14 @@
 import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import pkg from 'pg';
 const { Pool } = pkg;
 
-// Script de migration — rodar com: pnpm db:migrate
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Script de migration — rodar com: pnpm db:migrate (dev) ou node dist/db/migrate.js (produção)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://sgo:sgodev@localhost:5432/sgo',
 });
@@ -12,8 +16,9 @@ const pool = new Pool({
 const db = drizzle(pool);
 
 async function runMigrations() {
-  console.log('Executando migrations...');
-  await migrate(db, { migrationsFolder: './src/db/migrations' });
+  const migrationsFolder = path.join(__dirname, 'migrations');
+  console.log('Executando migrations em', migrationsFolder, '...');
+  await migrate(db, { migrationsFolder });
   console.log('Migrations concluídas.');
   await pool.end();
 }

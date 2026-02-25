@@ -55,7 +55,7 @@ export function HomePage() {
             <div className="max-w-md mx-auto space-y-2">
               <h3 className="text-xl font-semibold">Nenhum módulo disponível</h3>
               <p className="text-muted-foreground">
-                {user?.role === "admin" || user?.role === "superadmin"
+                {user?.role === "admin"
                   ? "Acesse o painel administrativo para instalar e configurar novos módulos no sistema."
                   : "Você ainda não possui módulos liberados. Entre em contato com seu gestor."}
               </p>

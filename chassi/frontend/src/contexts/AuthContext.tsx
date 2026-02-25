@@ -1,8 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { User, AuthContext as AuthContextType } from "@sgo/sdk";
+import type { User } from "@sgo/sdk";
 
-// Extende o tipo de AuthContext para incluir impersonation
-interface ExtendedAuthContext extends AuthContextType {
+/** Contexto de autenticação (chassi só tem admin/user; sem superadmin) */
+interface ExtendedAuthContext {
+  user: User | null;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isSuperAdmin: false; // chassi não tem superadmin
+  logout: () => void;
+  refresh: () => Promise<void>;
   isImpersonating: boolean;
   impersonatedBy: { id: number; name: string } | null;
   impersonate: (userId: number) => Promise<boolean>;
@@ -24,11 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isImpersonating, setIsImpersonating] = useState(false);
   const [impersonatedBy, setImpersonatedBy] = useState<{ id: number; name: string } | null>(null);
 
-  // 1) Resolve setup antes de mostrar app: se DB vazio, redireciona para /setup
-  // Retry uma vez em caso de falha transitória (ex.: backend ocupado logo após instalar módulo)
+  // 1) Resolve setup antes de mostrar app: em dev pula setup e usa credenciais padrão (admin/admin123)
   useEffect(() => {
     const path = window.location.pathname;
     if (path.startsWith("/setup") || path.startsWith("/install")) {
+      setSetupReady(true);
+      return;
+    }
+    if (import.meta.env.DEV) {
       setSetupReady(true);
       return;
     }
@@ -209,8 +218,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: ExtendedAuthContext = {
     user,
     isAuthenticated: !!user,
-    isSuperAdmin: user?.role === "superadmin" && !isImpersonating,
-    isAdmin: user?.role === "admin" || user?.role === "superadmin",
+    isSuperAdmin: false, // chassi não tem role superadmin
+    isAdmin: user?.role === "admin",
     logout,
     refresh,
     isImpersonating,

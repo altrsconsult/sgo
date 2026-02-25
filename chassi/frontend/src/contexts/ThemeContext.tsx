@@ -1,13 +1,21 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  loadCustomThemeFromStorage,
+  customThemeToCss,
+  googleFontsUrl,
+  type CustomThemeJson,
+} from "@/utils/customTheme";
 
-// Adicionando suporte aos novos temas
-export type Theme = "light" | "dark" | "system" | "minimal" | "group";
+// Temas: light/dark/system + skins (default, minimal, group, custom)
+export type Theme = "light" | "dark" | "system" | "minimal" | "group" | "custom";
 
 interface ThemeContextValue {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   resolvedTheme: "light" | "dark";
-  activeSkin: "default" | "minimal" | "group";
+  activeSkin: "default" | "minimal" | "group" | "custom";
+  /** Tema personalizado carregado (apenas quando activeSkin === "custom") */
+  customThemeData: CustomThemeJson | null;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -25,7 +33,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-  const [activeSkin, setActiveSkin] = useState<"default" | "minimal" | "group">("default");
+  const [activeSkin, setActiveSkin] = useState<"default" | "minimal" | "group" | "custom">("default");
+  const [customThemeData, setCustomThemeData] = useState<CustomThemeJson | null>(null);
 
   // Carrega tema do servidor (configuração global)
   useEffect(() => {
@@ -62,10 +71,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       } else if (theme === "light") {
         setResolvedTheme("light");
       } else if (theme === "minimal") {
-        // Minimal segue o sistema ou padrão light, vamos deixar light por padrão se não especificado
-        // mas idealmente minimal suporta ambos. Vamos assumir light para minimal por enquanto
-        // ou checar system preference se quisermos minimal-dark
-         setResolvedTheme("light"); 
+        setResolvedTheme("light");
+      } else if (theme === "custom") {
+        setResolvedTheme(mediaQuery.matches ? "dark" : "light");
       }
 
       // 2. Determina Skin
@@ -73,6 +81,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setActiveSkin("minimal");
       } else if (theme === "group") {
         setActiveSkin("group");
+      } else if (theme === "custom") {
+        setActiveSkin("custom");
       } else {
         setActiveSkin("default");
       }
@@ -87,18 +97,50 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Aplica classes no document
   useEffect(() => {
     const root = window.document.documentElement;
-    
-    // Remove todas as classes de tema conhecidas
-    root.classList.remove("light", "dark", "theme-minimal", "theme-group");
-
-    // Adiciona o modo (light/dark)
+    root.classList.remove("light", "dark", "theme-minimal", "theme-group", "theme-custom");
     root.classList.add(resolvedTheme);
-
-    // Adiciona a skin se não for default
     if (activeSkin !== "default") {
       root.classList.add(`theme-${activeSkin}`);
     }
   }, [resolvedTheme, activeSkin]);
+
+  // Injeta CSS do tema personalizado e opcionalmente link do Google Font
+  useEffect(() => {
+    if (activeSkin !== "custom") return;
+    const data = loadCustomThemeFromStorage();
+    setCustomThemeData(data);
+    if (!data) return;
+
+    let styleEl = document.getElementById("sgo-custom-theme") as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "sgo-custom-theme";
+      document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = customThemeToCss(data);
+
+    if (data.font) {
+      let linkEl = document.getElementById("sgo-custom-theme-font") as HTMLLinkElement | null;
+      if (!linkEl) {
+        linkEl = document.createElement("link");
+        linkEl.id = "sgo-custom-theme-font";
+        linkEl.rel = "stylesheet";
+        linkEl.href = googleFontsUrl(data.font);
+        document.head.appendChild(linkEl);
+      } else {
+        linkEl.href = googleFontsUrl(data.font);
+      }
+      const root = document.documentElement;
+      root.style.setProperty("--font-sans", `"${data.font}", ui-sans-serif, system-ui, sans-serif`);
+    }
+    return () => {
+      const el = document.getElementById("sgo-custom-theme");
+      if (el) el.remove();
+      const fontEl = document.getElementById("sgo-custom-theme-font");
+      if (fontEl) fontEl.remove();
+      if (data.font) document.documentElement.style.removeProperty("--font-sans");
+    };
+  }, [activeSkin]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -106,7 +148,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, activeSkin }}>
+    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme, activeSkin, customThemeData }}>
       {children}
     </ThemeContext.Provider>
   );

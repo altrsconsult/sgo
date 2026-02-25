@@ -23,6 +23,7 @@ services:
 
   # Backend Hono/Drizzle
   chassi-backend:
+    image: sgo/chassi-backend:4.0.0
     build:
       context: .
       dockerfile: chassi/Dockerfile.backend
@@ -44,6 +45,7 @@ services:
 
   # Frontend React (Nginx)
   chassi-frontend:
+    image: sgo/chassi-frontend:4.0.0
     build:
       context: .
       dockerfile: chassi/Dockerfile.frontend

@@ -2,6 +2,7 @@ import {
   pgTable, pgEnum, serial, text, integer, boolean,
   timestamp, jsonb, uuid, bigint, unique
 } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 // Role enum — SEM superadmin no chassi (superadmin apenas no Nexus)
 export const userRoleEnum = pgEnum('user_role', ['admin', 'user']);
@@ -18,6 +19,9 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+/** Tipo do usuário (contexto de auth) */
+export type User = typeof users.$inferSelect;
 
 export const modules = pgTable('modules', {
   id: serial('id').primaryKey(),
@@ -135,6 +139,14 @@ export const ticketMessages = pgTable('ticket_messages', {
   message: text('message').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+export const ticketsRelations = relations(tickets, ({ many }) => ({
+  messages: many(ticketMessages),
+}));
+
+export const ticketMessagesRelations = relations(ticketMessages, ({ one }) => ({
+  ticket: one(tickets, { fields: [ticketMessages.ticketId], references: [tickets.id] }),
+}));
 
 export const webhookDefinitions = pgTable('webhook_definitions', {
   id: uuid('id').defaultRandom().primaryKey(),

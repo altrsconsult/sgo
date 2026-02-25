@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface LogoProps {
@@ -13,8 +14,25 @@ interface LogoProps {
   size?: "xs" | "sm" | "md" | "lg" | "xl";
 }
 
+// Fallbacks estáticos quando não há logo customizado
+const FALLBACK_ICON = "/ALTRS-SGO-LOGO-ICON.svg";
+const FALLBACK_LIGHT = "/ALTRS-SGO-LOGO-LIGHT.svg";
+const FALLBACK_DARK = "/ALTRS-SGO-LOGO-DARK.svg";
+
 export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
   const { resolvedTheme } = useTheme();
+  const [publicSettings, setPublicSettings] = useState<{
+    "app.logo_url"?: string | null;
+    "app.logo_dark_url"?: string | null;
+    "app.logo_format"?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/public/settings")
+      .then((res) => (res.ok ? res.json() : {}))
+      .then((data) => setPublicSettings(data))
+      .catch(() => setPublicSettings(null));
+  }, []);
 
   const sizeClasses = {
     xs: "h-7",
@@ -24,19 +42,26 @@ export function Logo({ className, variant = "full", size = "md" }: LogoProps) {
     xl: "h-24"
   };
 
-  // ALTRS-SGO-LOGO-DARK.svg -> Light colored stroke (for Dark Theme)
-  // ALTRS-SGO-LOGO-LIGHT.svg -> Dark colored stroke (for Light Theme)
-  const fullLogo = resolvedTheme === "dark" 
-    ? "/ALTRS-SGO-LOGO-DARK.svg" 
-    : "/ALTRS-SGO-LOGO-LIGHT.svg";
+  const logoFormat = publicSettings?.["app.logo_format"] ?? "icon";
+  const isSquare = variant === "icon" || (variant === "full" && logoFormat === "icon");
+  const hasCustomLight = !!publicSettings?.["app.logo_url"];
+  const hasCustomDark = !!publicSettings?.["app.logo_dark_url"];
 
-  const imgSrc = variant === "icon" ? "/ALTRS-SGO-LOGO-ICON.svg" : fullLogo;
+  const urlLight = hasCustomLight ? "/api/public/logo/light" : FALLBACK_LIGHT;
+  const urlDark = hasCustomDark ? "/api/public/logo/dark" : FALLBACK_DARK;
+  const fullLogoUrl = resolvedTheme === "dark" ? urlDark : urlLight;
+  const iconUrl = variant === "icon" && (hasCustomLight || hasCustomDark)
+    ? (resolvedTheme === "dark" ? urlDark : urlLight)
+    : variant === "icon"
+      ? FALLBACK_ICON
+      : fullLogoUrl;
+  const imgSrc = variant === "icon" ? iconUrl : fullLogoUrl;
 
   return (
     <img
       src={imgSrc}
       alt="SGO Core"
-      className={`${sizeClasses[size]} w-auto ${className || ""}`}
+      className={`${sizeClasses[size]} w-auto ${isSquare ? "logo-format-icon" : "logo-format-horizontal"} ${className || ""}`}
     />
   );
 }

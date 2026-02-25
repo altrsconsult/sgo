@@ -1,11 +1,13 @@
 import { Outlet, NavLink, Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sun, Moon, LogOut, User, Settings, AlertTriangle, LayoutGrid, Menu } from "lucide-react";
 import {
   Button, Avatar, AvatarFallback, Separator,
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
   DropdownMenuItem, DropdownMenuSeparator,
   Sheet, SheetContent, SheetTitle,
+  Sidebar,
+  useSidebar,
 } from "@sgo/ui";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -15,9 +17,54 @@ import { Logo } from "@/components/Logo";
 import { CHASSIS_VERSION } from "@/version";
 import { getModuleIcon } from "@/lib/module-icons";
 
+const SIDEBAR_COLLAPSED_KEY = "sgo-sidebar-collapsed";
+
 /**
- * Conteúdo de navegação compartilhado entre sidebar desktop e drawer mobile.
- * onNavigate: chamado ao clicar em um link (fecha o drawer mobile).
+ * Nav da sidebar desktop — usa useSidebar() e classes do design system.
+ * Quando colapsada, mostra apenas ícones e title (tooltip nativo).
+ */
+function ShellSidebarNavContent({ modules, onNavigate }: { modules: any[]; onNavigate: () => void }) {
+  const { collapsed } = useSidebar();
+  return (
+    <ul className="space-y-0.5" aria-label="Módulos" role="list">
+      <li>
+        <NavLink
+          to="/"
+          end
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            `sidebar-nav-link ${isActive ? "active" : ""}`
+          }
+          title={collapsed ? "Início" : undefined}
+        >
+          <LayoutGrid className="sidebar-nav-link__icon" aria-hidden />
+          {!collapsed && <span className="sidebar-nav-link__label">Início</span>}
+        </NavLink>
+      </li>
+      {modules.map((mod) => {
+        const Icon = getModuleIcon(mod);
+        return (
+          <li key={mod.id}>
+            <NavLink
+              to={`/app/${mod.slug}`}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                `sidebar-nav-link ${isActive ? "active" : ""}`
+              }
+              title={collapsed ? mod.name : undefined}
+            >
+              <Icon className="sidebar-nav-link__icon" aria-hidden />
+              {!collapsed && <span className="sidebar-nav-link__label">{mod.name}</span>}
+            </NavLink>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/**
+ * Nav para drawer mobile (sem colapso); reutiliza estilos do design system.
  */
 function SidebarNav({ modules, onNavigate }: { modules: any[]; onNavigate: () => void }) {
   return (
@@ -27,12 +74,11 @@ function SidebarNav({ modules, onNavigate }: { modules: any[]; onNavigate: () =>
         end
         onClick={onNavigate}
         className={({ isActive }) =>
-          "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors " +
-          (isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground")
+          "sidebar-nav-link " + (isActive ? "active" : "")
         }
       >
-        <LayoutGrid className="h-4 w-4 shrink-0" />
-        Início
+        <LayoutGrid className="sidebar-nav-link__icon" />
+        <span className="sidebar-nav-link__label">Início</span>
       </NavLink>
       {modules.map((mod) => {
         const Icon = getModuleIcon(mod);
@@ -42,12 +88,11 @@ function SidebarNav({ modules, onNavigate }: { modules: any[]; onNavigate: () =>
             to={`/app/${mod.slug}`}
             onClick={onNavigate}
             className={({ isActive }) =>
-              "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors " +
-              (isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground")
+              "sidebar-nav-link " + (isActive ? "active" : "")
             }
           >
-            <Icon className="h-4 w-4 shrink-0" />
-            <span className="truncate">{mod.name}</span>
+            <Icon className="sidebar-nav-link__icon" />
+            <span className="sidebar-nav-link__label">{mod.name}</span>
           </NavLink>
         );
       })}
@@ -67,20 +112,23 @@ export function ShellLayout() {
   const { layout } = useLayout();
   const { data: modules = [] } = useAllowedModules();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(SIDEBAR_COLLAPSED_KEY) ?? "false");
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, JSON.stringify(sidebarCollapsed));
+  }, [sidebarCollapsed]);
   const isSidebar = layout === "sidebar";
   const location = useLocation();
   const isModuleRoute = location.pathname.startsWith("/app/");
 
-  // Pega as iniciais do nome do usuário
-  const initials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) || "U";
-
+  const rootClass = isSidebar ? "h-screen flex flex-col overflow-hidden bg-background" : "min-h-screen bg-background";
   return (
-    <div className="min-h-screen bg-background">
+    <div className={rootClass}>
       {/* Skip-to-main: acessibilidade — visível apenas no foco por teclado (TD-S05a) */}
       <a
         href="#main-content"
@@ -91,7 +139,7 @@ export function ShellLayout() {
 
       {/* Banner de Impersonation */}
       {isImpersonating && impersonatedBy && (
-        <div className="bg-amber-100 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 px-4 py-2 relative z-50">
+        <div className="flex-shrink-0 bg-amber-100 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 px-4 py-2 relative z-50">
           <div className="w-full flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-2 text-sm">
               <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
@@ -111,8 +159,8 @@ export function ShellLayout() {
         </div>
       )}
 
-      {/* TopBar */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* TopBar — fixo quando sidebar */}
+      <header className={`z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isSidebar ? "flex-shrink-0" : "sticky top-0"}`}>
         <div className="w-full flex h-16 items-center justify-between px-4 sm:px-6 transition-all duration-200">
           {/* Hamburger mobile — aparece apenas em telas pequenas com sidebar ativa */}
           {isSidebar && (
@@ -127,8 +175,8 @@ export function ShellLayout() {
             </Button>
           )}
 
-          {/* Logo — clique leva à home */}
-          <Link to="/" className="flex items-center cursor-pointer hover:opacity-90 transition-opacity" aria-label="Ir para início">
+          {/* Logo — alinhado ao eixo (mesma classe do Admin) */}
+          <Link to="/" className="admin-header__logo flex items-center shrink-0 cursor-pointer hover:opacity-90 transition-opacity" aria-label="Ir para início">
             <Logo size="sm" />
           </Link>
 
@@ -158,7 +206,9 @@ export function ShellLayout() {
                   aria-label="Menu do usuário"
                 >
                   <Avatar className="h-9 w-9 border border-border">
-                    <AvatarFallback className="bg-primary/10 text-primary">{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      <User className="h-4 w-4" aria-hidden />
+                    </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
@@ -210,13 +260,17 @@ export function ShellLayout() {
       </header>
 
       {/* Conteúdo principal: com ou sem sidebar */}
-      <div className={isSidebar ? "flex flex-1 min-h-[calc(100vh-4rem)]" : ""}>
+      <div className={isSidebar ? "flex flex-1 min-h-0 min-w-0" : ""}>
         {isSidebar && (
           <>
-            {/* Sidebar desktop — oculta em mobile */}
-            <aside className="shell-sidebar hidden md:flex w-56 shrink-0 border-r bg-muted/30 flex-col">
-              <SidebarNav modules={modules} onNavigate={() => {}} />
-            </aside>
+            {/* Sidebar desktop — colapsável (design system), estado em localStorage */}
+            <Sidebar
+              collapsed={sidebarCollapsed}
+              onToggleCollapse={setSidebarCollapsed}
+              className="hidden md:flex flex-col min-h-0 bg-muted/30"
+            >
+              <ShellSidebarNavContent modules={modules} onNavigate={() => {}} />
+            </Sidebar>
 
             {/* Drawer mobile — Sheet que desliza da esquerda */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -229,7 +283,7 @@ export function ShellLayout() {
             </Sheet>
           </>
         )}
-        <main id="main-content" className={isSidebar ? "flex-1 overflow-auto min-w-0" : "container mx-auto px-4 py-6 max-w-7xl"}>
+        <main id="main-content" className={isSidebar ? "flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden" : "container mx-auto px-4 py-6 max-w-7xl"}>
           {isSidebar ? (
             isModuleRoute ? (
               <div className="w-full min-w-0">

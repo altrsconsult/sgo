@@ -72,9 +72,9 @@
     --popover: 213 22% 8%;
     --popover-foreground: 210 20% 98%;
 
-    /* Primary (Dark) */
-    --primary: 210 20% 98%;
-    --primary-foreground: 220 70% 50%;
+    /* Primary (Dark): botão azul com texto branco (evita excesso de branco) */
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
 
     /* Secondary (Dark) */
     --secondary: 215 27.9% 16.9%;
@@ -84,8 +84,8 @@
     --muted: 215 27.9% 16.9%;
     --muted-foreground: 217.9 10.6% 64.9%;
 
-    /* Accent (Dark) */
-    --accent: 215 27.9% 16.9%;
+    /* Accent (Dark): seleção/hover em nav — azul escuro, não branco */
+    --accent: 220 70% 22%;
     --accent-foreground: 210 20% 98%;
 
     /* Destructive (Dark) */
@@ -96,8 +96,8 @@
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
 
-    /* Foco (Dark) */
-    --ring: 216 12.2% 83.9%;
+    /* Foco (Dark) — azul consistente */
+    --ring: 220 70% 50%;
   }
 
   /* =========================================
@@ -197,6 +197,90 @@
     
     --radius: 0rem; /* Sharp edges for executive feel */
   }
+}
+
+/* Tema personalizado (upload): variáveis injetadas via JS a partir de JSON em .theme-custom */
+.theme-custom {
+  /* Variáveis preenchidas dinamicamente por ThemeContext (localStorage sgo-custom-theme) */
+}
+
+/* Sidebar colapsável — tokens para módulos e chassi (evita hardcode) */
+:root {
+  --sidebar-width-expanded: 16rem;
+  --sidebar-width-collapsed: 4rem;
+}
+.sidebar--collapsed {
+  width: var(--sidebar-width-collapsed);
+}
+.sidebar--expanded {
+  width: var(--sidebar-width-expanded);
+}
+.sidebar--expanded.sidebar--size-lg {
+  width: 20rem;
+}
+.sidebar-trigger {
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  color: hsl(var(--muted-foreground));
+  transition: background-color 0.2s, color 0.2s;
+}
+.sidebar-trigger:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+/* Itens de nav dentro da sidebar (uso pelo chassi/módulos) */
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+.sidebar-nav-link:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+.sidebar-nav-link.active {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.sidebar-nav-link__icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+.sidebar-nav-link__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sidebar: header alinhado ao eixo central dos ícones da nav (menos margem esquerda) */
+.sidebar-header {
+  min-height: 3.5rem;
+  align-items: center;
+}
+.sidebar-header__logo-axis {
+  margin-left: 0.25rem;
+}
+/* Sidebar colapsada: itens quadrados (mesmo eixo do logo) e alinhados */
+.sidebar--collapsed .sidebar-nav-link {
+  justify-content: center;
+  width: 2rem;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--radius);
+}
+.sidebar--collapsed .sidebar-nav-link__icon {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
 }
 
 @layer base {

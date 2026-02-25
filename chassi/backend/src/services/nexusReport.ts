@@ -1,7 +1,7 @@
 import { env } from '../lib/env.js';
 import { db } from '../db/index.js';
 import { nexusInstallations } from '../db/schema.js';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 
 // Registra esta instalação no Nexus Central ao iniciar
@@ -22,7 +22,7 @@ export async function reportToNexusCentral() {
         masterKeyHash,
         version: process.env.npm_package_version || '4.0.0',
         hostname: process.env.HOSTNAME || 'unknown',
-      });
+      } as never);
 
       // Reporta ao Nexus com a master key em texto puro (apenas no primeiro registro)
       await fetch(`${env.nexusUrl}/api/instances/register`, {

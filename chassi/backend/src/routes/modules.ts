@@ -9,12 +9,21 @@ export const modulesRoutes = new Hono();
 
 modulesRoutes.use('*', authenticate);
 
+/** Enriquece módulo com remoteUrl quando instalado (standalone iframe) e sem remoteEntry. */
+function withRemoteUrl(m: { type: string | null; path: string | null; remoteEntry: string | null; slug: string } & Record<string, unknown>): Record<string, unknown> {
+  const row = { ...m };
+  if (m.type === 'installed' && m.path && !m.remoteEntry) {
+    (row as Record<string, string>).remoteUrl = `/modules-assets/${m.slug}/dist/index.html`;
+  }
+  return row;
+}
+
 // GET /api/modules
 modulesRoutes.get('/', async (c) => {
   const all = await db.query.modules.findMany({
     orderBy: (m, { asc }) => [asc(m.sortOrder), asc(m.name)],
   });
-  return c.json(all);
+  return c.json(all.map(withRemoteUrl));
 });
 
 // GET /api/modules/:id
@@ -22,7 +31,7 @@ modulesRoutes.get('/:id', async (c) => {
   const id = Number(c.req.param('id'));
   const mod = await db.query.modules.findFirst({ where: eq(modules.id, id) });
   if (!mod) return c.json({ error: 'Módulo não encontrado' }, 404);
-  return c.json(mod);
+  return c.json(withRemoteUrl(mod));
 });
 
 // POST /api/modules

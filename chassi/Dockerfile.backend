@@ -4,24 +4,31 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-# Copia configuração do workspace
-COPY pnpm-workspace.yaml package.json ./
+# Copia configuração do workspace (lockfile e tsconfig base para packages)
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml tsconfig.json ./
 COPY packages/ packages/
 COPY chassi/backend/ chassi/backend/
 
 RUN pnpm install --frozen-lockfile
+# SDK precisa ser buildado antes (backend depende de @sgo/sdk)
+RUN pnpm --filter @sgo/sdk build
 RUN pnpm --filter @sgo/chassi-backend build
 
 # Estágio 2: imagem de produção mínima
 FROM node:20-alpine
 WORKDIR /app
 
-RUN npm install -g pnpm
-
-# Copia apenas o necessário para produção
+# Copia dist do backend, migrações e SDK (para file: no package.json)
 COPY --from=builder /app/chassi/backend/dist ./dist
+COPY --from=builder /app/chassi/backend/src/db/migrations ./dist/db/migrations
+COPY --from=builder /app/packages/sdk/package.json ./sdk/package.json
+COPY --from=builder /app/packages/sdk/dist ./sdk/dist
+
+# package.json do backend com @sgo/sdk como file:./sdk (npm install no runtime)
 COPY --from=builder /app/chassi/backend/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
+RUN sed -i 's/"@sgo\/sdk": "workspace:\*"/"@sgo\/sdk": "file:.\/sdk"/' package.json
+
+RUN npm install --omit=dev
 
 # Diretórios para dados persistentes (montados via volume)
 RUN mkdir -p /app/modules_storage /app/uploads
@@ -31,4 +38,5 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
   CMD node -e "fetch('http://localhost:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-CMD ["node", "dist/index.js"]
+# Roda migrações na subida e depois inicia o servidor
+CMD ["sh", "-c", "node dist/db/migrate.js && node dist/index.js"]

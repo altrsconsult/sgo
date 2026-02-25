@@ -80,6 +80,60 @@ main:has(iframe) [contenteditable="true"] {
 .module-icon-color-5 { background-color: var(--color-module-icon-7); }
 .module-icon-color-6 { background-color: var(--color-module-icon-4); }
 
+/* Preview de logo na página Admin > Configurações > Aparência */
+.logo-preview-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-muted);
+  overflow: hidden;
+}
+.logo-preview-wrap.logo-preview-dark {
+  background: var(--color-muted);
+}
+.logo-preview-img {
+  max-width: 72px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+/* Dropzone para instalação de módulo por ZIP (Admin > Módulos) */
+.module-dropzone {
+  border: 2px dashed hsl(var(--border));
+  border-radius: var(--radius-lg);
+  background: hsl(var(--muted) / 0.3);
+  transition: border-color 0.2s, background 0.2s;
+}
+.module-dropzone:hover,
+.module-dropzone.drag-over {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.05);
+}
+.module-dropzone .module-dropzone-inner {
+  padding: var(--space-2xl);
+  text-align: center;
+  cursor: pointer;
+}
+
+/* Logo no header: ícone quadrado vs logo horizontal (Admin > Aparência) */
+.logo-format-icon {
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.logo-format-horizontal {
+  object-fit: contain;
+}
+
+/* Alinhamento do logo do header ao eixo central dos ícones da sidebar (28px) */
+@media (min-width: 1024px) {
+  .admin-header__logo {
+    margin-left: -0.75rem;
+  }
+}
+
 /* Sidebar responsiva */
 @media (max-width: 768px) {
   .sidebar {

@@ -43,7 +43,7 @@ export async function loadModuleFromZip(zipPath: string) {
       color: manifest.color,
       type: 'installed',
       updatedAt: new Date(),
-    }).where(eq(modules.slug, slug));
+    } as never).where(eq(modules.slug, slug));
   } else {
     await db.insert(modules).values({
       slug,
@@ -55,7 +55,7 @@ export async function loadModuleFromZip(zipPath: string) {
       color: manifest.color,
       active: true,
       type: 'installed',
-    });
+    } as never);
   }
 
   return { slug, name: manifest.name, version: manifest.version, installed: true };
@@ -72,7 +72,7 @@ export async function loadInstalledModules() {
         const raw = await fs.readFile(manifestPath, 'utf8');
         const manifest = ModuleManifestSchema.parse(JSON.parse(raw));
 
-        await db.insert(modules).values({
+        const row = {
           slug: manifest.slug,
           name: manifest.name,
           description: manifest.description,
@@ -82,13 +82,14 @@ export async function loadInstalledModules() {
           color: manifest.color,
           active: true,
           type: 'installed',
-        }).onConflictDoUpdate({
+        };
+        await db.insert(modules).values(row as never).onConflictDoUpdate({
           target: modules.slug,
           set: {
             name: manifest.name,
             version: manifest.version,
             updatedAt: new Date(),
-          },
+          } as never,
         });
       } catch {
         console.warn(`Aviso: não foi possível carregar módulo "${slug}"`);

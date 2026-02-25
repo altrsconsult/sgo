@@ -2,11 +2,12 @@ import { Hono } from 'hono';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { db } from '../db/index.js';
-import { users } from '../db/schema.js';
+import { users, type User } from '../db/schema.js';
 import { authenticate } from '../middleware/authenticate.js';
 import { requireAdmin } from '../middleware/requireAdmin.js';
 
-export const usersRoutes = new Hono();
+type AuthVariables = { Variables: { user: User } };
+export const usersRoutes = new Hono<AuthVariables>();
 
 usersRoutes.use('*', authenticate);
 

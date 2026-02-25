@@ -1,0 +1,5 @@
+# Conteúdo do lab não sobe no repo público.
+# Apenas este .gitignore e o README.md são versionados (via exceção no .gitignore da raiz).
+*
+!.gitignore
+!README.md

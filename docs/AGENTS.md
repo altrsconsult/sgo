@@ -1,3 +1,8 @@
+---
+description: 
+alwaysApply: false
+---
+
 # AGENTS.md — Hub de Documentação para Agentes de IA
 
 > **Para agentes de IA:** Este arquivo é o ponto de entrada principal.
@@ -50,6 +55,7 @@ new-sgo/
 | Arquitetura geral do sistema | [docs/architecture/SYSTEM-OVERVIEW.md](./architecture/SYSTEM-OVERVIEW.md) |
 | Criar um novo módulo | [docs/guides/CREATE-MODULE.md](./guides/CREATE-MODULE.md) |
 | Schema do manifest.json | [docs/standards/MODULE-MANIFEST-SCHEMA.md](./standards/MODULE-MANIFEST-SCHEMA.md) |
+| Lab de módulos (fora do repo) e visão N2/Pro | [docs/architecture/MODULES-LAB-VISAO.md](./architecture/MODULES-LAB-VISAO.md) |
 
 ---
 

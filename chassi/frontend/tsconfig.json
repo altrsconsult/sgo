@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@sgo/ui": ["../../packages/ui/src"],
+      "@sgo/sdk": ["../../packages/sdk/src"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/test/**/*", "**/*.test.ts", "**/*.test.tsx"],
+  "references": []
+}

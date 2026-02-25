@@ -2,11 +2,21 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/utils";
 
+/** Contexto do sidebar: estado colapsado para filhos (nav, módulos) */
+type SidebarContextValue = { collapsed: boolean };
+const SidebarContext = React.createContext<SidebarContextValue | null>(null);
+
+export function useSidebar(): SidebarContextValue {
+  const ctx = React.useContext(SidebarContext);
+  if (!ctx) throw new Error("useSidebar deve ser usado dentro de Sidebar");
+  return ctx;
+}
+
 /**
  * Variantes do container Sidebar
  */
 const sidebarVariants = cva(
-  "border-r bg-background transition-all duration-300 overflow-y-auto",
+  "border-r bg-background transition-[width] duration-300 overflow-y-auto flex-shrink-0",
   {
     variants: {
       variant: {
@@ -20,32 +30,21 @@ const sidebarVariants = cva(
   }
 );
 
-/**
- * Tamanho do sidebar (afeta largura e responsive)
- */
-const sidebarSizeVariants = cva("", {
-  variants: {
-    size: {
-      default: "w-64",
-      compact: "w-16",
-      lg: "w-80",
-    },
-  },
-  defaultVariants: {
-    size: "default",
-  },
-});
-
 export interface SidebarProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof sidebarVariants>,
-    VariantProps<typeof sidebarSizeVariants> {
-  /** Itens de navegação */
+    VariantProps<typeof sidebarVariants> {
+  /** Itens de navegação (opcional; se não informado, use children) */
   items?: SidebarItem[];
-  /** Se true, sidebar fica colapsado */
+  /** Se true, sidebar fica colapsada (apenas ícones). Controlado quando onToggleCollapse é passado. */
   collapsed?: boolean;
-  /** Callback quando collapsar/expandir */
+  /** Callback ao colapsar/expandir — quando passado, estado é controlado (persistir em localStorage no app). */
   onToggleCollapse?: (collapsed: boolean) => void;
+  /** Largura quando expandido (usa token --sidebar-width-expanded) */
+  size?: "default" | "lg";
+  /** Conteúdo do cabeçalho (ex.: Logo + título); exibido quando expandido. */
+  headerContent?: React.ReactNode;
+  /** Conteúdo do rodapé (ex.: link Voltar, versão). */
+  footerContent?: React.ReactNode;
 }
 
 export interface SidebarItem {
@@ -68,99 +67,107 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
     {
       className,
       variant,
-      size,
+      size = "default",
       items,
-      collapsed,
+      collapsed: controlledCollapsed,
       onToggleCollapse,
+      headerContent,
+      footerContent,
       children,
       ...props
     },
     ref
   ) => {
-    const [isCollapsed, setIsCollapsed] = React.useState(collapsed ?? false);
-    const [expandedItems, setExpandedItems] = React.useState<Set<string>>(
-      new Set()
-    );
+    const [internalCollapsed, setInternalCollapsed] = React.useState(false);
+    const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set());
 
-    const handleToggle = (collapsed: boolean) => {
-      setIsCollapsed(collapsed);
-      onToggleCollapse?.(collapsed);
+    const isControlled = onToggleCollapse != null;
+    const isCollapsed = isControlled ? (controlledCollapsed ?? false) : internalCollapsed;
+
+    React.useEffect(() => {
+      if (isControlled && controlledCollapsed !== undefined) {
+        setInternalCollapsed(controlledCollapsed);
+      }
+    }, [isControlled, controlledCollapsed]);
+
+    const handleToggle = () => {
+      const next = !isCollapsed;
+      if (!isControlled) setInternalCollapsed(next);
+      onToggleCollapse?.(next);
     };
 
     const toggleSubmenu = (itemId: string) => {
       setExpandedItems((prev) => {
         const next = new Set(prev);
-        if (next.has(itemId)) {
-          next.delete(itemId);
-        } else {
-          next.add(itemId);
-        }
+        if (next.has(itemId)) next.delete(itemId);
+        else next.add(itemId);
         return next;
       });
     };
 
     return (
-      <aside
-        ref={ref}
-        className={cn(
-          sidebarVariants({ variant }),
-          sidebarSizeVariants({ size }),
-          isCollapsed && "w-16",
-          className
-        )}
-        role="complementary"
-        aria-label="Sidebar navigation"
-        {...props}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header com botão de collapse */}
-          <div className="flex items-center justify-between p-4 border-b">
-            {!isCollapsed && (
-              <span className="text-xs font-semibold text-muted-foreground uppercase">
-                Menu
-              </span>
-            )}
-            <button
-              onClick={() => handleToggle(!isCollapsed)}
-              className="p-1 hover:bg-accent rounded transition-colors"
-              aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-              title={isCollapsed ? "Expandir" : "Colapsar"}
-            >
-              {/* Ícone chevron simplificado */}
-              <svg
-                className={cn(
-                  "w-4 h-4 transition-transform",
-                  isCollapsed ? "rotate-180" : ""
-                )}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      <SidebarContext.Provider value={{ collapsed: isCollapsed }}>
+        <aside
+          ref={ref}
+          className={cn(
+            sidebarVariants({ variant }),
+            isCollapsed ? "sidebar--collapsed" : cn("sidebar--expanded", size === "lg" && "sidebar--size-lg"),
+            className
+          )}
+          role="complementary"
+          aria-label="Sidebar navigation"
+          {...props}
+        >
+          <div className="flex flex-col h-full min-h-0">
+            {/* Cabeçalho: conteúdo opcional (expandido) + gatilho de colapso; alinhado ao eixo dos ícones */}
+            <div className={cn(
+              "flex items-center border-b px-2 py-3 flex-shrink-0 sidebar-header",
+              isCollapsed ? "justify-center" : "justify-between"
+            )}>
+              {!isCollapsed && (
+                <div className="sidebar-header__logo-axis flex items-center min-w-0 flex-1">
+                  {headerContent}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={handleToggle}
+                className="sidebar-trigger p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+                title={isCollapsed ? "Expandir" : "Colapsar"}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-          </div>
+                <svg
+                  className={cn("w-4 h-4 transition-transform", isCollapsed && "rotate-180")}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            </div>
 
-          {/* Nav items */}
-          <nav className="flex-1 px-2 py-4">
-            {items && items.length > 0 ? (
-              <SidebarNav
-                items={items}
-                collapsed={isCollapsed}
-                expandedItems={expandedItems}
-                onToggleSubmenu={toggleSubmenu}
-              />
-            ) : (
-              children
+            <nav className="flex-1 overflow-y-auto px-2 py-4 min-h-0">
+              {items != null && items.length > 0 ? (
+                <SidebarNav
+                  items={items}
+                  collapsed={isCollapsed}
+                  expandedItems={expandedItems}
+                  onToggleSubmenu={toggleSubmenu}
+                />
+              ) : (
+                children
+              )}
+            </nav>
+            {footerContent != null && (
+              <div className="flex-shrink-0 border-t px-2 py-3">
+                {footerContent}
+              </div>
             )}
-          </nav>
-        </div>
-      </aside>
+          </div>
+        </aside>
+      </SidebarContext.Provider>
     );
   }
 );

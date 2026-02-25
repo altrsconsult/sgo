@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Layers, Settings, Users, ToggleLeft, ToggleRight, ExternalLink, Upload, Trash2, Link } from "lucide-react";
+import { Layers, Settings, Users, ToggleLeft, ToggleRight, ExternalLink, Upload, Trash2, Link, FileArchive } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -116,6 +116,7 @@ export function AdminModulesPage() {
   const { success, error: showError } = useNotification();
   const { isSuperAdmin } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const [linkUrl, setLinkUrl] = useState("");
   const [linkCode, setLinkCode] = useState("");
@@ -186,32 +187,23 @@ export function AdminModulesPage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.name.endsWith('.zip')) {
+  const doUpload = async (file: File) => {
+    if (!file.name.endsWith(".zip")) {
       showError("Erro", "Por favor, envie um arquivo .zip");
       return;
     }
-
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const token = localStorage.getItem("sgo-token");
       const res = await fetch("/api/upload-module", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
       });
-
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         const msg = err.error || "Erro no upload";
-        // 401 = token expirado/inválido; 403 = sem permissão (admin/superadmin)
         if (res.status === 401) {
           localStorage.removeItem("sgo-token");
           window.location.href = "/login?from=upload";
@@ -219,16 +211,34 @@ export function AdminModulesPage() {
         }
         throw new Error(msg);
       }
-
       const data = await res.json();
       success("Sucesso", data.message);
       queryClient.invalidateQueries({ queryKey: ["modules"] });
-    } catch (err: any) {
-      showError("Erro", err.message || "Erro ao fazer upload do módulo");
+    } catch (err: unknown) {
+      showError("Erro", (err as Error).message || "Erro ao fazer upload do módulo");
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) doUpload(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) doUpload(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = () => setDragOver(false);
 
   if (isLoading) {
     return (
@@ -269,73 +279,94 @@ export function AdminModulesPage() {
       </AlertDialog>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Módulos</h1>
-          <p className="text-muted-foreground">
-            Gerencie os módulos instalados e suas permissões.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept=".zip"
-            onChange={handleFileChange}
-            aria-label="Selecionar arquivo .zip do módulo"
-          />
-          <Button
-            variant="outline"
-            onClick={handleUploadClick}
-            title="Envie um .zip do módulo. Se o módulo já existir (mesmo slug), será atualizado sem perder dados."
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Instalar / Atualizar Módulo
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold">Módulos</h1>
+        <p className="text-muted-foreground">
+          Gerencie os módulos instalados e instale/atualize por link ou por ZIP.
+        </p>
       </div>
 
-      {/* Instalar por link (URL + código de compra) */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Link className="h-4 w-4" />
-            Instalar por link
-          </CardTitle>
-          <CardDescription>
-            Cole o link do módulo (ex.: do Nexus/marketplace) e o código de compra. O sistema validará e instalará automaticamente.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleInstallFromLink} className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="link-url">URL do módulo</Label>
-              <Input
-                id="link-url"
-                type="url"
-                placeholder="https://nexus.exemplo.com/api/modules/file/leads-intake/1.0.0"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-              />
+      {/* Instalar / Atualizar: dois cards 50/50 — ZIP (esquerda) e link (direita) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Card: Instalar por ZIP (esquerda) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileArchive className="h-4 w-4" />
+              Instalar por ZIP
+            </CardTitle>
+            <CardDescription>
+              Arraste um .zip do módulo ou clique para selecionar. Se o módulo já existir (mesmo slug), será atualizado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept=".zip"
+              onChange={handleFileChange}
+              aria-label="Selecionar arquivo .zip do módulo"
+            />
+            <div
+              className={`module-dropzone ${dragOver ? "drag-over" : ""}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={handleUploadClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
+              aria-label="Arraste um arquivo .zip ou clique para selecionar"
+            >
+              <div className="module-dropzone-inner">
+                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium text-foreground">Arraste o .zip aqui</p>
+                <p className="text-xs text-muted-foreground mt-1">ou clique para escolher o arquivo</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="link-code">Código de compra</Label>
-              <Input
-                id="link-code"
-                placeholder="XXXX-XXXX-XXXX"
-                value={linkCode}
-                onChange={(e) => setLinkCode(e.target.value)}
-              />
-            </div>
-            <div className="flex items-end">
+          </CardContent>
+        </Card>
+
+        {/* Card: Instalar por link (direita) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Link className="h-4 w-4" />
+              Instalar por link
+            </CardTitle>
+            <CardDescription>
+              URL do módulo e código de compra. Instala ou atualiza automaticamente.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleInstallFromLink} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="link-url">URL do módulo</Label>
+                <Input
+                  id="link-url"
+                  type="url"
+                  placeholder="https://nexus.exemplo.com/api/modules/file/..."
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="link-code">Código de compra</Label>
+                <Input
+                  id="link-code"
+                  placeholder="XXXX-XXXX-XXXX"
+                  value={linkCode}
+                  onChange={(e) => setLinkCode(e.target.value)}
+                />
+              </div>
               <Button type="submit" disabled={installFromLinkMutation.isPending || !linkUrl.trim() || !linkCode.trim()}>
-                {installFromLinkMutation.isPending ? "Instalando…" : "Instalar"}
+                {installFromLinkMutation.isPending ? "Instalando…" : "Instalar / Atualizar"}
               </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Lista de módulos */}
       {modules.length === 0 ? (
@@ -343,8 +374,7 @@ export function AdminModulesPage() {
           <CardContent className="py-12 text-center">
             <Layers className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">
-              Nenhum módulo instalado.
-              Use \"Instalar / Atualizar Módulo\" (zip) ou \"Instalar por link\" (URL + código).
+              Nenhum módulo instalado. Use os cards acima: Instalar por link ou Instalar por ZIP.
             </p>
           </CardContent>
         </Card>

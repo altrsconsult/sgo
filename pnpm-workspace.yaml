@@ -1,7 +1,11 @@
 packages:
   - "chassi/frontend"
   - "chassi/backend"
-  - "nexus/frontend"
-  - "nexus/backend"
+  # nexus/ (esqueleto sprint futuro) — descomentar quando criar nexus/
+  # - "nexus/frontend"
+  # - "nexus/backend"
   - "modules/*"
+  - "modules-lab/*"
   - "packages/*"
+  # LP em repo separado (altrsadmin/lp-sgo)
+  # - "lp-sgo"

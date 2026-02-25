@@ -3,12 +3,16 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Inpu
 
 type AuditItem = {
   id: number;
-  user_name: string | null;
+  user_name?: string | null;
+  userName?: string | null;
   action: string;
-  entity_type: string | null;
-  entity_id: string | null;
+  entity_type?: string | null;
+  entityType?: string | null;
+  entity_id?: string | null;
+  entityId?: string | null;
   details: Record<string, unknown> | null;
-  created_at: string;
+  created_at?: string;
+  createdAt?: string;
 };
 
 export function AdminAuditPage() {
@@ -30,8 +34,8 @@ export function AdminAuditPage() {
       const query = new URLSearchParams();
       if (filters.action !== "all") query.set("action", filters.action);
       if (filters.entityType !== "all") query.set("entityType", filters.entityType);
-      if (filters.startDate) query.set("startDate", filters.startDate);
-      if (filters.endDate) query.set("endDate", filters.endDate);
+      if (filters.startDate) query.set("from", filters.startDate);
+      if (filters.endDate) query.set("to", filters.endDate);
       query.set("limit", "200");
 
       const [logsRes, actionsRes, typesRes] = await Promise.all([
@@ -48,7 +52,7 @@ export function AdminAuditPage() {
 
       if (logsRes.ok) {
         const payload = await logsRes.json();
-        setLogs(payload.data || []);
+        setLogs(Array.isArray(payload) ? payload : payload.data ?? []);
       }
       if (actionsRes.ok) {
         setActions(await actionsRes.json());
@@ -141,27 +145,39 @@ export function AdminAuditPage() {
           <CardTitle>Registros</CardTitle>
           <CardDescription>{loading ? "Carregando..." : `${logs.length} registro(s)`}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          {logs.map((log) => (
-            <div key={log.id} className="rounded-md border p-3">
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="font-semibold">{log.action}</span>
-                <span className="text-muted-foreground">por {log.user_name || "sistema"}</span>
-                <span className="text-muted-foreground">em {new Date(log.created_at).toLocaleString("pt-BR")}</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Entidade: {log.entity_type || "-"} | ID: {log.entity_id || "-"}
-              </p>
-              {log.details ? (
-                <pre className="mt-2 overflow-x-auto rounded bg-muted p-2 text-[11px]">
-                  {JSON.stringify(log.details, null, 2)}
-                </pre>
-              ) : null}
-            </div>
-          ))}
-          {!loading && logs.length === 0 ? (
+        <CardContent>
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Carregando...</p>
+          ) : logs.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhum registro encontrado.</p>
-          ) : null}
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" role="grid" aria-label="Registros de auditoria">
+                <thead>
+                  <tr className="border-b text-left text-muted-foreground">
+                    <th className="pb-2 pr-4 font-medium">Data / Hora</th>
+                    <th className="pb-2 pr-4 font-medium">Usuário</th>
+                    <th className="pb-2 pr-4 font-medium">Ação</th>
+                    <th className="pb-2 pr-4 font-medium">Entidade</th>
+                    <th className="pb-2 font-medium">ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.map((log) => (
+                    <tr key={log.id} className="border-b last:border-0">
+                      <td className="py-2 pr-4 whitespace-nowrap text-muted-foreground">
+                        {new Date((log.createdAt ?? log.created_at) ?? "").toLocaleString("pt-BR")}
+                      </td>
+                      <td className="py-2 pr-4">{log.userName ?? log.user_name ?? "—"}</td>
+                      <td className="py-2 pr-4 font-medium">{log.action}</td>
+                      <td className="py-2 pr-4 text-muted-foreground">{log.entityType ?? log.entity_type ?? "—"}</td>
+                      <td className="py-2 text-muted-foreground">{log.entityId ?? log.entity_id ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

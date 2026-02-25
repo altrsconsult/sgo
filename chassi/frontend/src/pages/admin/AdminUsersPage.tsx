@@ -96,7 +96,7 @@ async function deleteUser(id: number) {
 export function AdminUsersPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isSuperAdmin, impersonate, user: currentUser } = useAuth();
+  const { isAdmin, isSuperAdmin, impersonate, user: currentUser } = useAuth();
   const { success, error: showError } = useNotification();
   
   const [search, setSearch] = useState("");
@@ -389,9 +389,9 @@ export function AdminUsersPage() {
                 </div>
 
                 <div className="flex items-center gap-1">
-                  {/* Impersonate */}
-                  {isSuperAdmin && user.role !== "superadmin" && user.id !== currentUser?.id && (
-                    <Button variant="ghost" size="icon" title="Logar como" onClick={() => handleImpersonate(user.id)}>
+                  {/* Impersonate: admin ou superadmin pode logar como outro usuário (exceto outro admin/superadmin) */}
+                  {(isAdmin || isSuperAdmin) && user.role !== "admin" && user.role !== "superadmin" && user.id !== currentUser?.id && (
+                    <Button variant="ghost" size="icon" title="Logar como este usuário" onClick={() => handleImpersonate(user.id)}>
                       <LogIn className="h-4 w-4" />
                     </Button>
                   )}
