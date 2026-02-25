@@ -10,6 +10,7 @@ Obrigado por considerar contribuir. Sua participação — seja com código, doc
 - **Vulnerabilidades de segurança:** não abra issue pública; siga a [política de segurança](docs/security/SECURITY.md).
 - **Código e documentação:** faça um fork, crie um branch, altere e envie um **pull request**. Pull requests que melhorem o chassi, a documentação ou os guias são muito bem-vindos.
 - **Módulos:** você pode desenvolver módulos próprios sem alterar o core; se achar que algo do chassi ou do SDK facilitaria a vida de outros, um PR é a melhor forma de compartilhar.
+- **Dependências:** o repositório usa **Dependabot** para atualizações de dependências e de GitHub Actions; PRs são abertos semanalmente (ver [.github/dependabot.yml](.github/dependabot.yml)). Revisar e mesclar esses PRs ajuda a manter o projeto seguro.
 
 Não é obrigatório enviar PRs — a licença é MIT e você pode usar e adaptar à vontade. Quando você envia uma contribuição, está ajudando a comunidade e a ALTRS a evoluir o projeto de forma aberta.
 

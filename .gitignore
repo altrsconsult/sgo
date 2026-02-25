@@ -45,6 +45,9 @@ Thumbs.db
 # Deploy packages (gerados localmente)
 deploy/*.zip
 
+# Artefatos de módulos — gerados no CI/release; não versionar (Scorecard: Binary-Artifacts)
+modules/**/*.zip
+
 # Nexus simulator (apenas dev)
 nexus-simulator.html
 
