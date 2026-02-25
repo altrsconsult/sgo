@@ -51,8 +51,8 @@ Campos extras (ex.: `title`, `author`, `webhooks`, `config`) são **ignorados** 
 2. **Backend — URL usável para instalados**  
    Em `GET /api/modules` (e quando aplicável em respostas por id/slug), para módulos com `type: 'installed'` é preenchido `remoteUrl: '/modules-assets/<slug>/dist/index.html'`, para o frontend usar no iframe sem depender de `path` (filesystem).
 
-3. **devModulesSync — módulos standalone em dev**  
-   Ao descobrir um módulo na porta N, o sync tenta `GET http://localhost:N/assets/remoteEntry.js`. Se retornar 404 (módulo standalone), registra `remoteEntry = 'http://localhost:N/'` para o frontend usar iframe no dev server; caso contrário, mantém `remoteEntry = 'http://localhost:N/assets/remoteEntry.js'` (Federation).
+3. **devModulesSync — standalone vs Federation em dev**  
+   Só registra como Federation se o manifest tiver campo **`exposes`** e existir GET `/assets/remoteEntry.js`. Caso contrário registra `remoteEntry = 'http://localhost:N/'` (iframe). O dev server do módulo precisa de `host: true` e `allowedHosts: true` no Vite para o backend no Docker acessar via `host.docker.internal`. Ver `docs/DEV-DOCKER-LOCAL.md`.
 
 ---
 
@@ -67,16 +67,14 @@ Módulo instalado (ZIP):
 
 Módulo em dev (pnpm dev):
   Backend a cada 5s varre 5001–5099, lê manifest.json
-  → Se /assets/remoteEntry.js 404: remoteEntry = 'http://localhost:N/' (iframe)
-  → Se 200: remoteEntry = 'http://localhost:N/assets/remoteEntry.js' (Federation)
+  → Se manifest tem "exposes" e /assets/remoteEntry.js 200: remoteEntry = '.../assets/remoteEntry.js' (Federation)
+  → Senão: remoteEntry = 'http://localhost:N/' (iframe)
   → Frontend usa remoteEntry para iframe ou useRemoteModule
 ```
 
 ---
 
-## Dev: expor manifest.json
-
-Para o `devModulesSync` descobrir o módulo, o servidor de dev do módulo precisa responder em **GET /manifest.json**. No Vite, coloque `manifest.json` em **public/** (ou um symlink) para que seja servido na raiz. Caso contrário a varredura de portas não registrará o módulo.
+Dev (manifest, Vite, portas): ver **docs/DEV-DOCKER-LOCAL.md**.
 
 ---
 

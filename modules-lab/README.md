@@ -31,3 +31,5 @@ Esta pasta é o **laboratório de desenvolvimento de módulos** do SGO. Contém 
 - **edukaead-gestao-repasses** — Gestão de Repasses (porta 5005)
 
 Os **slugs** no `manifest.json` continuam `leads-intake`, `enroll-manage`, `gestao-repasses`; apenas o nome da pasta e do pacote têm o prefixo `edukaead-` para identificação no lab.
+
+**Validar os 3 módulos no chassi 4.0:** veja no repo sgo o guia [docs/guides/MODULES-LAB-MVP-VALIDACAO.md](../docs/guides/MODULES-LAB-MVP-VALIDACAO.md) (conversão já feita; roteiro de validação em dev e via ZIP).

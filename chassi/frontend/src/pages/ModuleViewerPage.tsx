@@ -251,7 +251,12 @@ export function ModuleViewerPage() {
     if (useDevServerForIframe && devServerUrl) {
       base = devServerUrl.replace(/\/$/, "");
     } else if (isDevStandalone && remoteUrl) {
-      base = remoteUrl.replace(/\/remoteEntry\.js$/, "").replace(/\/$/, "");
+      // Dev com Federation: base é a origin do dev server (ex.: http://localhost:5001)
+      try {
+        base = new URL(remoteUrl).origin;
+      } catch {
+        base = remoteUrl.replace(/\/remoteEntry\.js$/, "").replace(/\/$/, "") || remoteUrl;
+      }
     } else if (remoteUrl) {
       base = remoteUrl.replace(/\/$/, "");
       const sameOrigin = base.startsWith(origin);
@@ -293,7 +298,7 @@ export function ModuleViewerPage() {
           ref={iframeRef}
           title={moduleData.name}
           src={iframeSrc}
-          className="w-full flex-1 min-h-[400px] border-0 rounded-lg bg-background outline-none focus:outline-none focus-visible:ring-0"
+          className="w-full flex-1 min-h-[400px] border-0 rounded-lg bg-transparent outline-none focus:outline-none focus-visible:ring-0"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
           allow="clipboard-write"
           onLoad={onIframeLoad}

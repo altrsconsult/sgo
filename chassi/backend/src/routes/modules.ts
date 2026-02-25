@@ -18,7 +18,8 @@ function withRemoteUrl(m: { type: string | null; path: string | null; remoteEntr
   return row;
 }
 
-// GET /api/modules
+// GET /api/modules — lista todos os módulos (qualquer usuário autenticado)
+// Módulos type='dev' não exigem admin nem permissão explícita; aparecem para todos.
 modulesRoutes.get('/', async (c) => {
   const all = await db.query.modules.findMany({
     orderBy: (m, { asc }) => [asc(m.sortOrder), asc(m.name)],

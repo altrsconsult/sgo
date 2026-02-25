@@ -54,14 +54,10 @@ Altere apenas o `name`:
 
 ### 2c. `modules/meu-modulo/vite.config.ts`
 
-```typescript
-federation({
-  name: 'meu-modulo',  // ← mesmo valor que slug no manifest
-  ...
-})
-```
+- `federation({ name: 'meu-modulo', ... })` — mesmo valor que `slug`.
+- `server: { port: 5001, host: true, allowedHosts: true, cors: true }` (dev com Docker: ver docs/DEV-DOCKER-LOCAL.md).
 
-Se outro módulo já estiver na porta 5001, use 5002, 5003, etc.
+Se a porta estiver em uso, use 5002, 5003, etc.
 
 ---
 
@@ -85,15 +81,7 @@ O módulo estará disponível em `http://localhost:5001`.
 
 ## Passo 5: Ver no Chassi
 
-Com o chassi rodando via Docker e `DOCKER_ENV=true`, o backend detecta automaticamente
-módulos em desenvolvimento nas portas 5001-5099 a cada 5 segundos.
-
-Acesse `http://localhost:3000` e o módulo aparecerá no menu lateral.
-
-> **Como funciona:** `devModulesSync.ts` no backend varre as portas e busca `/manifest.json`.
-> Ao encontrar, registra/atualiza o módulo no banco com `type: 'dev'`.
-> O `remoteEntry.js` é sempre carregado de `localhost:{porta}` (não de `host.docker.internal`)
-> pois é o **browser** quem carrega — não o container.
+Fluxo completo: **docs/DEV-DOCKER-LOCAL.md**. Chassi em 5173 (`pnpm dev`) ou 3000 (Docker); backend descobre módulos em 5001–5099 a cada ~5 s.
 
 ---
 

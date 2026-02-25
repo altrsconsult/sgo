@@ -36,10 +36,10 @@ export default defineConfig({
   },
   server: {
     port: 5001,
+    host: true,
     strictPort: false,
     cors: true,
-    // Expõe o manifest.json na raiz do dev server
-    middlewareMode: false,
+    allowedHosts: true, // aceita Host host.docker.internal (backend no Docker)
   },
   build: {
     modulePreload: false,

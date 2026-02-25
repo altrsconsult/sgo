@@ -67,17 +67,19 @@ permissionsRoutes.get('/check/:userId/:moduleSlug', async (c) => {
 });
 
 // GET /api/permissions/allowed-modules/:userId — módulos permitidos para o usuário (join manual)
+// Módulos type='dev' são sempre incluídos (não exigem permissão explícita nem admin).
 permissionsRoutes.get('/allowed-modules/:userId', async (c) => {
   const userId = Number(c.req.param('userId'));
   const perms = await db.query.modulePermissions.findMany({
     where: and(eq(modulePermissions.userId, userId), eq(modulePermissions.allowed, true)),
   });
-  if (perms.length === 0) return c.json([]);
   const mods = await db.query.modules.findMany({
     where: eq(modules.active, true),
   });
   const allowedIds = new Set(perms.map((p) => p.moduleId));
-  return c.json(mods.filter((m) => allowedIds.has(m.id)));
+  // Incluir sempre os módulos em dev (sem depender de regra de permissão/superadmin)
+  const withDev = mods.filter((m) => allowedIds.has(m.id) || m.type === 'dev');
+  return c.json(withDev);
 });
 
 // POST /api/permissions — upsert: se já existir (moduleId+userId ou moduleId+groupId), atualiza allowed

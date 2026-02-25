@@ -31,13 +31,14 @@ export default defineConfig({
     },
   },
   server: {
-    port: Number(process.env.VITE_DEV_FRONTEND_PORT) || 3000,
+    // Frontend em dev (pnpm dev) na 5173; backend fica no Docker (3001)
+    port: Number(process.env.VITE_DEV_FRONTEND_PORT) || 5173,
     strictPort: false,
     hmr: {
       protocol: 'ws',
       host: 'localhost',
     },
-    // Proxy /api para o backend (chassi-backend local ou Docker)
+    // Proxy para o backend (Docker na 3001)
     proxy: {
       '/api': {
         target: `http://localhost:${process.env.VITE_API_PORT || '3001'}`,

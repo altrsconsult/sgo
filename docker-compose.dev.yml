@@ -8,13 +8,18 @@
 services:
   chassi-backend:
     environment:
-      # Ativa descoberta de módulos via host.docker.internal (portas 5001-5099)
       DOCKER_ENV: "true"
-      # Permite recarregar sem rebuild durante desenvolvimento
       NODE_ENV: development
+      # Aceitar qualquer módulo que responda (sem restringir por pasta)
+      DEV_MODULES_ACCEPT_ALL: "true"
+      MODULES_DEV_DIR: /app/dev_modules
+      MODULES_LAB_DEV_DIR: /app/dev_modules_lab
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       # Monta source do backend para hot-reload (com tsx watch)
       - ./chassi/backend/src:/app/src
+      # Monta pastas de módulos para descoberta restrita (só esses slugs são registrados)
+      - ./modules:/app/dev_modules:ro
+      - ./modules-lab:/app/dev_modules_lab:ro
     command: npx tsx watch src/index.ts

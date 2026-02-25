@@ -1,24 +1,40 @@
-# Dev local com Docker em paralelo
+# Dev local — estado atual
 
-Para ajustar o frontend do chassi com **HMR** (Hot Module Replacement) sem rebuildar a imagem Docker:
+Backend e banco no **Docker**. Frontend e módulos no host com **pnpm dev** (Vite). Módulos aparecem no chassi com HMR (iframe no dev server).
 
-1. **Deixe o Docker rodando** como está:
-   ```powershell
-   docker compose up -d
+## Portas
+
+| Onde   | Serviço   | Porta |
+|--------|-----------|-------|
+| Docker | Backend   | 3001  |
+| Docker | Frontend  | 3000 (opcional) |
+| Docker | Postgres  | 5432  |
+| Host   | Chassi (Vite) | 5173  |
+| Host   | Módulos (Vite) | 5001–5099 |
+
+## Fluxo para rodar (ordem)
+
+1. **Backend + banco**
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d chassi-db chassi-backend
    ```
-   - Frontend buildado: http://localhost:3000  
-   - Backend: http://localhost:3001  
-   - PostgreSQL: 5432  
 
-2. **Suba o dev server do frontend** (porta 5173, sem conflito com o 3000 do Docker):
-   ```powershell
-   cd chassi/frontend
-   pnpm dev
-   ```
-   Ou da raiz: `pnpm --filter @sgo/chassi-frontend dev`
+2. **Chassi (frontend)** — na raiz: `pnpm dev` → Vite em 5173 (proxy `/api` e `/modules-assets` para 3001).
 
-3. **Use no navegador:** http://localhost:5173  
-   - Vite com HMR; alterações no código refletem na hora.  
-   - O dev server faz proxy de `/api` e `/modules-assets` para o backend no Docker (porta 3001).
+3. **Módulos** — um terminal por módulo: `cd <pasta-do-modulo>` e `pnpm dev`. O backend descobre em ~5 s (varredura 5001–5099 via `host.docker.internal`).
 
-Resumo: **Docker** = banco + backend + front (build); **local** = apenas front em modo dev na 5173.
+## Requisitos no módulo (dev)
+
+- **`public/manifest.json`** (cópia do manifest) para GET /manifest.json.
+- **vite.config.ts** — `server: { host: true, allowedHosts: true, cors: true }`.
+- **Standalone vs Federation:** o backend só registra como Federation se o manifest tiver campo **`exposes`** e existir `/assets/remoteEntry.js`. Sem `exposes` → iframe (standalone).
+
+## Comportamento
+
+- **DEV_MODULES_ACCEPT_ALL=true** (override de dev): qualquer módulo que responda na varredura é registrado (sem restrição por pasta).
+- **3000 (frontend Docker):** mesmo backend 3001; se o sync de dev estiver ativo, mostra instalados + dev. Para “só instalados”, use backend sem override de dev ou NODE_ENV=production.
+- **Instalado (ZIP) + mesmo slug em dev:** um único registro por slug (upsert). Enquanto o dev estiver rodando, o registro aponta para o dev server; ao parar o dev, o módulo fica inativo.
+
+## Resumo
+
+Docker = backend (3001) + banco. `pnpm dev` na raiz = só frontend (5173). `pnpm dev` na pasta do módulo = descoberta automática e iframe com HMR.
