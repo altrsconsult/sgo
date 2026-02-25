@@ -1,5 +1,5 @@
 # Estágio 1: build do backend TypeScript
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 
 RUN npm install -g pnpm
@@ -15,7 +15,7 @@ RUN pnpm --filter @sgo/sdk build
 RUN pnpm --filter @sgo/chassi-backend build
 
 # Estágio 2: imagem de produção mínima
-FROM node:20-alpine
+FROM node:25-alpine
 WORKDIR /app
 
 # Copia dist do backend, migrações (pg e mysql) e SDK
