@@ -21,11 +21,15 @@ Queremos um ambiente **inclusivo e respeitoso**. Ao participar (issues, PRs, dis
 
 Não toleramos assédio, discriminação ou comportamento que deixe alguém desconfortável. Dúvidas sobre conduta podem ser enviadas para contato@altrs.com.br.
 
+## Signed-off-by (DCO)
+
+Aceitamos contribuições sob **Developer Certificate of Origin (DCO)** implícito. Ao commitar, use `git commit -s` para adicionar a linha `Signed-off-by: Seu Nome <seu@email.com>` na mensagem. Isso atesta que você tem o direito de submeter a contribuição nos termos da licença do projeto. Não exigimos CLA (Contributor License Agreement) separado.
+
 ## Convenções técnicas
 
 - **Antes de codar:** leia o [docs/AGENTS.md](docs/AGENTS.md) — ele descreve a arquitetura, a estrutura do monorepo e as convenções (TypeScript, Drizzle, Zod, comentários em PT-BR, etc.).
 - **Módulos:** siga o [docs/standards/MODULE-MANIFEST-SCHEMA.md](docs/standards/MODULE-MANIFEST-SCHEMA.md) e o guia [docs/guides/CREATE-MODULE.md](docs/guides/CREATE-MODULE.md).
-- **Commits:** mensagens claras ajudam; prefira descrições objetivas (ex.: "Corrige validação do login" em vez de "fix").
+- **Commits:** mensagens claras ajudam; prefira descrições objetivas (ex.: "Corrige validação do login" em vez de "fix"). Use `git commit -s` para Signed-off-by quando possível.
 
 Não é necessário ser expert: correções pequenas, melhorias de texto e testes são tão válidos quanto mudanças maiores. Se tiver dúvida, pergunte na issue ou no PR.
 

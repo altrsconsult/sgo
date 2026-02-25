@@ -1,0 +1,47 @@
+# OSSF Scorecard — análise de segurança do repositório
+# https://github.com/marketplace/actions/ossf-scorecard-action
+# Badge e resultados: publish_results: true atualiza api.scorecard.dev e o badge no README
+name: Scorecard analysis
+
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    # Semanal (sábado)
+    - cron: '30 1 * * 6'
+
+permissions:
+  read-all: read
+
+jobs:
+  analysis:
+    name: OpenSSF Scorecard
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run Scorecard
+        uses: ossf/scorecard-action@v2
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload artifact (SARIF)
+        uses: actions/upload-artifact@v4
+        with:
+          name: scorecard-results
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

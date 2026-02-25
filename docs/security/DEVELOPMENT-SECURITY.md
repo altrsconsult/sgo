@@ -22,6 +22,8 @@ Este documento descreve as práticas e checagens que sustentam o claim de que o 
 
 - **Attestation de build:** artefatos (imagens Docker) gerados no GitHub Actions possuem attestation de proveniência (quem buildou, com qual commit, em qual workflow). Ver [BUILD-AND-PROVENANCE.md](BUILD-AND-PROVENANCE.md).
 - **SBOM:** lista de componentes (dependências) é gerada no CI e publicada como artefato ou anexada à attestation, para transparência e auditoria da cadeia de suprimentos.
+- **Tags de versão Git:** as tags de release (ex.: `v4.0.0`) não são assinadas com GPG. A integridade dos artefatos de release é garantida pela **attestation de build** das imagens Docker (Sigstore) e pelos artefatos do CI; quem consumir o código pode verificar o commit e o workflow que gerou cada imagem.
+- **Algoritmos de criptografia:** o uso de algoritmos (ex.: bcrypt para hash de senha, JWT para sessão) está definido no código e na documentação. Qualquer alteração de algoritmo (ex.: troca de bcrypt por argon2) passa por revisão de código, atualização de documentação e changelog. Não há mecanismo automático de “agilidade” de algoritmo; mudanças são deliberadas e documentadas.
 
 ## Onde estão as evidências
 
