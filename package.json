@@ -1,5 +1,6 @@
 {
   "name": "sgo",
+  "description": "Plataforma open-source de gestão para micro empresas. Chassi pronto (auth, permissões, whitelabel) + módulos sob medida. Self-hosted, sem lock-in. Para devs, integradores e quem quer o sistema sob sua marca. MIT.",
   "private": true,
   "license": "MIT",
   "scripts": {

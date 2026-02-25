@@ -12,12 +12,15 @@ const url = process.env.DATABASE_URL || 'postgresql://sgo:sgodev@localhost:5432/
 // Detecta dialeto pelo prefixo da DATABASE_URL
 export const dialect = url.startsWith('mysql') ? 'mysql' : 'pg';
 
-// Instância do banco exportada conforme dialeto detectado
-let dbInstance: ReturnType<typeof drizzlePg<typeof schemaPg>> | ReturnType<typeof drizzleMysql<typeof schemaMysql>>;
+// Tipo unificado para compilação (evita "This expression is not callable" na união Pg|MySQL)
+export type Db = ReturnType<typeof drizzlePg<typeof schemaPg>>;
+
+// Instância do banco; em runtime é Pg ou MySQL conforme dialect; tipamos como Db para o restante do código
+let dbInstance: Db;
 
 if (dialect === 'mysql') {
   const pool = mysql.createPool(url);
-  dbInstance = drizzleMysql(pool, { schema: schemaMysql, mode: 'default' });
+  dbInstance = drizzleMysql(pool, { schema: schemaMysql, mode: 'default' }) as unknown as Db;
 } else {
   const pool = new Pool({ connectionString: url });
   dbInstance = drizzlePg(pool, { schema: schemaPg });

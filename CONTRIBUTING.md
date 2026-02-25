@@ -2,6 +2,8 @@
 
 Obrigado por considerar contribuir. Sua participação — seja com código, documentação, ideias ou feedback — é valorizada e ajuda a tornar o SGO útil para mais pessoas.
 
+**Gostou do projeto?** [Deixe uma estrela ⭐](https://github.com/altrsconsult/sgo/stargazers) no GitHub — ajuda outros devs e integradores a descobrirem o SGO. Não é obrigatório contribuir com código: estrelas, issues e sugestões também contam.
+
 ## Por onde começar
 
 - **Bugs e sugestões:** abra uma [issue](https://github.com/altrsconsult/sgo/issues) descrevendo o problema ou a ideia.

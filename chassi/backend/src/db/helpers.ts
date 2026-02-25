@@ -5,7 +5,8 @@ import { db, dialect } from './index.js';
 // e MySQL (ignore/onDuplicateKeyUpdate)
 
 type AnyTable = Parameters<typeof db.insert>[0];
-type AnyValues = Parameters<ReturnType<typeof db.insert>['values']>[0];
+// Objeto único para insert (evita inferência como array {}[])
+type AnyValues = Record<string, unknown>;
 
 /**
  * Insere ignorando conflito de chave única.
