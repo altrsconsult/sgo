@@ -1,5 +1,7 @@
 name: Docker Build & Push
 
+# Dispara em push para main (qualquer arquivo do chassi/packages)
+# Gera imagens com :latest e :sha-xxx — para uso em ambientes de staging/dev
 on:
   push:
     branches: [main]
@@ -19,13 +21,11 @@ jobs:
   chassi-backend:
     name: Chassi Backend
     runs-on: ubuntu-latest
-    if: >
-      contains(github.event.head_commit.modified, 'chassi/backend/') ||
-      contains(github.event.head_commit.modified, 'packages/') ||
-      contains(github.event.head_commit.modified, '.github/workflows/docker.yml')
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,11 +43,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend
           tags: |
-            type=ref,event=branch
             type=sha,prefix=sha-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest
 
-      - name: Build e Push (amd64 apenas)
+      - name: Build e Push (amd64)
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -59,17 +59,29 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Attest build provenance (backend)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend@${{ steps.build.outputs.digest }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+      - name: Trivy scan (backend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend@${{ steps.build.outputs.digest }}
+          severity: CRITICAL
+          exit-code: "1"
+        continue-on-error: true
+
   # Build e push da imagem do frontend
   chassi-frontend:
     name: Chassi Frontend
     runs-on: ubuntu-latest
-    if: >
-      contains(github.event.head_commit.modified, 'chassi/frontend/') ||
-      contains(github.event.head_commit.modified, 'packages/') ||
-      contains(github.event.head_commit.modified, '.github/workflows/docker.yml')
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -87,11 +99,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend
           tags: |
-            type=ref,event=branch
             type=sha,prefix=sha-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest
 
-      - name: Build e Push (amd64 apenas)
+      - name: Build e Push (amd64)
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -102,3 +114,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Attest build provenance (frontend)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend@${{ steps.build.outputs.digest }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+      - name: Trivy scan (frontend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend@${{ steps.build.outputs.digest }}
+          severity: CRITICAL
+          exit-code: "1"
+        continue-on-error: true

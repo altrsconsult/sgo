@@ -1,0 +1,47 @@
+{
+  "cards": [
+    {
+      "id": "total",
+      "titulo": "Total de Registros",
+      "valor": "1.284",
+      "variacao": "+12%",
+      "tendencia": "up",
+      "descricao": "vs. mês anterior",
+      "icone": "Users"
+    },
+    {
+      "id": "ativos",
+      "titulo": "Registros Ativos",
+      "valor": "847",
+      "variacao": "+8%",
+      "tendencia": "up",
+      "descricao": "vs. mês anterior",
+      "icone": "CheckCircle"
+    },
+    {
+      "id": "receita",
+      "titulo": "Receita do Mês",
+      "valor": "R$ 48.320",
+      "variacao": "+23%",
+      "tendencia": "up",
+      "descricao": "vs. mês anterior",
+      "icone": "TrendingUp"
+    },
+    {
+      "id": "pendentes",
+      "titulo": "Pendentes",
+      "valor": "37",
+      "variacao": "-5%",
+      "tendencia": "down",
+      "descricao": "vs. mês anterior",
+      "icone": "Clock"
+    }
+  ],
+  "atividades": [
+    { "id": "1", "acao": "Novo registro criado", "usuario": "Carlos M.", "tempo": "há 2 min", "tipo": "create" },
+    { "id": "2", "acao": "Status atualizado para Ativo", "usuario": "Juliana P.", "tempo": "há 15 min", "tipo": "update" },
+    { "id": "3", "acao": "Registro #1284 aprovado", "usuario": "Fernanda L.", "tempo": "há 1h", "tipo": "approve" },
+    { "id": "4", "acao": "Comentário adicionado", "usuario": "Carlos M.", "tempo": "há 2h", "tipo": "comment" },
+    { "id": "5", "acao": "Arquivo anexado", "usuario": "Ana B.", "tempo": "há 3h", "tipo": "attach" }
+  ]
+}

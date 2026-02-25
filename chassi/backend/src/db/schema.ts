@@ -185,3 +185,11 @@ export const auditLogs = pgTable('audit_logs', {
   userAgent: text('user_agent'),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+// Tabela de controle de migrations por módulo
+export const moduleMigrations = pgTable('module_migrations', {
+  id: serial('id').primaryKey(),
+  moduleSlug: text('module_slug').notNull(),
+  migrationName: text('migration_name').notNull(),
+  appliedAt: timestamp('applied_at').defaultNow(),
+});

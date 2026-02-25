@@ -1,4 +1,5 @@
 import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -67,6 +68,20 @@ app.route('/api/install-from-link', installFromLinkRoutes);
 
 // Rotas M2M para o Nexus Central
 app.route('/api/nexus', nexusRoutes);
+
+// Modo Node.js single-process: serve frontend buildado como estáticos (ex.: Hostinger)
+// Ativado pela variável SERVE_STATIC=true no .env
+if (env.serveStatic) {
+  // Assets com hash (cache longo)
+  app.use('/assets/*', serveStatic({ root: env.staticPath }));
+  // SPA fallback: rotas não-API retornam index.html
+  app.use('*', async (c, next) => {
+    if (c.req.path.startsWith('/api') || c.req.path.startsWith('/modules-assets')) {
+      return next();
+    }
+    return serveStatic({ path: `${env.staticPath}/index.html` })(c, next);
+  });
+}
 
 // Em dev: garante seed antes de aceitar conexões para /api/setup/status retornar installed
 async function ensureDevSeed() {

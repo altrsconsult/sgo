@@ -1,0 +1,10 @@
+{
+  "slug": "sgo-demo",
+  "name": "SGO Demo",
+  "description": "Showcase de componentes e padrões de UI para módulos SGO",
+  "version": "1.0.0",
+  "icon": "Sparkles",
+  "color": "#7c3aed",
+  "permissions": [],
+  "serverPort": 5010
+}

@@ -1,0 +1,121 @@
+/* Estilos globais do módulo demo — tokens dark do @sgo/ui */
+
+/* Quando embutido no chassi (iframe): fundo transparente — cobre light e dark mode. */
+html.in-chassis,
+html.in-chassis body,
+html.in-chassis #root,
+html.in-chassis #root > *,
+html.in-chassis #root > * > *,
+html.in-chassis #root > * > * > *,
+html.dark.in-chassis,
+html.dark.in-chassis body,
+html.dark.in-chassis #root,
+html.dark.in-chassis #root > *,
+html.dark.in-chassis #root > * > *,
+html.dark.in-chassis #root > * > * > * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+html.in-chassis #root,
+html.in-chassis #root > * {
+  min-height: 100%;
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Tema claro (padrão quando chassi está em light) */
+  :root,
+  .light {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --background: 55 25% 97%;
+    --foreground: 220 13% 18%;
+    --card: 52 22% 94%;
+    --card-foreground: 220 13% 18%;
+    --popover: 52 22% 94%;
+    --popover-foreground: 220 13% 18%;
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 52 20% 92%;
+    --secondary-foreground: 50 12% 28%;
+    --muted: 52 18% 93%;
+    --muted-foreground: 48 10% 42%;
+    --accent: 52 20% 92%;
+    --accent-foreground: 220 13% 18%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 50 18% 90%;
+    --input: 50 18% 90%;
+    --ring: 220 70% 50%;
+    --radius: 0.5rem;
+  }
+
+  /* Tema escuro */
+  .dark {
+    --background: 213 22% 8%;
+    --foreground: 210 20% 98%;
+    --card: 213 22% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 213 22% 8%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 220 70% 22%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 220 70% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Evita cursor piscando ao receber foco no iframe */
+  html, body, #root {
+    caret-color: transparent;
+  }
+  input, textarea, [contenteditable="true"] {
+    caret-color: revert;
+  }
+}
+
+/* Animação de entrada suave para cards e seções */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+/* Delays escalonados para listas */
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.10s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.20s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+.stagger-6 { animation-delay: 0.30s; opacity: 0; }

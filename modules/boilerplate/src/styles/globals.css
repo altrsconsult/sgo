@@ -1,0 +1,229 @@
+/* =============================================================
+   BOILERPLATE SGO — globals.css
+   Template base para novos módulos do chassi SGO.
+
+   COMO USAR:
+   1. Copie esta pasta (modules/boilerplate) para modules-lab/<slug>/
+   2. Ajuste o manifest.json (slug, name, port)
+   3. Personalize os tokens de cor abaixo para a identidade do cliente
+   4. Importe a fonte desejada via Google Fonts (substitua Inter)
+   5. NÃO remova os blocos marcados como [OBRIGATÓRIO]
+
+   PADRÕES ESTABELECIDOS (não alterar sem motivo):
+   - Transparência no chassi: bloco [OBRIGATÓRIO] abaixo
+   - Bridge de tema (dark/light): initChassisBridge() em main.tsx
+   - Tokens CSS: sobrescreva apenas --primary, --font-sans e pastéis
+   - Sem estilos inline: tudo centralizado aqui
+   ============================================================= */
+
+/* [OBRIGATÓRIO] Transparência quando embutido no chassi (iframe).
+   Garante que o fundo do chassi apareça — funciona em light e dark. */
+html.in-chassis,
+html.in-chassis body,
+html.in-chassis #root,
+html.in-chassis #root > *,
+html.in-chassis #root > * > *,
+html.in-chassis #root > * > * > *,
+html.dark.in-chassis,
+html.dark.in-chassis body,
+html.dark.in-chassis #root,
+html.dark.in-chassis #root > *,
+html.dark.in-chassis #root > * > *,
+html.dark.in-chassis #root > * > * > * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+html.in-chassis #root,
+html.in-chassis #root > * {
+  min-height: 100%;
+}
+
+/* [PERSONALIZAR] Fonte do módulo — substitua por Google Fonts do cliente.
+   Exemplo EdukaEAD: Nunito | Exemplo genérico: Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* [PERSONALIZAR] Tokens do tema claro.
+     Sobrescreva --primary com a cor de marca do cliente (formato HSL sem hsl()).
+     Os demais tokens herdam do @sgo/ui — só altere o que precisar. */
+  :root,
+  .light {
+    /* Fonte — altere para a fonte do cliente */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Cor primária — altere para a cor de marca do cliente
+       Exemplo EdukaEAD (teal): 180 47% 53%
+       Exemplo genérico (azul): 220 70% 50% */
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
+    --ring: 220 70% 50%;
+
+    /* Fundo e texto — ajuste conforme a paleta do cliente */
+    --background: 55 25% 97%;
+    --foreground: 220 13% 18%;
+    --card: 52 22% 94%;
+    --card-foreground: 220 13% 18%;
+    --popover: 52 22% 94%;
+    --popover-foreground: 220 13% 18%;
+    --secondary: 52 20% 92%;
+    --secondary-foreground: 50 12% 28%;
+    --muted: 52 18% 93%;
+    --muted-foreground: 48 10% 42%;
+    --accent: 52 20% 92%;
+    --accent-foreground: 220 13% 18%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 50 18% 90%;
+    --input: 50 18% 90%;
+    --radius: 0.5rem;
+
+    /* [PERSONALIZAR] Pastéis do módulo — derivados da cor primária.
+       Usados em badges, tabs ativas, cards de destaque.
+       Exemplo EdukaEAD: hsl(180 55% 91%) / hsl(180 50% 86%) / hsl(180 48% 80%)
+       Exemplo genérico: hsl(217 85% 92%) / hsl(217 80% 88%) / hsl(217 75% 84%) */
+    --primary-pastel: hsl(217 85% 92%);
+    --primary-pastel-hover: hsl(217 80% 88%);
+    --primary-pastel-active: hsl(217 75% 84%);
+    --success-pastel: hsl(142 60% 92%);
+    --success-pastel-border: hsl(142 64% 40% / 0.55);
+    --warning-pastel: hsl(45 95% 92%);
+    --danger-pastel: hsl(0 85% 94%);
+    --info-pastel: hsl(200 85% 92%);
+    --muted-pastel: hsl(220 15% 96%);
+    --border-pastel: hsl(220 13% 91%);
+  }
+
+  /* [PERSONALIZAR] Tokens do tema escuro — espelhe as mudanças do :root aqui. */
+  .dark {
+    --primary: 220 70% 50%;
+    --primary-foreground: 210 20% 98%;
+    --ring: 220 70% 50%;
+
+    --background: 213 22% 8%;
+    --foreground: 210 20% 98%;
+    --card: 213 22% 8%;
+    --card-foreground: 210 20% 98%;
+    --popover: 213 22% 8%;
+    --popover-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 220 70% 22%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+
+    /* Pastéis escuros */
+    --primary-pastel: hsl(217 40% 18%);
+    --primary-pastel-hover: hsl(217 35% 22%);
+    --primary-pastel-active: hsl(217 30% 26%);
+    --success-pastel: hsl(142 30% 16%);
+    --success-pastel-border: hsl(142 40% 35%);
+    --warning-pastel: hsl(45 35% 18%);
+    --danger-pastel: hsl(0 35% 18%);
+    --info-pastel: hsl(200 40% 18%);
+    --muted-pastel: hsl(220 10% 14%);
+    --border-pastel: hsl(220 8% 20%);
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Títulos com peso maior para identidade da marca */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* [OBRIGATÓRIO] Evita cursor piscando ao receber foco no iframe */
+  html, body, #root {
+    caret-color: transparent;
+  }
+  input, textarea, [contenteditable="true"] {
+    caret-color: revert;
+  }
+
+  /* Scroll suave */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Transições padrão nos elementos interativos */
+button,
+input,
+select,
+textarea {
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}
+
+/* Feedback visual ao clicar */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Layout raiz do módulo */
+.module-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+/* Estado vazio */
+.module-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 28rem;
+  gap: 0.75rem;
+}
+
+.module-empty-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: hsl(var(--muted));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.5rem;
+}
+
+.module-empty-icon-svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.module-empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.module-empty-desc {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+}

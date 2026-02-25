@@ -1,5 +1,6 @@
 import { db } from './index.js';
 import { users, systemSettings } from './schema.js';
+import { insertIgnore } from './helpers.js';
 import bcrypt from 'bcryptjs';
 
 // Seed padrão para desenvolvimento (admin + user de exemplo)
@@ -11,22 +12,22 @@ export async function seedDevData() {
   const userPassword = await bcrypt.hash('usuario123', 10);
 
   // Cria admin padrão de desenvolvimento
-  await db.insert(users).values({
+  await insertIgnore(users, {
     username: process.env.ADMIN_USERNAME || 'admin',
     password: adminPassword,
     name: 'Administrador',
     email: process.env.ADMIN_EMAIL || 'admin@example.com',
     role: 'admin',
-  }).onConflictDoNothing();
+  });
 
   // Cria usuário de exemplo
-  await db.insert(users).values({
+  await insertIgnore(users, {
     username: 'usuario',
     password: userPassword,
     name: 'Usuário Exemplo',
     email: 'usuario@example.com',
     role: 'user',
-  }).onConflictDoNothing();
+  });
 
   // Configurações padrão de whitelabel
   const defaultSettings = [
@@ -39,7 +40,7 @@ export async function seedDevData() {
   ];
 
   for (const setting of defaultSettings) {
-    await db.insert(systemSettings).values(setting).onConflictDoNothing();
+    await insertIgnore(systemSettings, setting);
   }
 
   console.log('Seed de desenvolvimento concluído.');

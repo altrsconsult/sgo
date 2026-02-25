@@ -1,0 +1,33 @@
+# docker-compose.prod.yml — Override para produção (uma porta, sem Traefik)
+#
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Pré-requisito: copiar .env.example para .env e preencher POSTGRES_PASSWORD e JWT_SECRET.
+#
+# Expõe apenas a porta 80 (frontend). O Nginx no frontend faz proxy de /api e /modules-assets
+# para o backend; não é necessário proxy reverso externo (Traefik/Caddy).
+# Compatível com: Coolify, Hostinger, VPS, Portainer (como stack tipo Compose).
+
+services:
+  chassi-db:
+    # Não expõe a porta 5432 para fora (acesso apenas na rede interna)
+    ports: []
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sgo}
+      POSTGRES_USER: ${POSTGRES_USER:-sgo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  chassi-backend:
+    ports: []
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-sgo}:${POSTGRES_PASSWORD}@chassi-db:5432/${POSTGRES_DB:-sgo}
+      JWT_SECRET: ${JWT_SECRET}
+      NEXUS_URL: ${NEXUS_URL:-}
+      CHASSIS_URL: ${CHASSIS_URL:-}
+      DOCKER_ENV: "false"
+
+  chassi-frontend:
+    # Único ponto de entrada: porta 80 (usuário acessa http://IP ou https://dominio se houver proxy no host)
+    ports:
+      - "80:80"

@@ -1,26 +1,43 @@
 import 'dotenv/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
-import pkg from 'pg';
-const { Pool } = pkg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Script de migration — rodar com: pnpm db:migrate (dev) ou node dist/db/migrate.js (produção)
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://sgo:sgodev@localhost:5432/sgo',
-});
+const url = process.env.DATABASE_URL || 'postgresql://sgo:sgodev@localhost:5432/sgo';
 
-const db = drizzle(pool);
+// Detecta dialeto pelo prefixo da DATABASE_URL
+const dialect = url.startsWith('mysql') ? 'mysql' : 'pg';
 
 async function runMigrations() {
-  const migrationsFolder = path.join(__dirname, 'migrations');
-  console.log('Executando migrations em', migrationsFolder, '...');
-  await migrate(db, { migrationsFolder });
-  console.log('Migrations concluídas.');
-  await pool.end();
+  if (dialect === 'mysql') {
+    const { drizzle } = await import('drizzle-orm/mysql2');
+    const { migrate } = await import('drizzle-orm/mysql2/migrator');
+    const mysql = await import('mysql2/promise');
+
+    const pool = mysql.createPool(url);
+    const db = drizzle(pool);
+    const migrationsFolder = path.join(__dirname, 'migrations/mysql');
+
+    console.log('Executando migrations MySQL em', migrationsFolder, '...');
+    await migrate(db, { migrationsFolder });
+    console.log('Migrations MySQL concluídas.');
+    await pool.end();
+  } else {
+    const { drizzle } = await import('drizzle-orm/node-postgres');
+    const { migrate } = await import('drizzle-orm/node-postgres/migrator');
+    const { default: pkg } = await import('pg');
+    const { Pool } = pkg as unknown as { Pool: typeof import('pg').Pool };
+
+    const pool = new Pool({ connectionString: url });
+    const db = drizzle(pool);
+    const migrationsFolder = path.join(__dirname, 'migrations/pg');
+
+    console.log('Executando migrations PostgreSQL em', migrationsFolder, '...');
+    await migrate(db, { migrationsFolder });
+    console.log('Migrations PostgreSQL concluídas.');
+    await pool.end();
+  }
 }
 
 runMigrations().catch((err) => {

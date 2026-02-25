@@ -1,12 +1,61 @@
 import path from 'path';
 import fs from 'fs/promises';
 import AdmZip from 'adm-zip';
-import { db } from '../db/index.js';
-import { modules } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { db, dialect } from '../db/index.js';
+import { modules, moduleMigrations } from '../db/schema.js';
+import { eq, and } from 'drizzle-orm';
 import { ModuleManifestSchema } from '@sgo/sdk';
+import { upsert } from '../db/helpers.js';
 
 const MODULES_STORAGE_PATH = process.env.MODULES_STORAGE_PATH || './modules_storage';
+
+/**
+ * Roda as migrations SQL de um módulo instalado.
+ * Verifica a pasta migrations/{dialect}/ dentro do módulo extraído
+ * e aplica apenas as pendentes (não registradas em module_migrations).
+ */
+async function runModuleMigrations(slug: string, modulePath: string) {
+  const migrationsDir = path.join(modulePath, 'migrations', dialect);
+
+  try {
+    await fs.access(migrationsDir);
+  } catch {
+    // Módulo não tem migrations para este dialeto — ok
+    return;
+  }
+
+  const files = (await fs.readdir(migrationsDir))
+    .filter((f) => f.endsWith('.sql'))
+    .sort();
+
+  for (const file of files) {
+    // Verifica se migration já foi aplicada
+    const applied = await db.query.moduleMigrations.findFirst({
+      where: and(
+        eq(moduleMigrations.moduleSlug, slug),
+        eq(moduleMigrations.migrationName, file)
+      ),
+    });
+
+    if (applied) continue;
+
+    const sql = await fs.readFile(path.join(migrationsDir, file), 'utf8');
+
+    // Executa cada statement separado por ";"
+    const statements = sql.split(';').map((s) => s.trim()).filter(Boolean);
+    for (const statement of statements) {
+      await db.execute(statement as never);
+    }
+
+    // Registra migration como aplicada
+    await db.insert(moduleMigrations).values({
+      moduleSlug: slug,
+      migrationName: file,
+    });
+
+    console.log(`Migration do módulo "${slug}" aplicada: ${file}`);
+  }
+}
 
 // Carrega e registra um módulo a partir de um arquivo ZIP
 export async function loadModuleFromZip(zipPath: string) {
@@ -58,6 +107,9 @@ export async function loadModuleFromZip(zipPath: string) {
     } as never);
   }
 
+  // Roda migrations do módulo (se houver)
+  await runModuleMigrations(slug, modulePath);
+
   return { slug, name: manifest.name, version: manifest.version, installed: true };
 }
 
@@ -83,14 +135,14 @@ export async function loadInstalledModules() {
           active: true,
           type: 'installed',
         };
-        await db.insert(modules).values(row as never).onConflictDoUpdate({
-          target: modules.slug,
-          set: {
-            name: manifest.name,
-            version: manifest.version,
-            updatedAt: new Date(),
-          } as never,
+        await upsert(modules, row, modules.slug, {
+          name: manifest.name,
+          version: manifest.version,
+          updatedAt: new Date(),
         });
+
+        // Roda migrations pendentes do módulo ao iniciar
+        await runModuleMigrations(slug, path.join(MODULES_STORAGE_PATH, slug));
       } catch {
         console.warn(`Aviso: não foi possível carregar módulo "${slug}"`);
       }

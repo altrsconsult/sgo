@@ -1,13 +1,15 @@
 # stack.yml — Deploy Portainer / Docker Swarm + Traefik
 #
+# Quando usar: produção em Portainer (ou Swarm) com Traefik já instalado.
+# Sem Traefik? Use Docker Compose com docker-compose.prod.yml — ver docs/guides/DEPLOY.md.
+#
 # Pré-requisitos no servidor:
 #   1. Rede externa: docker network create --driver overlay traefik-public
 #   2. Traefik já rodando com entrypoints 'web' (80) e 'websecure' (443)
 #   3. Stack do PostgreSQL OU usar o serviço chassi-db abaixo (bind volume)
 #
-# Deploy via Portainer: importar este arquivo como stack, editar variáveis de ambiente.
-# Deploy via CLI:
-#   docker stack deploy -c stack.yml sgo-cliente-a
+# Deploy via Portainer: Stacks → Add stack → colar este arquivo, editar variáveis (DOMAIN, JWT_SECRET, POSTGRES_PASSWORD).
+# Deploy via CLI: docker stack deploy -c stack.yml sgo-cliente-a
 
 version: "3.9"
 

@@ -89,6 +89,61 @@ const ModuleManifestSchema = z.object({
 
 ---
 
+## Migrations por Módulo
+
+Módulos podem incluir migrations SQL para criar ou alterar tabelas no banco do chassi. O chassi aplica as migrations automaticamente ao instalar ou atualizar o módulo, e ao iniciar o servidor.
+
+### Convenção de pastas no ZIP
+
+```
+meu-modulo.zip
+  manifest.json
+  dist/           ← assets do frontend
+  server/         ← backend do módulo (opcional)
+  migrations/
+    pg/
+      0001_create_leads.sql
+      0002_add_status_column.sql
+    mysql/
+      0001_create_leads.sql
+      0002_add_status_column.sql
+```
+
+- A pasta `migrations/pg/` contém SQL para PostgreSQL.
+- A pasta `migrations/mysql/` contém SQL para MySQL.
+- O chassi detecta o dialeto ativo e aplica apenas a pasta correspondente.
+- Arquivos são aplicados em **ordem alfabética** (use prefixo numérico: `0001_`, `0002_`, etc.).
+
+### Controle de migrations aplicadas
+
+O chassi mantém a tabela `module_migrations` no banco:
+
+| Coluna | Tipo | Descrição |
+| ------ | ---- | --------- |
+| `id` | int | PK auto-increment |
+| `module_slug` | text | Slug do módulo |
+| `migration_name` | text | Nome do arquivo SQL |
+| `applied_at` | timestamp | Data de aplicação |
+
+Migrations já registradas nessa tabela **não são reaplicadas**, garantindo idempotência.
+
+### Exemplo de migration SQL
+
+```sql
+-- 0001_create_leads.sql
+CREATE TABLE IF NOT EXISTS leads (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT,
+  status TEXT DEFAULT 'new',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+> **Atenção:** use `IF NOT EXISTS` e operações idempotentes sempre que possível. Evite `DROP TABLE` sem condição.
+
+---
+
 ## Slugs Reservados
 
 Os seguintes slugs estão reservados pelo chassi e não podem ser usados por módulos:

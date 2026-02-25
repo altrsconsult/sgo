@@ -1,0 +1,77 @@
+# Dependabot: atualizações de dependências e alertas de segurança
+# Docs: https://docs.github.com/en/code-security/dependabot
+version: 2
+updates:
+  # npm/pnpm na raiz
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Backend
+  - package-ecosystem: "npm"
+    directory: "/chassi/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "chassi"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Frontend
+  - package-ecosystem: "npm"
+    directory: "/chassi/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "chassi"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Packages
+  - package-ecosystem: "npm"
+    directory: "/packages/ui"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "packages"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/sdk"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "packages"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "chore(ci)"
+
+  # Docker (Dockerfile.backend e .frontend)
+  - package-ecosystem: "docker"
+    directory: "/chassi"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "chassi"]
+    commit-message:
+      prefix: "chore(docker)"

@@ -1,10 +1,12 @@
 {
   "name": "sgo",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "setup:modules-lab": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-modules-lab.ps1",
     "dev": "pnpm --filter @sgo/chassi-frontend dev",
     "build:chassi": "pnpm --filter @sgo/sdk build && pnpm --filter @sgo/chassi-frontend build && pnpm --filter @sgo/chassi-backend build",
+    "build:node": "pnpm --filter @sgo/sdk build && pnpm --filter @sgo/chassi-frontend build && node -e \"const fs=require('fs');fs.cpSync('chassi/frontend/dist','chassi/backend/public',{recursive:true});\" && pnpm --filter @sgo/chassi-backend build",
     "docker:up": "docker compose up",
     "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up"
   },

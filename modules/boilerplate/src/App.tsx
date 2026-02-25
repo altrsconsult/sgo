@@ -1,4 +1,5 @@
 import React from 'react';
+import { Package } from 'lucide-react';
 import type { ModuleContext } from '@sgo/sdk';
 
 interface AppProps {
@@ -6,21 +7,22 @@ interface AppProps {
 }
 
 /**
- * Componente principal do módulo — renderizado dentro do layout do chassi.
- * Recebe o ModuleContext como prop quando carregado pelo chassi.
+ * Componente principal do módulo boilerplate.
+ * Tela de estado vazio simples — substitua pelo conteúdo real do seu módulo.
  */
-export default function App({ context }: AppProps) {
+export default function App({ context: _context }: AppProps) {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-2">Boilerplate Module</h1>
-      <p className="text-muted-foreground">
-        Substitua este componente com a lógica do seu módulo.
-      </p>
-      {context && (
-        <pre className="mt-4 p-4 bg-muted rounded text-xs overflow-auto">
-          {JSON.stringify(context, null, 2)}
-        </pre>
-      )}
+    <div className="module-root">
+      <div className="module-empty">
+        <div className="module-empty-icon">
+          <Package className="module-empty-icon-svg" />
+        </div>
+        <h2 className="module-empty-title">Nenhum item ainda</h2>
+        <p className="module-empty-desc">
+          Este módulo ainda não possui dados. Substitua este componente
+          pela lógica do seu módulo.
+        </p>
+      </div>
     </div>
   );
 }

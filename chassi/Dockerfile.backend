@@ -18,9 +18,10 @@ RUN pnpm --filter @sgo/chassi-backend build
 FROM node:20-alpine
 WORKDIR /app
 
-# Copia dist do backend, migrações e SDK (para file: no package.json)
+# Copia dist do backend, migrações (pg e mysql) e SDK
 COPY --from=builder /app/chassi/backend/dist ./dist
-COPY --from=builder /app/chassi/backend/src/db/migrations ./dist/db/migrations
+COPY --from=builder /app/chassi/backend/src/db/migrations/pg    ./dist/db/migrations/pg
+COPY --from=builder /app/chassi/backend/src/db/migrations/mysql ./dist/db/migrations/mysql
 COPY --from=builder /app/packages/sdk/package.json ./sdk/package.json
 COPY --from=builder /app/packages/sdk/dist ./sdk/dist
 

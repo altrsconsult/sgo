@@ -32,7 +32,8 @@ new-sgo/
 │   ├── frontend/          # React (placeholder)
 │   └── backend/           # Hono (placeholder)
 ├── modules/
-│   └── boilerplate/       # Template base para novos módulos
+│   ├── boilerplate/       # Template base para novos módulos (mínimo + tela de estado vazio)
+│   └── demo/              # Showcase completo de componentes @sgo/ui (slug: sgo-demo, porta 5010)
 ├── packages/
 │   ├── ui/                # Design System (@sgo/ui — Shadcn/Tailwind)
 │   └── sdk/               # Tipos TypeScript + Zod schemas (@sgo/sdk)
@@ -53,7 +54,9 @@ new-sgo/
 | Área | Arquivo |
 |------|---------|
 | Arquitetura geral do sistema | [docs/architecture/SYSTEM-OVERVIEW.md](./architecture/SYSTEM-OVERVIEW.md) |
+| Deploy em produção (Compose, Portainer, Traefik) | [docs/guides/DEPLOY.md](./guides/DEPLOY.md) |
 | Criar um novo módulo | [docs/guides/CREATE-MODULE.md](./guides/CREATE-MODULE.md) |
+| MVP: validar módulos Edukaead (modules-lab) | [docs/guides/MODULES-LAB-MVP-VALIDACAO.md](./guides/MODULES-LAB-MVP-VALIDACAO.md) |
 | Schema do manifest.json | [docs/standards/MODULE-MANIFEST-SCHEMA.md](./standards/MODULE-MANIFEST-SCHEMA.md) |
 | Lab de módulos (fora do repo) e visão N2/Pro | [docs/architecture/MODULES-LAB-VISAO.md](./architecture/MODULES-LAB-VISAO.md) |
 
@@ -78,8 +81,8 @@ new-sgo/
 
 ### Infra
 - **Containers:** Docker multi-stage (amd64)
-- **Orquestração:** Docker Compose (dev) / Docker Swarm + Portainer (produção)
-- **Proxy:** Traefik (HTTPS automático via Let's Encrypt)
+- **Orquestração:** Docker Compose (dev e prod sem proxy) / Docker Swarm + Portainer (prod com Traefik). Proxy opcional (Traefik) ou único ponto de entrada (Nginx no frontend). Ver [docs/guides/DEPLOY.md](./guides/DEPLOY.md).
+- **Proxy:** Traefik (HTTPS automático via Let's Encrypt) quando usado; ou apenas frontend:80 com Nginx interno.
 - **Registry:** `ghcr.io/altrsconsult/`
 - **CI/CD:** GitHub Actions com path filters
 

@@ -158,19 +158,36 @@ export default function App({ context }: AppProps) {
 
 ## Empacotando para Distribuição
 
+Use o script `build:zip` — ele faz o build e gera o ZIP automaticamente:
+
 ```bash
-pnpm --filter @sgo/module-meu-modulo build
+pnpm --filter @sgo/module-meu-modulo build:zip
 ```
 
-O build gera `modules/meu-modulo/dist/`.
+O ZIP gerado (`meu-modulo-v1.0.0.zip`) inclui:
+- `dist/` — frontend buildado
+- `manifest.json` — contrato do módulo
+- `migrations/` — migrations SQL por dialeto (se existir)
 
-Para criar o ZIP de instalação:
-```bash
-cd modules/meu-modulo
-zip -r meu-modulo-v1.0.0.zip dist/ manifest.json
-```
+> **Windows sem `zip` nativo:** o script usa PowerShell como fallback. Para melhor compatibilidade, use Git Bash ou WSL.
 
 Para instalar em uma instância de chassi:
-- Via UI: Configurações → Módulos → Upload ZIP
+- Via UI: Admin → Módulos → Upload ZIP
 - Via API: `POST /api/upload-module` com o arquivo em `multipart/form-data`
+- Via link: `POST /api/install-from-link` com a URL pública do ZIP
 - Via Nexus: instala remotamente em N instâncias simultaneamente
+
+### Migrations no módulo (opcional)
+
+Se o módulo precisar de tabelas próprias no banco do chassi, crie a pasta `migrations/` com SQL por dialeto:
+
+```
+meu-modulo/
+  migrations/
+    pg/
+      0001_create_tabela.sql
+    mysql/
+      0001_create_tabela.sql
+```
+
+O chassi aplica as migrations automaticamente ao instalar o módulo. Ver [MODULE-MANIFEST-SCHEMA.md](../standards/MODULE-MANIFEST-SCHEMA.md) para detalhes.

@@ -1,0 +1,90 @@
+[
+  {
+    "id": "1",
+    "nome": "Ana Beatriz Ferreira",
+    "email": "ana.ferreira@email.com",
+    "status": "ativo",
+    "categoria": "Premium",
+    "valor": 1250.00,
+    "data": "2025-01-15",
+    "responsavel": "Carlos M.",
+    "progresso": 85
+  },
+  {
+    "id": "2",
+    "nome": "Rafael Souza",
+    "email": "rafael.souza@empresa.com",
+    "status": "pendente",
+    "categoria": "Básico",
+    "valor": 490.00,
+    "data": "2025-01-18",
+    "responsavel": "Juliana P.",
+    "progresso": 40
+  },
+  {
+    "id": "3",
+    "nome": "Mariana Costa",
+    "email": "mariana.costa@corp.com.br",
+    "status": "ativo",
+    "categoria": "Enterprise",
+    "valor": 3800.00,
+    "data": "2025-01-20",
+    "responsavel": "Carlos M.",
+    "progresso": 100
+  },
+  {
+    "id": "4",
+    "nome": "Lucas Andrade",
+    "email": "lucas.andrade@startup.io",
+    "status": "inativo",
+    "categoria": "Básico",
+    "valor": 290.00,
+    "data": "2025-01-22",
+    "responsavel": "Fernanda L.",
+    "progresso": 10
+  },
+  {
+    "id": "5",
+    "nome": "Camila Rocha",
+    "email": "camila.rocha@agencia.com",
+    "status": "ativo",
+    "categoria": "Premium",
+    "valor": 1800.00,
+    "data": "2025-01-25",
+    "responsavel": "Juliana P.",
+    "progresso": 72
+  },
+  {
+    "id": "6",
+    "nome": "Pedro Henrique Lima",
+    "email": "pedro.lima@consultoria.com",
+    "status": "pendente",
+    "categoria": "Enterprise",
+    "valor": 5200.00,
+    "data": "2025-01-28",
+    "responsavel": "Fernanda L.",
+    "progresso": 55
+  },
+  {
+    "id": "7",
+    "nome": "Isabela Martins",
+    "email": "isabela.martins@tech.com",
+    "status": "ativo",
+    "categoria": "Premium",
+    "valor": 2100.00,
+    "data": "2025-02-01",
+    "responsavel": "Carlos M.",
+    "progresso": 90
+  },
+  {
+    "id": "8",
+    "nome": "Thiago Nascimento",
+    "email": "thiago.n@freelancer.dev",
+    "status": "inativo",
+    "categoria": "Básico",
+    "valor": 390.00,
+    "data": "2025-02-03",
+    "responsavel": "Juliana P.",
+    "progresso": 5
+  }
+]

@@ -1,0 +1,183 @@
+name: Release
+
+# Dispara ao criar uma tag versionada (ex.: v1.0.0, v2.3.1)
+# Gera: imagens Docker versionadas no ghcr.io + ZIP buildado para deploy Node.js
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  ORG: altrsconsult
+
+jobs:
+  # ─── Job 1: Imagem Docker do backend com tag de versão ───────────────────────
+  docker-backend:
+    name: Docker — Chassi Backend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrair metadata Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build e Push (amd64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: chassi/Dockerfile.backend
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Job 2: Imagem Docker do frontend com tag de versão ──────────────────────
+  docker-frontend:
+    name: Docker — Chassi Frontend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrair metadata Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build e Push (amd64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: chassi/Dockerfile.frontend
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Job 3: ZIP Node.js para deploy em Hostinger e similares ─────────────────
+  node-zip:
+    name: ZIP — Node.js Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # necessário para criar/atualizar o GitHub Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Node.js (SDK + Frontend + Backend + copia public/)
+        run: pnpm build:node
+
+      - name: Instalar dependências de produção do backend
+        working-directory: chassi/backend
+        run: |
+          # Substitui workspace:* pelo caminho relativo para npm install funcionar fora do workspace
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.dependencies['@sgo/sdk'] = 'file:./sdk';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+          # Copia o SDK buildado para dentro da pasta de deploy
+          mkdir -p sdk
+          cp -r ../../packages/sdk/dist ./sdk/dist
+          cp ../../packages/sdk/package.json ./sdk/package.json
+          npm install --omit=dev --ignore-scripts
+
+      - name: Montar estrutura do ZIP
+        run: |
+          mkdir -p sgo-node-release
+          # Backend compilado
+          cp -r chassi/backend/dist       sgo-node-release/dist
+          # Frontend buildado (servido como estático pelo backend)
+          cp -r chassi/backend/public     sgo-node-release/public
+          # SDK como dependência local
+          cp -r chassi/backend/sdk        sgo-node-release/sdk
+          # node_modules de produção
+          cp -r chassi/backend/node_modules sgo-node-release/node_modules
+          # package.json já ajustado
+          cp    chassi/backend/package.json sgo-node-release/package.json
+          # Referências de configuração
+          cp    .env.example               sgo-node-release/.env.example
+          cp    docs/guides/README-HOSTINGER.md sgo-node-release/README.md
+
+      - name: Criar ZIP
+        run: |
+          TAG=${GITHUB_REF_NAME}
+          zip -r "sgo-node-${TAG}.zip" sgo-node-release/
+          echo "ZIP_NAME=sgo-node-${TAG}.zip" >> $GITHUB_ENV
+
+      - name: Criar GitHub Release e anexar ZIP
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "SGO ${{ github.ref_name }}"
+          body: |
+            ## SGO ${{ github.ref_name }}
+
+            ### Imagens Docker
+            ```
+            ghcr.io/${{ env.ORG }}/chassi-backend:${{ github.ref_name }}
+            ghcr.io/${{ env.ORG }}/chassi-frontend:${{ github.ref_name }}
+            ```
+
+            ### Deploy Node.js (Hostinger, Railway, etc.)
+            Baixe o arquivo `sgo-node-${{ github.ref_name }}.zip`, extraia e siga o `README.md` incluído.
+
+            **Start command:** `node dist/index.js`
+            **Variáveis obrigatórias:** `DATABASE_URL`, `JWT_SECRET`, `SERVE_STATIC=true`
+
+            ### Deploy Docker (VPS, Coolify, Portainer)
+            Consulte [docs/guides/DEPLOY.md](https://github.com/${{ github.repository }}/blob/main/docs/guides/DEPLOY.md).
+          files: ${{ env.ZIP_NAME }}
+          generate_release_notes: true
