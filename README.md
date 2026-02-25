@@ -1,48 +1,118 @@
-# SGO — Sistema de Gestão Operacional
+<div align="center">
 
-**Tags:** `open-source` `self-hosted` `typescript` `react` `nodejs` `micro-empresas` `gestão` `whitelabel` `module-federation` `lgpd` `docker`
+<!-- BANNER ─────────────────────────────────────────────────────────────────
+  Adicione docs/assets/banner.png para ativar o cabeçalho visual.
+  Dimensões ideais: 1280 × 400 px | Ferramentas: Canva, Figma, screenshot do sistema.
+  Quando o arquivo estiver pronto, descomente a linha abaixo:
+  <img src="docs/assets/banner.png" alt="SGO — Sistema de Gestão Operacional" width="100%"/>
+──────────────────────────────────────────────────────────────────────────── -->
 
-Plataforma **open-source** de gestão para micro empresas: **chassi pronto** (autenticação, usuários, permissões, whitelabel) e **módulos de negócio** que você adiciona no seu ritmo. Self-hosted, sem lock-in — o sistema fica no seu servidor, sob sua marca. Ideal para integradores que entregam solução completa ao cliente e para empresas que não querem depender de assinatura para manter o sistema.
+<h1>SGO — Sistema de Gestão Operacional</h1>
 
-- **Para quem implanta:** sistema profissional e validado, que passa a ser do cliente após a implantação; documentação de conformidade (LGPD/GDPR, acessibilidade, processos) para apoiar vendas e auditorias.
-- **Para devs e integradores:** base documentada, Module Federation, guias para criar módulos (incluindo uso com IA). Contribuições e **⭐ estrelas** são bem-vindas — cada uma ajuda outros a descobrirem o projeto.
+<p><em>Seu sistema. Sua marca. Seus dados. Para sempre.</em></p>
 
-Projeto sólido: build attestado, SBOM, processos documentados, preparado para LGPD/GDPR e acessibilidade; **ESG** (sustentabilidade, stack enxuta, self-hosted) e **conforto ocular** (temas claro/escuro, contraste WCAG, temas custom).
-
-> **Gostou do projeto?** [Deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers) no GitHub — ajuda outras pessoas a descobrirem o SGO. Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
-
-## Selos e status
-
-As badges abaixo atestam segurança, conformidade e experiência de uso. **Certificado OpenSSF Best Practices (Baseline 3)** — [Ver certificação →](https://www.bestpractices.dev/projects/12038)
+<p>
+  Plataforma <strong>open-source</strong> de gestão com chassi pronto.<br/>
+  Autenticação, usuários, permissões e painel admin funcionam no primeiro deploy.<br/>
+  Você encaixa módulos; o cliente recebe o sistema — <strong>sem lock-in, sem assinatura obrigatória.</strong>
+</p>
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
-
-[![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker Build](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml)
 [![Security](https://github.com/altrsconsult/sgo/actions/workflows/security.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
 [![Release](https://img.shields.io/github/v/release/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/releases)
-[![Language](https://img.shields.io/github/languages/top/altrsconsult/sgo)](https://github.com/altrsconsult/sgo)
-[![Issues](https://img.shields.io/github/issues/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/issues)
-[![Last commit](https://img.shields.io/github/last-commit/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/commits)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![LGPD | GDPR](https://img.shields.io/badge/LGPD%20%7C%20GDPR-ready-blue)](docs/compliance/ADEQUACAO-PRIVACIDADE.md)
-[![WCAG 2.1](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-informational)](docs/ux/ACCESSIBILITY-CHECKLIST.md)
-[![Self-hosted](https://img.shields.io/badge/Self--hosted-yes-green)](docs/sustainability/SUSTAINABILITY.md)
-[![Build attestation](https://img.shields.io/badge/Build-attested-blue)](docs/security/BUILD-AND-PROVENANCE.md)
-[![SBOM](https://img.shields.io/badge/SBOM-available-blue)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
-[![Processes](https://img.shields.io/badge/Processes-documented-blue)](docs/processes/README.md)
-[![ESG](https://img.shields.io/badge/ESG-ready-informational)](docs/sustainability/SUSTAINABILITY.md)
-[![Conforto ocular](https://img.shields.io/badge/Conforto%20ocular-temas%20light%20%7C%20dark-informational)](docs/ux/CONFORTO-VISUAL.md)
+<p>
+  <a href="https://sgo.altrs.net">🌐 Site Oficial</a> &nbsp;·&nbsp;
+  <a href="https://sgo.altrs.net/devs">Para Integradores</a> &nbsp;·&nbsp;
+  <a href="docs/AGENTS.md">Docs para IA</a> &nbsp;·&nbsp;
+  <a href="https://github.com/altrsconsult/sgo/stargazers">⭐ Deixe uma estrela</a>
+</p>
+
+</div>
 
 ---
 
-## Quick start
+## Por que o SGO existe
+
+O mercado de sistemas de gestão cobra assinatura mensal pelo **direito de usar** — quando você para de pagar, o sistema some junto com os dados. O SGO inverte essa lógica:
+
+> **Você contrata o trabalho de implantação. O sistema fica com o cliente, para sempre — independente do que aconteça depois.**
+
+**Três princípios que guiam o projeto:**
+
+| # | Princípio | O que significa |
+|---|-----------|-----------------|
+| 01 | **Propriedade Total** | Após a implantação, sistema e dados pertencem ao negócio do cliente. Sem dependência de terceiros. |
+| 02 | **Pronto para Operar** | Autenticação, usuários, permissões e painel admin funcionam antes de escrever uma linha de módulo. O integrador foca no que é vertical do cliente. |
+| 03 | **Cresce Sem Reescrever** | Cada funcionalidade nova entra como módulo independente via Module Federation. O que já funciona continua intacto — sem refatoração cara. |
+
+---
+
+## Screenshots & Demo
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+  SCREENSHOTS: adicione imagens reais quando disponíveis.
+  Sugestão de capturas: painel principal, módulo ativo, tela mobile, dark mode.
+
+  Para vídeo demo no YouTube, substitua VIDEO_ID e descomente:
+  [![Demo SGO](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+
+  Para galeria de imagens 2×2, descomente e preencha:
+  <table>
+    <tr>
+      <td><img src="docs/assets/screen-dashboard.png" alt="Dashboard" width="400"/></td>
+      <td><img src="docs/assets/screen-module.png" alt="Módulo ativo" width="400"/></td>
+    </tr>
+    <tr>
+      <td><img src="docs/assets/screen-mobile.png" alt="Mobile" width="400"/></td>
+      <td><img src="docs/assets/screen-darkmode.png" alt="Dark Mode" width="400"/></td>
+    </tr>
+  </table>
+════════════════════════════════════════════════════════════════════════ -->
+
+> 📸 **Screenshots em breve** — UI em finalização. [Acompanhe o repositório](https://github.com/altrsconsult/sgo/stargazers) para ser notificado quando os assets forem publicados.
+
+---
+
+## Para quem é o SGO?
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🧩 Integradores e Devs
+
+Você já entrega sistemas open-source ao cliente — omnichannel, automação, agentes de IA — mas cada ferramenta tem seu painel. O SGO é a **camada de gestão central** que faltava.
+
+**O que você ganha:**
+- Base pronta: não escreva auth nem controle de acesso do zero
+- Whitelabel nativo: cada cliente com nome, logo e cores próprias
+- Module Federation: seus módulos entram sem tocar no chassi
+- IA-friendly: [`AGENTS.md`](docs/AGENTS.md) descreve a arquitetura para LLMs; o agente gera o boilerplate, você revisa e entrega
+
+</td>
+<td width="50%" valign="top">
+
+### 🏢 Empresas e Implantadores
+
+Sistema profissional e validado, que passa a pertencer ao cliente após a implantação. Documentação de conformidade (LGPD/GDPR, acessibilidade, processos) pronta para apoiar vendas e auditorias corporativas.
+
+**O que o cliente recebe:**
+- Sistema rodando no servidor dele
+- Dados sob controle próprio
+- Sem assinatura mensal obrigatória para continuar usando
+- Módulos novos entram sem reescrever o que já funciona
+
+</td>
+</tr>
+</table>
+
+---
+
+## Quick Start
 
 ```bash
 git clone https://github.com/altrsconsult/sgo.git
@@ -51,57 +121,122 @@ pnpm install
 docker compose up -d
 ```
 
-Acesse `http://localhost:3000`. O wizard de instalação aparece no primeiro acesso.
+Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro acesso.
 
-- **Desenvolvimento com módulos:** [docs/guides/CREATE-MODULE.md](docs/guides/CREATE-MODULE.md)
-- **Deploy em produção:** [docs/guides/DEPLOY.md](docs/guides/DEPLOY.md)
-- **Arquitetura:** [docs/architecture/SYSTEM-OVERVIEW.md](docs/architecture/SYSTEM-OVERVIEW.md)
+| O que fazer a seguir | Link |
+|---|---|
+| Criar seu primeiro módulo | [docs/guides/CREATE-MODULE.md](docs/guides/CREATE-MODULE.md) |
+| Deploy em produção | [docs/guides/DEPLOY.md](docs/guides/DEPLOY.md) |
+| Visão geral da arquitetura | [docs/architecture/SYSTEM-OVERVIEW.md](docs/architecture/SYSTEM-OVERVIEW.md) |
+
+---
+
+## Stack Técnica
+
+| Camada | Tecnologia |
+|--------|-----------|
+| **Frontend** | React 19 · Vite 6 · Module Federation · Tailwind CSS · Shadcn UI (`@sgo/ui`) |
+| **Backend** | Hono · Drizzle ORM · PostgreSQL (ou MySQL) |
+| **Infra** | Docker · Docker Swarm · Traefik · GitHub Actions |
+| **Imagens** | `ghcr.io/altrsconsult/` — build com attestation Sigstore |
+
+---
+
+## Selos & Certificações
+
+> O SGO é um dos poucos projetos open-source nacionais com **[OpenSSF Best Practices Baseline 3](https://www.bestpractices.dev/projects/12038)** — verificação independente de segurança, build, processos e governança. [Ver certificação →](https://www.bestpractices.dev/projects/12038)
+
+### 🔐 Segurança & Conformidade
+
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
+[![LGPD | GDPR](https://img.shields.io/badge/LGPD%20%7C%20GDPR-ready-blue)](docs/compliance/ADEQUACAO-PRIVACIDADE.md)
+[![Build attestation](https://img.shields.io/badge/Build-attested-blue)](docs/security/BUILD-AND-PROVENANCE.md)
+[![SBOM](https://img.shields.io/badge/SBOM-available-blue)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
+[![Processes](https://img.shields.io/badge/Processes-documented-blue)](docs/processes/README.md)
+
+### ⚙️ CI/CD & Qualidade
+
+[![Docker Build](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml)
+[![Security](https://github.com/altrsconsult/sgo/actions/workflows/security.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+
+### 🎨 UX, ESG & Acessibilidade
+
+[![WCAG 2.1](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-informational)](docs/ux/ACCESSIBILITY-CHECKLIST.md)
+[![Conforto ocular](https://img.shields.io/badge/Conforto%20ocular-temas%20light%20%7C%20dark-informational)](docs/ux/CONFORTO-VISUAL.md)
+[![Self-hosted](https://img.shields.io/badge/Self--hosted-yes-green)](docs/sustainability/SUSTAINABILITY.md)
+[![ESG](https://img.shields.io/badge/ESG-ready-informational)](docs/sustainability/SUSTAINABILITY.md)
+
+### 📊 Status do Projeto
+
+[![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
+[![Release](https://img.shields.io/github/v/release/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/releases)
+[![Last commit](https://img.shields.io/github/last-commit/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/commits)
+[![Issues](https://img.shields.io/github/issues/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/issues)
+[![Language](https://img.shields.io/github/languages/top/altrsconsult/sgo)](https://github.com/altrsconsult/sgo)
+
+---
 
 ## Documentação
 
-| O quê | Onde |
-|-------|------|
-| Visão geral e convenções (incl. para agentes de IA) | [docs/AGENTS.md](docs/AGENTS.md) |
+| Tópico | Link |
+|--------|------|
+| Visão geral e contexto para agentes de IA | [docs/AGENTS.md](docs/AGENTS.md) |
 | Criar um módulo | [docs/guides/CREATE-MODULE.md](docs/guides/CREATE-MODULE.md) |
 | Deploy (Docker, Portainer, Node) | [docs/guides/DEPLOY.md](docs/guides/DEPLOY.md) |
 | Schema do manifest de módulos | [docs/standards/MODULE-MANIFEST-SCHEMA.md](docs/standards/MODULE-MANIFEST-SCHEMA.md) |
 | Segurança e proveniência de build | [docs/security/SECURITY.md](docs/security/SECURITY.md) · [BUILD-AND-PROVENANCE.md](docs/security/BUILD-AND-PROVENANCE.md) |
-| Adequação à privacidade (LGPD/GDPR) | [docs/compliance/ADEQUACAO-PRIVACIDADE.md](docs/compliance/ADEQUACAO-PRIVACIDADE.md) |
+| Adequação LGPD/GDPR | [docs/compliance/ADEQUACAO-PRIVACIDADE.md](docs/compliance/ADEQUACAO-PRIVACIDADE.md) |
 | Processos (desenvolvimento, release) | [docs/processes/README.md](docs/processes/README.md) |
 | Governança e política de testes | [docs/governance/README.md](docs/governance/README.md) |
-| Acessibilidade (WCAG) | [docs/ux/ACCESSIBILITY-CHECKLIST.md](docs/ux/ACCESSIBILITY-CHECKLIST.md) |
-| Conforto visual / temas (conforto ocular) | [docs/ux/CONFORTO-VISUAL.md](docs/ux/CONFORTO-VISUAL.md) |
-| Sustentabilidade e eficiência | [docs/sustainability/SUSTAINABILITY.md](docs/sustainability/SUSTAINABILITY.md) |
-| OpenSSF Best Practices (mapeamento) | [docs/standards/OPENSSF-BEST-PRACTICES.md](docs/standards/OPENSSF-BEST-PRACTICES.md) |
-| Textos para LP / marketing (claims e links) | [docs/marketing/TEXTOS-LP-CLAIMS.md](docs/marketing/TEXTOS-LP-CLAIMS.md) |
-
-## Confiança e conformidade
-
-- **Certificado OpenSSF Best Practices (Baseline 3)** — [Ver selo e critérios](https://www.bestpractices.dev/projects/12038); [mapeamento no repo](docs/standards/OPENSSF-BEST-PRACTICES.md).
-- **Build verificável** — imagens Docker com attestation (Sigstore); [proveniência](docs/security/BUILD-AND-PROVENANCE.md).
-- **Preparado para LGPD/GDPR** — [checklist](docs/compliance/LGPD-GDPR-CHECKLIST.md) e [adequação](docs/compliance/ADEQUACAO-PRIVACIDADE.md) documentadas.
-- **Processos documentados** — [desenvolvimento, release, segurança](docs/processes/README.md) e [governança](docs/governance/README.md).
-- **Acessibilidade** — critérios [WCAG 2.1 AA](docs/ux/ACCESSIBILITY-CHECKLIST.md); checagem axe no CI.
-- **Conforto ocular** — [temas claro/escuro e personalizáveis](docs/ux/CONFORTO-VISUAL.md), contraste WCAG; menos fadiga visual em uso prolongado.
-- **Sustentabilidade (ESG)** — [stack enxuto, self-hosted, SCI](docs/sustainability/SUSTAINABILITY.md).
-- **Política de testes** — [TESTING-POLICY](docs/governance/TESTING-POLICY.md); testes no CI.
-
-## Stack
-
-- **Frontend:** React 19, Vite 6, Module Federation, Tailwind + Shadcn via `@sgo/ui`
-- **Backend:** Hono, Drizzle ORM, PostgreSQL (ou MySQL)
-- **Infra:** Docker; imagens em `ghcr.io/altrsconsult/`
-
-## Contribuições
-
-**Quer participar?** Correções de bugs, docs, novos módulos ou ideias para o chassi — tudo conta. Se o SGO te ajudou, considere [dar uma estrela ⭐](https://github.com/altrsconsult/sgo/stargazers) ou abrir um PR; cada contribuição ajuda outros devs e integradores a encontrarem e confiarem no projeto. Ambiente inclusivo e respeitoso; veja [CONTRIBUTING.md](CONTRIBUTING.md) para começar.
-
-## Licença
-
-Este projeto está sob a **Licença MIT**. Uso comercial é permitido; é necessário manter o aviso de copyright e o texto da licença. Para uma tradução em português (apenas informacional), veja [docs/legal/LICENSE-pt-BR.md](docs/legal/LICENSE-pt-BR.md).
-
-- **Texto oficial (inglês):** [LICENSE](LICENSE)
+| Acessibilidade WCAG | [docs/ux/ACCESSIBILITY-CHECKLIST.md](docs/ux/ACCESSIBILITY-CHECKLIST.md) |
+| Conforto visual / temas | [docs/ux/CONFORTO-VISUAL.md](docs/ux/CONFORTO-VISUAL.md) |
+| Sustentabilidade (ESG/SCI) | [docs/sustainability/SUSTAINABILITY.md](docs/sustainability/SUSTAINABILITY.md) |
+| OpenSSF Best Practices — mapeamento | [docs/standards/OPENSSF-BEST-PRACTICES.md](docs/standards/OPENSSF-BEST-PRACTICES.md) |
+| Textos de marketing (claims e evidências) | [docs/marketing/TEXTOS-LP-CLAIMS.md](docs/marketing/TEXTOS-LP-CLAIMS.md) |
 
 ---
 
-**ALTRS Consultoria** — [sgo.altrs.net](https://sgo.altrs.net) · [GitHub](https://github.com/altrsconsult/sgo)
+## Confiança e Conformidade
+
+- **[OpenSSF Best Practices Baseline 3](https://www.bestpractices.dev/projects/12038)** — certificação independente de documentação, segurança, build e governança; [mapeamento completo no repo](docs/standards/OPENSSF-BEST-PRACTICES.md).
+- **Build verificável** — imagens Docker com attestation Sigstore, SBOM disponível; [proveniência](docs/security/BUILD-AND-PROVENANCE.md).
+- **Preparado para LGPD/GDPR** — [checklist](docs/compliance/LGPD-GDPR-CHECKLIST.md) e [adequação](docs/compliance/ADEQUACAO-PRIVACIDADE.md) documentadas.
+- **Processos documentados** — [desenvolvimento, release, segurança](docs/processes/README.md) e [governança](docs/governance/README.md).
+- **Acessibilidade** — [WCAG 2.1 AA](docs/ux/ACCESSIBILITY-CHECKLIST.md); checagem `axe` no CI.
+- **Conforto ocular** — [temas claro/escuro e personalizáveis](docs/ux/CONFORTO-VISUAL.md), contraste WCAG.
+- **Sustentabilidade (ESG)** — [stack enxuto, self-hosted, metodologia SCI](docs/sustainability/SUSTAINABILITY.md).
+- **Política de testes** — [TESTING-POLICY](docs/governance/TESTING-POLICY.md); testes no CI.
+
+---
+
+## Contribuições
+
+O SGO é construído pela comunidade. Quer participar?
+
+- 🐛 **Bugs e melhorias** — [abra uma issue](https://github.com/altrsconsult/sgo/issues)
+- 🧩 **Módulos e chassi** — veja [CONTRIBUTING.md](CONTRIBUTING.md)
+- ⭐ **Se o SGO te ajudou** — [deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers); ajuda outros devs a descobrirem o projeto
+
+Ambiente inclusivo e respeitoso.
+
+---
+
+## Licença
+
+**MIT** — uso comercial permitido; mantenha o aviso de copyright.
+
+- Texto oficial (inglês): [LICENSE](LICENSE)
+- Tradução informacional (PT-BR): [docs/legal/LICENSE-pt-BR.md](docs/legal/LICENSE-pt-BR.md)
+
+---
+
+<div align="center">
+
+**[ALTRS Consultoria](https://altrs.com.br)** &nbsp;·&nbsp; [sgo.altrs.net](https://sgo.altrs.net) &nbsp;·&nbsp; [contato@altrs.com.br](mailto:contato@altrs.com.br)
+
+*Feito com propósito. Código aberto. Sistema seu, para sempre.*
+
+</div>
