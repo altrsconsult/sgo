@@ -79,6 +79,44 @@ O mercado de sistemas de gestão cobra assinatura mensal pelo **direito de usar*
 
 ---
 
+## Selos & Certificações
+
+> **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** e **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — duas certificações voluntárias e independentes que avaliam segurança, build, processos e governança com critérios rigorosos da indústria. SGO está em roadmap para **Silver (89%)**. [Ver certificação Best Practices →](https://www.bestpractices.dev/projects/12038)
+
+### 🔐 Segurança & Conformidade
+
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
+[![OpenSSF Baseline](https://www.bestpractices.dev/projects/12038/baseline)](https://www.bestpractices.dev/projects/12038)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
+[![Build attestation](https://img.shields.io/badge/Build-attested-blue)](docs/security/BUILD-AND-PROVENANCE.md)
+[![SBOM](https://img.shields.io/badge/SBOM-available-blue)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
+[![Processes](https://img.shields.io/badge/Processes-documented-blue)](docs/processes/README.md)
+
+### ⚙️ CI/CD & Qualidade
+
+[![Docker Build](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml)
+[![Security](https://github.com/altrsconsult/sgo/actions/workflows/security.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
+
+### 🎨 UX, ESG & Acessibilidade
+
+[![WCAG 2.1](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-informational)](docs/ux/ACCESSIBILITY-CHECKLIST.md)
+[![LGPD](https://img.shields.io/badge/LGPD-ready-blue)](docs/compliance/ADEQUACAO-PRIVACIDADE.md)
+[![Conforto ocular](https://img.shields.io/badge/Conforto%20ocular-multi--tema-informational)](docs/ux/CONFORTO-VISUAL.md)
+[![Self-hosted](https://img.shields.io/badge/Self--hosted-yes-green)](docs/sustainability/SUSTAINABILITY.md)
+[![ESG](https://img.shields.io/badge/ESG-ready-informational)](docs/sustainability/SUSTAINABILITY.md)
+
+### 📊 Status do Projeto
+
+[![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
+[![Release](https://img.shields.io/github/v/release/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/releases)
+[![Last commit](https://img.shields.io/github/last-commit/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/commits)
+[![Issues](https://img.shields.io/github/issues/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/issues)
+[![Language](https://img.shields.io/github/languages/top/altrsconsult/sgo)](https://github.com/altrsconsult/sgo)
+
+---
+
 ## Para quem é o SGO?
 
 <table>
@@ -141,44 +179,6 @@ Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro 
 | **Backend** | Hono · Drizzle ORM · PostgreSQL (ou MySQL) |
 | **Infra** | Docker · Docker Swarm · Traefik · GitHub Actions |
 | **Imagens** | `ghcr.io/altrsconsult/` — build com attestation Sigstore |
-
----
-
-## Selos & Certificações
-
-> **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** e **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — duas certificações independentes que avaliam segurança, build, processos e governança com critérios rigorosos da indústria. SGO está em roadmap para **Silver (89%)**. [Ver certificação Best Practices →](https://www.bestpractices.dev/projects/12038)
-
-### 🔐 Segurança & Conformidade
-
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
-[![OpenSSF Baseline](https://www.bestpractices.dev/projects/12038/baseline)](https://www.bestpractices.dev/projects/12038)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
-[![LGPD | GDPR](https://img.shields.io/badge/LGPD%20%7C%20GDPR-ready-blue)](docs/compliance/ADEQUACAO-PRIVACIDADE.md)
-[![Build attestation](https://img.shields.io/badge/Build-attested-blue)](docs/security/BUILD-AND-PROVENANCE.md)
-[![SBOM](https://img.shields.io/badge/SBOM-available-blue)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
-[![Processes](https://img.shields.io/badge/Processes-documented-blue)](docs/processes/README.md)
-
-### ⚙️ CI/CD & Qualidade
-
-[![Docker Build](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml)
-[![Security](https://github.com/altrsconsult/sgo/actions/workflows/security.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
-[![Node](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org/)
-
-### 🎨 UX, ESG & Acessibilidade
-
-[![WCAG 2.1](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-informational)](docs/ux/ACCESSIBILITY-CHECKLIST.md)
-[![Conforto ocular](https://img.shields.io/badge/Conforto%20ocular-temas%20light%20%7C%20dark-informational)](docs/ux/CONFORTO-VISUAL.md)
-[![Self-hosted](https://img.shields.io/badge/Self--hosted-yes-green)](docs/sustainability/SUSTAINABILITY.md)
-[![ESG](https://img.shields.io/badge/ESG-ready-informational)](docs/sustainability/SUSTAINABILITY.md)
-
-### 📊 Status do Projeto
-
-[![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
-[![Release](https://img.shields.io/github/v/release/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/releases)
-[![Last commit](https://img.shields.io/github/last-commit/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/commits)
-[![Issues](https://img.shields.io/github/issues/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/issues)
-[![Language](https://img.shields.io/github/languages/top/altrsconsult/sgo)](https://github.com/altrsconsult/sgo)
 
 ---
 
