@@ -1,0 +1,23 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://github.com/altrsconsult/sgo/blob/main/docs/security/openvex.json",
+  "author": "ALTRS Consultoria",
+  "role": "Document Creator",
+  "timestamp": "2025-02-25T12:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2024-21626",
+        "description": "Vulnerability in runc (container runtime); container escape via crafted image. Often reported in Docker base images."
+      },
+      "products": [
+        { "@id": "pkg:docker/ghcr.io/altrsconsult/chassi-backend" },
+        { "@id": "pkg:docker/ghcr.io/altrsconsult/chassi-frontend" }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "status_notes": "Imagens oficiais do SGO não expõem o código path explorável; uso típico (app Node em container) não invoca o componente vulnerável da forma descrita no CVE."
+    }
+  ]
+}

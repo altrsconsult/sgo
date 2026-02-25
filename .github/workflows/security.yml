@@ -64,6 +64,20 @@ jobs:
           format: cyclonedx-json
           artifact-name: sbom-cyclonedx.json
 
+  vex:
+    name: VEX (OpenVEX)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar documento VEX
+        run: |
+          VEX="docs/security/openvex.json"
+          test -f "$VEX" || { echo "Arquivo VEX não encontrado: $VEX"; exit 1; }
+          jq -e '.["@context"] and .author and .timestamp and .version and .statements' "$VEX" > /dev/null || { echo "VEX inválido: campos obrigatórios (@context, author, timestamp, version, statements)"; exit 1; }
+          echo "OpenVEX document validado com sucesso."
+
   # Acessibilidade: axe no frontend buildado (violações críticas falham)
   accessibility:
     name: Acessibilidade (axe)

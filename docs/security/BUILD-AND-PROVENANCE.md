@@ -36,3 +36,13 @@ Cada push na branch principal que altere chassi ou packages dispara o build; as 
 A lista de dependências (SBOM) do projeto é gerada no CI e publicada como artefato do workflow de segurança. Formato: CycloneDX ou SPDX. Localização: artefatos do job correspondente no GitHub Actions (Actions → workflow run → Artifacts).
 
 Consultar o SBOM permite auditar a cadeia de suprimentos e verificar vulnerabilidades em dependências de forma padronizada.
+
+## VEX (Vulnerability Exploitability eXchange)
+
+O projeto mantém um documento **VEX** em formato OpenVEX para declarar quais vulnerabilidades (CVEs) encontradas em dependências ou em imagens Docker **não afetam** o SGO no contexto de uso oficial, com justificativa de não-explorabilidade.
+
+- **Arquivo:** [docs/security/openvex.json](openvex.json)
+- **Formato:** OpenVEX 0.2 (JSON-LD)
+- **Uso:** Cada CVE reportada pelo Trivy (ou por outros scanners) que for avaliada como não explorável no contexto do SGO deve ser registrada no VEX com status `not_affected` e uma das justificativas padronizadas (ex.: `vulnerable_code_not_in_execute_path`, `component_not_present`).
+
+Ao adicionar ou alterar declarações, atualize o campo `version` do documento e o `timestamp` (ou `last_updated`). O CI valida que o arquivo existe e está em JSON válido com a estrutura OpenVEX esperada.
