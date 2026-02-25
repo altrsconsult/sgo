@@ -189,6 +189,7 @@ Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro 
 | Visão geral e contexto para agentes de IA | [docs/AGENTS.md](docs/AGENTS.md) |
 | Criar um módulo | [docs/guides/CREATE-MODULE.md](docs/guides/CREATE-MODULE.md) |
 | Deploy (Docker, Portainer, Node) | [docs/guides/DEPLOY.md](docs/guides/DEPLOY.md) |
+| Branch protection e code review (Scorecard) | [docs/guides/BRANCH-PROTECTION.md](docs/guides/BRANCH-PROTECTION.md) |
 | Schema do manifest de módulos | [docs/standards/MODULE-MANIFEST-SCHEMA.md](docs/standards/MODULE-MANIFEST-SCHEMA.md) |
 | Segurança e proveniência de build | [docs/security/SECURITY.md](docs/security/SECURITY.md) · [BUILD-AND-PROVENANCE.md](docs/security/BUILD-AND-PROVENANCE.md) |
 | Adequação LGPD/GDPR | [docs/compliance/ADEQUACAO-PRIVACIDADE.md](docs/compliance/ADEQUACAO-PRIVACIDADE.md) |

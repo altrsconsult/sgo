@@ -23,6 +23,15 @@ export const users = pgTable('users', {
 /** Tipo do usuário (contexto de auth) */
 export type User = typeof users.$inferSelect;
 
+/** Tokens de ativação: link que o admin copia e envia; usuário define senha na primeira vez (sem SMTP) */
+export const userActivationTokens = pgTable('user_activation_tokens', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  token: text('token').notNull().unique(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const modules = pgTable('modules', {
   id: serial('id').primaryKey(),
   slug: text('slug').notNull().unique(),

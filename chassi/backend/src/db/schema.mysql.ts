@@ -23,6 +23,15 @@ export const users = mysqlTable('users', {
 /** Tipo do usuário (contexto de auth) */
 export type User = typeof users.$inferSelect;
 
+/** Tokens de ativação (link de convite — admin copia e envia) */
+export const userActivationTokens = mysqlTable('user_activation_tokens', {
+  id: int('id').autoincrement().primaryKey(),
+  userId: int('user_id').notNull(),
+  token: text('token').notNull().unique(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const modules = mysqlTable('modules', {
   id: int('id').autoincrement().primaryKey(),
   slug: text('slug').notNull().unique(),

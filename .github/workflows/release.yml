@@ -98,6 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # necessário para criar/atualizar o GitHub Release
+      id-token: write   # keyless signing (cosign) — Scorecard Signed-Releases
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -162,6 +163,22 @@ jobs:
           mkdir -p release-artifacts
           cp sgo-node-*.zip release-artifacts/
           find modules -maxdepth 2 -name '*.zip' -type f -exec cp {} release-artifacts/ \;
+          ls -la release-artifacts/
+
+      # Assinatura keyless (Sigstore) para Scorecard Signed-Releases
+      - name: Instalar cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: "v2.2.3"
+
+      - name: Assinar artefatos de release (cosign keyless)
+        env:
+          COSIGN_EXPERIMENTAL: "true"
+        run: |
+          for f in release-artifacts/*.zip; do
+            [ -f "$f" ] || continue
+            cosign sign-blob "$f" --bundle "${f}.sigstore.json" --yes
+          done
           ls -la release-artifacts/
 
       - name: Criar GitHub Release e anexar artefatos

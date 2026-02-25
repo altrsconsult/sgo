@@ -9,9 +9,9 @@ Se você encontrar uma vulnerabilidade de segurança no SGO, agradecemos que a r
 
 Não use issues públicas para vulnerabilidades ainda não corrigidas. Detalhes e compromissos de resposta em [docs/security/SECURITY.md](docs/security/SECURITY.md).
 
-## Atualizações de dependências
+## Atualizações de dependências e vulnerabilidades
 
-As dependências do repositório são monitoradas e atualizadas pelo **Dependabot** (configuração em [.github/dependabot.yml](.github/dependabot.yml)). PRs de atualização são abertos semanalmente; revise e mescle conforme a política do projeto.
+As dependências são monitoradas pelo **Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)). O CI executa `pnpm audit --audit-level=critical` no workflow [Security](.github/workflows/security.yml): o build falha se houver vulnerabilidades críticas. Vulnerabilidades high devem ser tratadas antes de releases; moderadas são acompanhadas via Dependabot e issues.
 
 ## Mais informações
 

@@ -24,4 +24,6 @@ export const env = {
   // Modo Node.js single-process: serve frontend estático pelo backend (ex.: Hostinger)
   serveStatic: process.env.SERVE_STATIC === 'true',
   staticPath: process.env.STATIC_PATH || './public',
+  // URL base da aplicação (para montar link de ativação; fallback: origem da requisição)
+  publicAppUrl: process.env.PUBLIC_APP_URL || null,
 };

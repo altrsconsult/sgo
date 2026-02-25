@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Search, UserCheck, UserX, Key, LogIn, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, UserCheck, UserX, Key, LogIn, Pencil, Trash2, Copy, Link2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotification } from "@/contexts/NotificationContext";
 import {
@@ -46,8 +46,8 @@ async function fetchUsers(): Promise<User[]> {
   return res.json();
 }
 
-// Cria usuário
-async function createUser(data: Partial<User> & { password: string }) {
+// Cria usuário (password opcional se invite: true)
+async function createUser(data: Partial<User> & { password?: string; invite?: boolean }) {
   const token = localStorage.getItem("sgo-token");
   const res = await fetch("/api/users", {
     method: "POST",
@@ -112,7 +112,10 @@ export function AdminUsersPage() {
     email: "",
     password: "",
     role: "user" as User["role"],
+    invite: false,
   });
+  // Link de ativação retornado após criar com convite (admin copia e envia)
+  const [lastActivationLink, setLastActivationLink] = useState<string | null>(null);
 
   // Query de usuários
   const { data: users = [], isLoading } = useQuery({
@@ -123,10 +126,15 @@ export function AdminUsersPage() {
   // Mutations
   const createMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
+    onSuccess: (data: User & { activationLink?: string }) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      success("Usuário criado com sucesso");
-      resetForm();
+      if (data.activationLink) {
+        setLastActivationLink(data.activationLink);
+        success("Usuário criado. Copie o link de ativação e envie ao usuário.");
+      } else {
+        success("Usuário criado com sucesso");
+        resetForm();
+      }
     },
     onError: (err: Error) => showError("Erro", err.message),
   });
@@ -165,12 +173,14 @@ export function AdminUsersPage() {
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
+    setLastActivationLink(null);
     setFormData({
       username: user.username,
       name: user.name,
       email: user.email,
       password: "",
       role: user.role,
+      invite: false,
     });
     setShowForm(true);
   };
@@ -184,7 +194,6 @@ export function AdminUsersPage() {
     e.preventDefault();
     
     if (editingUser) {
-      // Atualiza
       const data: any = {
         username: formData.username,
         name: formData.name,
@@ -194,15 +203,32 @@ export function AdminUsersPage() {
       if (formData.password) data.password = formData.password;
       updateMutation.mutate({ id: editingUser.id, data });
     } else {
-      // Cria
-      createMutation.mutate(formData);
+      const payload: any = {
+        username: formData.username,
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+      };
+      if (formData.invite) {
+        payload.invite = true;
+      } else {
+        payload.password = formData.password;
+      }
+      createMutation.mutate(payload);
     }
+  };
+
+  const copyActivationLink = () => {
+    if (!lastActivationLink) return;
+    navigator.clipboard.writeText(lastActivationLink);
+    success("Link copiado para a área de transferência.");
   };
 
   const resetForm = () => {
     setShowForm(false);
     setEditingUser(null);
-    setFormData({ username: "", name: "", email: "", password: "", role: "user" });
+    setLastActivationLink(null);
+    setFormData({ username: "", name: "", email: "", password: "", role: "user", invite: false });
   };
 
   // Filtra usuários
@@ -302,16 +328,32 @@ export function AdminUsersPage() {
                   required
                 />
               </div>
+              {!editingUser && (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="invite"
+                    checked={formData.invite}
+                    onChange={(e) => setFormData({ ...formData, invite: e.target.checked })}
+                    className="rounded border-input"
+                  />
+                  <Label htmlFor="invite" className="font-normal cursor-pointer">
+                    Convite (usuário define senha) — copie o link e envie por WhatsApp, etc.
+                  </Label>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="password">
                   Senha {editingUser && "(deixe vazio para manter)"}
+                  {!editingUser && formData.invite && " — não necessário"}
                 </Label>
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required={!editingUser}
+                  required={!editingUser && !formData.invite}
+                  disabled={!editingUser && formData.invite}
                 />
               </div>
               <div className="space-y-2">
@@ -336,6 +378,23 @@ export function AdminUsersPage() {
                 </Button>
               </div>
             </form>
+            {lastActivationLink && (
+              <div className="mt-4 p-4 rounded-lg border bg-muted/50 space-y-2">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <Link2 className="h-4 w-4" />
+                  Link de ativação — copie e envie ao usuário (WhatsApp, etc.)
+                </p>
+                <div className="flex gap-2">
+                  <Input readOnly value={lastActivationLink} className="font-mono text-xs" />
+                  <Button type="button" variant="secondary" size="icon" onClick={copyActivationLink} title="Copiar link">
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={resetForm}>
+                  Fechar
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

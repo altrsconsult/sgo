@@ -1,13 +1,1 @@
-{
-  "version": "7",
-  "dialect": "mysql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "5",
-      "when": 1772023518173,
-      "tag": "0000_pale_wonder_man",
-      "breakpoints": true
-    }
-  ]
-}
+{"version":"7","dialect":"mysql","entries":[{"idx":0,"version":"5","when":1772023518173,"tag":"0000_pale_wonder_man","breakpoints":true},{"idx":1,"version":"7","when":1772100000000,"tag":"0001_activation_tokens","breakpoints":true}]}

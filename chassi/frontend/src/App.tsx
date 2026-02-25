@@ -9,6 +9,7 @@ import { ManagerLayout } from "@/layouts/ManagerLayout";
 
 // Páginas de Auth
 import { LoginPage } from "@/pages/auth/LoginPage";
+import { ActivatePage } from "@/pages/auth/ActivatePage";
 
 // Páginas do Usuário
 import { HomePage } from "@/pages/HomePage";
@@ -52,6 +53,8 @@ export default function App() {
           isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
         }
       />
+      {/* Ativação de conta (link de convite — admin copia e envia) */}
+      <Route path="/activate" element={<ActivatePage />} />
 
       {/* Rotas do Usuário (Shell Layout; ?embed=true mostra só o conteúdo, sem header/sidebar) */}
       <Route
