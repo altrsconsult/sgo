@@ -1,27 +1,23 @@
 # SGO — Sistema de Gestão Operacional
 
-```
-  ███████╗ ██████╗  ██████╗ 
-  ██╔════╝ ██╔════╝ ██╔═══██╗
-  ███████╗ ██║      ██║   ██║
-  ╚════██║ ██║      ██║   ██║
-  ███████║ ╚██████╗ ╚██████╔╝
-  ╚══════╝  ╚═════╝  ╚═════╝ 
-```
-
 **Tags:** `open-source` `self-hosted` `typescript` `react` `nodejs` `micro-empresas` `gestão` `whitelabel` `module-federation` `lgpd` `docker`
+
+Plataforma **open-source** de gestão para micro empresas: **chassi pronto** (autenticação, usuários, permissões, whitelabel) e **módulos de negócio** que você adiciona no seu ritmo. Self-hosted, sem lock-in — o sistema fica no seu servidor, sob sua marca. Ideal para integradores que entregam solução completa ao cliente e para empresas que não querem depender de assinatura para manter o sistema.
+
+- **Para quem implanta:** sistema profissional e validado, que passa a ser do cliente após a implantação; documentação de conformidade (LGPD/GDPR, acessibilidade, processos) para apoiar vendas e auditorias.
+- **Para devs e integradores:** base documentada, Module Federation, guias para criar módulos (incluindo uso com IA). Contribuições e **⭐ estrelas** são bem-vindas — cada uma ajuda outros a descobrirem o projeto.
+
+Projeto sólido: build attestado, SBOM, processos documentados, preparado para LGPD/GDPR e acessibilidade; **ESG** (sustentabilidade, stack enxuta, self-hosted) e **conforto ocular** (temas claro/escuro, contraste WCAG, temas custom).
+
+> **Gostou do projeto?** [Deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers) no GitHub — ajuda outras pessoas a descobrirem o SGO. Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-**Projeto sólido:** build attestado, SBOM, processos documentados, preparado para LGPD/GDPR e acessibilidade; **ESG** (sustentabilidade, stack enxuta, self-hosted) e **conforto ocular** (temas claro/escuro, contraste WCAG, temas custom). As badges abaixo atestam que o SGO leva segurança, conformidade e experiência de uso a sério.
+## Selos e status
 
-**Certificado OpenSSF Best Practices (Baseline 3)** — O SGO aderiu voluntariamente ao programa de melhores práticas da Open Source Security Foundation e alcançou o nível Baseline 3. Isso significa que o projeto atende a critérios verificáveis de documentação, segurança, build e governança. [Ver certificação →](https://www.bestpractices.dev/projects/12038)
+As badges abaixo atestam segurança, conformidade e experiência de uso. **Certificado OpenSSF Best Practices (Baseline 3)** — [Ver certificação →](https://www.bestpractices.dev/projects/12038)
 
-*Selos OpenSSF:*
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
-[![OpenSSF Baseline 1](https://www.bestpractices.dev/projects/12038/baseline-1)](https://www.bestpractices.dev/projects/12038)
-[![OpenSSF Baseline 2](https://www.bestpractices.dev/projects/12038/baseline-2)](https://www.bestpractices.dev/projects/12038)
-[![OpenSSF Baseline 3](https://www.bestpractices.dev/projects/12038/baseline-3)](https://www.bestpractices.dev/projects/12038)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
 
 [![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
@@ -45,13 +41,6 @@
 [![Conforto ocular](https://img.shields.io/badge/Conforto%20ocular-temas%20light%20%7C%20dark-informational)](docs/ux/CONFORTO-VISUAL.md)
 
 ---
-
-Plataforma **open-source** de gestão para micro empresas: **chassi pronto** (autenticação, usuários, permissões, whitelabel) e **módulos de negócio** que você adiciona no seu ritmo. Self-hosted, sem lock-in — o sistema fica no seu servidor, sob sua marca. Ideal para integradores que entregam solução completa ao cliente e para empresas que não querem depender de assinatura para manter o sistema.
-
-- **Para quem implanta:** sistema profissional e validado, que passa a ser do cliente após a implantação; documentação de conformidade (LGPD/GDPR, acessibilidade, processos) para apoiar vendas e auditorias.
-- **Para devs e integradores:** base documentada, Module Federation, guias para criar módulos (incluindo uso com IA). Contribuições e **⭐ estrelas** são bem-vindas — cada uma ajuda outros a descobrirem o projeto.
-
-> **Gostou do projeto?** [Deixe uma estrela](https://github.com/altrsconsult/sgo/stargazers) no GitHub — ajuda outras pessoas a descobrirem o SGO. Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Quick start
 
