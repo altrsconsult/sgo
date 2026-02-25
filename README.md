@@ -18,9 +18,11 @@
 </p>
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
+[![OpenSSF Baseline](https://www.bestpractices.dev/projects/12038/baseline)](https://www.bestpractices.dev/projects/12038)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
-[![Docker Build](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/docker.yml)
 [![Security](https://github.com/altrsconsult/sgo/actions/workflows/security.yml/badge.svg)](https://github.com/altrsconsult/sgo/actions/workflows/security.yml)
+[![Maintained](https://img.shields.io/badge/Maintained-yes-green)](https://github.com/altrsconsult/sgo)
+[![Issues](https://img.shields.io/github/issues/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/issues)
 [![Release](https://img.shields.io/github/v/release/altrsconsult/sgo)](https://github.com/altrsconsult/sgo/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -144,11 +146,12 @@ Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro 
 
 ## Selos & Certificações
 
-> O SGO é um dos poucos projetos open-source nacionais com **[OpenSSF Best Practices Baseline 3](https://www.bestpractices.dev/projects/12038)** — verificação independente de segurança, build, processos e governança. [Ver certificação →](https://www.bestpractices.dev/projects/12038)
+> **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** e **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — duas certificações independentes que avaliam segurança, build, processos e governança com critérios rigorosos da indústria. SGO está em roadmap para **Silver (89%)**. [Ver certificação Best Practices →](https://www.bestpractices.dev/projects/12038)
 
 ### 🔐 Segurança & Conformidade
 
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12038/badge)](https://www.bestpractices.dev/projects/12038)
+[![OpenSSF Baseline](https://www.bestpractices.dev/projects/12038/baseline)](https://www.bestpractices.dev/projects/12038)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/altrsconsult/sgo/badge)](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)
 [![LGPD | GDPR](https://img.shields.io/badge/LGPD%20%7C%20GDPR-ready-blue)](docs/compliance/ADEQUACAO-PRIVACIDADE.md)
 [![Build attestation](https://img.shields.io/badge/Build-attested-blue)](docs/security/BUILD-AND-PROVENANCE.md)
@@ -201,7 +204,8 @@ Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro 
 
 ## Confiança e Conformidade
 
-- **[OpenSSF Best Practices Baseline 3](https://www.bestpractices.dev/projects/12038)** — certificação independente de documentação, segurança, build e governança; [mapeamento completo no repo](docs/standards/OPENSSF-BEST-PRACTICES.md).
+- **[OpenSSF Best Practices: Passing + Baseline 3](https://www.bestpractices.dev/projects/12038)** — certificação independente de documentação, segurança, build e governança; 89% para Silver. [Mapeamento completo no repo](docs/standards/OPENSSF-BEST-PRACTICES.md).
+- **[OpenSSF Scorecard](https://scorecard.dev/viewer/?uri=github.com/altrsconsult/sgo)** — análise contínua e automatizada de práticas de segurança do repositório (branch protection, dependências, CI/CD).
 - **Build verificável** — imagens Docker com attestation Sigstore, SBOM disponível; [proveniência](docs/security/BUILD-AND-PROVENANCE.md).
 - **Preparado para LGPD/GDPR** — [checklist](docs/compliance/LGPD-GDPR-CHECKLIST.md) e [adequação](docs/compliance/ADEQUACAO-PRIVACIDADE.md) documentadas.
 - **Processos documentados** — [desenvolvimento, release, segurança](docs/processes/README.md) e [governança](docs/governance/README.md).
