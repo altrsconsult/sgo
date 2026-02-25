@@ -102,16 +102,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+
+      - name: Habilitar pnpm via Corepack
+        run: corepack enable && corepack prepare pnpm@9 --activate
 
       - name: Instalar dependências
         run: pnpm install --frozen-lockfile
@@ -152,20 +149,29 @@ jobs:
           cp    .env.example               sgo-node-release/.env.example
           cp    docs/guides/README-HOSTINGER.md sgo-node-release/README.md
 
-      - name: Criar ZIP
+      - name: Criar ZIP Node.js
         run: |
           TAG=${GITHUB_REF_NAME}
           zip -r "sgo-node-${TAG}.zip" sgo-node-release/
           echo "ZIP_NAME=sgo-node-${TAG}.zip" >> $GITHUB_ENV
 
-      - name: Criar GitHub Release e anexar ZIP
+      - name: Build e ZIP dos módulos
+        run: |
+          pnpm --filter '@sgo/module-demo' build:zip || true
+          pnpm --filter '@sgo/module-boilerplate' build:zip || true
+          mkdir -p release-artifacts
+          cp sgo-node-*.zip release-artifacts/
+          find modules -maxdepth 2 -name '*.zip' -type f -exec cp {} release-artifacts/ \;
+          ls -la release-artifacts/
+
+      - name: Criar GitHub Release e anexar artefatos
         uses: softprops/action-gh-release@v2
         with:
           name: "SGO ${{ github.ref_name }}"
           body: |
             ## SGO ${{ github.ref_name }}
 
-            ### Imagens Docker
+            ### Imagens Docker (ghcr.io)
             ```
             ghcr.io/${{ env.ORG }}/chassi-backend:${{ github.ref_name }}
             ghcr.io/${{ env.ORG }}/chassi-frontend:${{ github.ref_name }}
@@ -177,7 +183,10 @@ jobs:
             **Start command:** `node dist/index.js`
             **Variáveis obrigatórias:** `DATABASE_URL`, `JWT_SECRET`, `SERVE_STATIC=true`
 
+            ### Módulos (ZIP)
+            Opcional: anexos com build dos módulos oficiais (demo, boilerplate) para instalação no chassi.
+
             ### Deploy Docker (VPS, Coolify, Portainer)
             Consulte [docs/guides/DEPLOY.md](https://github.com/${{ github.repository }}/blob/main/docs/guides/DEPLOY.md).
-          files: ${{ env.ZIP_NAME }}
+          files: release-artifacts/*
           generate_release_notes: true
