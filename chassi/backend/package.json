@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@hono/zod-validator": "^0.4.3",
+    "@hono/zod-validator": "^0.7.6",
     "@sgo/sdk": "workspace:*",
     "adm-zip": "^0.5.16",
     "bcryptjs": "^3.0.3",
