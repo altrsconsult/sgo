@@ -60,8 +60,8 @@ export function ModuleViewerPage() {
     enabled: !!moduleSlug,
   });
 
-  // URL do módulo: path pode ser base (standalone), remoteEntry.js (Federation) ou dev server (iframe com HMR)
-  const rawPath = moduleData?.remoteUrl ?? moduleData?.path ?? moduleData?.remoteEntry ?? null;
+  // URL do módulo: remoteEntry (Federation), remoteUrl (Standalone iframe), ou fallback
+  const rawPath = moduleData?.remoteEntry ?? moduleData?.remoteUrl ?? null;
   const remoteUrl = rawPath?.startsWith("http") ? rawPath : (rawPath ? `${window.location.origin}${rawPath}` : null);
   // Módulos instalados (ZIP) podem ser Standalone (index.html) ou Federation (remoteEntry.js)
   const isStandalone = !!(rawPath?.endsWith(".html") || rawPath?.endsWith("/"));
