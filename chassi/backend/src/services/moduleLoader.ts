@@ -76,8 +76,18 @@ export async function loadModuleFromZip(zipPath: string) {
   await fs.rm(modulePath, { recursive: true, force: true });
   await fs.mkdir(modulePath, { recursive: true });
 
-  // Extrai conteúdo do ZIP
-  zip.extractAllTo(modulePath, true);
+  // Extrai conteúdo do ZIP manualmente para contornar problemas de separador de caminho (Windows vs Linux)
+  for (const entry of entries) {
+    const normalizedPath = entry.entryName.replace(/\\/g, '/');
+    const fullPath = path.join(modulePath, normalizedPath);
+    
+    if (entry.isDirectory || normalizedPath.endsWith('/')) {
+      await fs.mkdir(fullPath, { recursive: true }).catch(() => {});
+    } else {
+      await fs.mkdir(path.dirname(fullPath), { recursive: true }).catch(() => {});
+      await fs.writeFile(fullPath, entry.getData());
+    }
+  }
 
   // Verifica se é Module Federation
   let remoteEntry: string | null = null;
