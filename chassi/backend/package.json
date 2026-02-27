@@ -1,40 +1,40 @@
 {
-  "name": "@sgo/chassi-backend",
-  "version": "4.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "db:generate": "drizzle-kit generate",
-    "db:generate:pg": "drizzle-kit generate --config drizzle.config.ts",
-    "db:generate:mysql": "drizzle-kit generate --config drizzle.config.mysql.ts",
-    "db:push": "drizzle-kit push",
-    "db:migrate": "tsx src/db/migrate.ts"
-  },
-  "dependencies": {
-    "@hono/node-server": "^1.13.7",
-    "@hono/zod-validator": "^0.7.6",
-    "@sgo/sdk": "workspace:*",
-    "adm-zip": "^0.5.16",
-"bcryptjs": "^3.0.3",
-    "dotenv": "^17.3.1",
-    "drizzle-orm": "^0.45.1",
-    "hono": "^4.6.14",
-    "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.18.1",
-    "pg": "^8.13.1",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@types/adm-zip": "^0.5.7",
-    "@types/bcryptjs": "^3.0.0",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/node": "^22.10.2",
-    "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.30.1",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
-  }
+    "name":  "@sgo/chassi-backend",
+    "version":  "4.0.10",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "tsx watch src/index.ts",
+                    "build":  "tsc",
+                    "start":  "node dist/index.js",
+                    "db:generate":  "drizzle-kit generate",
+                    "db:generate:pg":  "drizzle-kit generate --config drizzle.config.ts",
+                    "db:generate:mysql":  "drizzle-kit generate --config drizzle.config.mysql.ts",
+                    "db:push":  "drizzle-kit push",
+                    "db:migrate":  "tsx src/db/migrate.ts"
+                },
+    "dependencies":  {
+                         "@hono/node-server":  "^1.13.7",
+                         "@hono/zod-validator":  "^0.7.6",
+                         "@sgo/sdk": "workspace:*",
+                         "adm-zip":  "^0.5.16",
+                         "bcryptjs":  "^3.0.3",
+                         "dotenv":  "^17.3.1",
+                         "drizzle-orm":  "^0.45.1",
+                         "hono":  "^4.6.14",
+                         "jsonwebtoken":  "^9.0.2",
+                         "mysql2":  "^3.18.1",
+                         "pg":  "^8.13.1",
+                         "zod":  "^4.3.6"
+                     },
+    "devDependencies":  {
+                            "@types/adm-zip":  "^0.5.7",
+                            "@types/bcryptjs":  "^3.0.0",
+                            "@types/jsonwebtoken":  "^9.0.7",
+                            "@types/node":  "^22.10.2",
+                            "@types/pg":  "^8.11.10",
+                            "drizzle-kit":  "^0.30.1",
+                            "tsx":  "^4.19.2",
+                            "typescript":  "^5.7.2"
+                        }
 }

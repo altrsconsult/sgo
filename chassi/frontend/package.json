@@ -1,6 +1,6 @@
 {
   "name": "@sgo/chassi-frontend",
-  "version": "4.0.0",
+  "version": "4.0.10",
   "private": true,
   "type": "module",
   "scripts": {
