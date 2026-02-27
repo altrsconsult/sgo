@@ -16,7 +16,7 @@ jobs:
     name: Build e push (backend + frontend)
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write   # leitura + criação de Release (atualiza Latest)
       packages: write
       id-token: write
       attestations: write
@@ -107,3 +107,9 @@ jobs:
           severity: CRITICAL
           exit-code: "1"
         continue-on-error: true
+
+      - name: Criar GitHub Release (atualiza Latest)
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          make_latest: true
