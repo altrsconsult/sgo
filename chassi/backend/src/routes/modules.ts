@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { eq } from 'drizzle-orm';
+import path from 'path';
+import fs from 'fs/promises';
 import { db } from '../db/index.js';
 import { modules } from '../db/schema.js';
 import { authenticate } from '../middleware/authenticate.js';
@@ -63,6 +65,24 @@ modulesRoutes.patch('/:id/toggle-active', requireAdmin, async (c) => {
 // DELETE /api/modules/:id
 modulesRoutes.delete('/:id', requireAdmin, async (c) => {
   const id = Number(c.req.param('id'));
+  
+  // Buscar módulo antes de excluir para pegar o slug e type
+  const mod = await db.query.modules.findFirst({ where: eq(modules.id, id) });
+  if (!mod) return c.json({ error: 'Módulo não encontrado' }, 404);
+
+  // Excluir do banco
   await db.delete(modules).where(eq(modules.id, id));
+
+  // Se for um módulo instalado (zip), limpar a pasta de arquivos
+  if (mod.type === 'installed') {
+    try {
+      const MODULES_STORAGE_PATH = process.env.MODULES_STORAGE_PATH || './modules_storage';
+      const modulePath = path.join(MODULES_STORAGE_PATH, mod.slug);
+      await fs.rm(modulePath, { recursive: true, force: true });
+    } catch (err) {
+      console.error(`Erro ao remover arquivos do módulo ${mod.slug}:`, err);
+    }
+  }
+
   return c.json({ message: 'Módulo removido' });
 });

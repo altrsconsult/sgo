@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Layers, Settings, Users, ToggleLeft, ToggleRight, ExternalLink, Upload, Trash2, Link, FileArchive } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   Card,
   CardContent,
@@ -114,7 +113,6 @@ export function AdminModulesPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { success, error: showError } = useNotification();
-  const { isSuperAdmin } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -472,19 +470,17 @@ export function AdminModulesPage() {
                       <Users className="h-4 w-4 mr-1" />
                       Permissões
                     </Button>
-                    {isSuperAdmin && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleRemove(module)}
-                        disabled={deleteMutation.isPending}
-                        title="Remover módulo do sistema"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        Remover
-                      </Button>
-                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => handleRemove(module)}
+                      disabled={deleteMutation.isPending}
+                      title="Remover módulo do sistema"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Remover
+                    </Button>
                   </div>
                 </div>
               </CardContent>
