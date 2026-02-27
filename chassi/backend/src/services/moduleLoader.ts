@@ -79,6 +79,13 @@ export async function loadModuleFromZip(zipPath: string) {
   // Extrai conteúdo do ZIP
   zip.extractAllTo(modulePath, true);
 
+  // Verifica se é Module Federation
+  let remoteEntry: string | null = null;
+  try {
+    await fs.access(path.join(modulePath, 'dist', 'assets', 'remoteEntry.js'));
+    remoteEntry = `/modules-assets/${slug}/dist/assets/remoteEntry.js`;
+  } catch {}
+
   // Registra ou atualiza módulo no banco
   const existing = await db.query.modules.findFirst({ where: eq(modules.slug, slug) });
 
@@ -91,6 +98,7 @@ export async function loadModuleFromZip(zipPath: string) {
       icon: manifest.icon,
       color: manifest.color,
       type: 'installed',
+      remoteEntry,
       updatedAt: new Date(),
     } as never).where(eq(modules.slug, slug));
   } else {
@@ -104,6 +112,7 @@ export async function loadModuleFromZip(zipPath: string) {
       color: manifest.color,
       active: true,
       type: 'installed',
+      remoteEntry,
     } as never);
   }
 
@@ -124,6 +133,12 @@ export async function loadInstalledModules() {
         const raw = await fs.readFile(manifestPath, 'utf8');
         const manifest = ModuleManifestSchema.parse(JSON.parse(raw));
 
+        let remoteEntry: string | null = null;
+        try {
+          await fs.access(path.join(MODULES_STORAGE_PATH, slug, 'dist', 'assets', 'remoteEntry.js'));
+          remoteEntry = `/modules-assets/${slug}/dist/assets/remoteEntry.js`;
+        } catch {}
+
         const row = {
           slug: manifest.slug,
           name: manifest.name,
@@ -134,6 +149,7 @@ export async function loadInstalledModules() {
           color: manifest.color,
           active: true,
           type: 'installed',
+          remoteEntry,
         };
         await upsert(modules, row, modules.slug, {
           name: manifest.name,
