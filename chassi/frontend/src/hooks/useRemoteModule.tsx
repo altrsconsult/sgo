@@ -38,9 +38,20 @@ async function loadRemoteModule(
       if (mod && typeof (mod as any).get === "function") {
         const shareScope = (globalThis as any).__federation_shared_scope__ || {};
         if ((mod as any).init) await (mod as any).init(shareScope);
-        const factory = await (mod as any).get(module);
-        const Component = typeof factory === "function" ? factory() : factory;
-        return (Component?.default ?? Component) as ComponentType<unknown>;
+        
+        // Verifica se o módulo exposto existe
+        if (typeof (mod as any).get !== "function") {
+          throw new Error(`O módulo ${scope} não exporta o método 'get'. Verifique a configuração do vite-plugin-federation.`);
+        }
+        
+        try {
+          const factory = await (mod as any).get(module);
+          const Component = typeof factory === "function" ? factory() : factory;
+          return (Component?.default ?? Component) as ComponentType<unknown>;
+        } catch (e) {
+          console.error("Module Federation Erro no get():", e);
+          throw new Error(`O módulo ${scope} não expõe '${module}'. Exposes disponíveis não puderam ser lidos. Verifique o vite.config.ts do módulo.`);
+        }
       }
     } catch (e) {
       lastError = e instanceof Error ? e : new Error(String(e));
