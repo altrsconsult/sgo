@@ -59,7 +59,7 @@ jobs:
           labels: ${{ steps.meta-backend.outputs.labels }}
 
       - name: Attest build provenance (backend)
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend@${{ steps.build-backend.outputs.digest }}
           subject-digest: ${{ steps.build-backend.outputs.digest }}
@@ -95,7 +95,7 @@ jobs:
           labels: ${{ steps.meta-frontend.outputs.labels }}
 
       - name: Attest build provenance (frontend)
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend@${{ steps.build-frontend.outputs.digest }}
           subject-digest: ${{ steps.build-frontend.outputs.digest }}
