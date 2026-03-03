@@ -1,0 +1,3 @@
+# Artefatos do build Node (script em scripts/build-node-zip.ps1) — não commitar
+sgo-node-*.zip
+sgo-node-release/

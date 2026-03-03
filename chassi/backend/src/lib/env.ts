@@ -26,4 +26,11 @@ export const env = {
   staticPath: process.env.STATIC_PATH || './public',
   // URL base da aplicação (para montar link de ativação; fallback: origem da requisição)
   publicAppUrl: process.env.PUBLIC_APP_URL || null,
+  // Segredo para reset de senha do admin em produção (POST /api/setup/reset-admin-password)
+  resetAdminSecret: process.env.SGO_RESET_ADMIN_SECRET || null,
+  // Admin inicial a partir de env (dev e produção): na primeira subida, se não existir admin, cria com essas credenciais
+  adminUsername: process.env.SGO_ADMIN_USERNAME || process.env.ADMIN_USERNAME || null,
+  adminPassword: process.env.SGO_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || null,
+  adminEmail: process.env.SGO_ADMIN_EMAIL || process.env.ADMIN_EMAIL || null,
+  adminName: process.env.SGO_ADMIN_NAME || process.env.ADMIN_NAME || null,
 };

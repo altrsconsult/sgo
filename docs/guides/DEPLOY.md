@@ -30,10 +30,13 @@ flowchart LR
 
 ## Cenários de produção
 
+As **stacks** (stack.yml, stack2.yml, stack-postgres-shared.yml, stack-chassi-only.yml) e o exemplo de variáveis (**stack-env.example.txt**) ficam na **raiz** do repositório (não em `deploy/`).
+
 | Cenário | Arquivo | Observação |
 | ------- | ------- | ---------- |
 | **VPS / Coolify / terminal** (uma porta) | `docker-compose.prod.yml` + `docker-compose.yml` | Uma porta (80); Nginx no frontend faz proxy para o backend. |
-| **Portainer com Traefik** | `stack.yml` | Rede `traefik-public`, variáveis `DOMAIN`, `JWT_SECRET`, `POSTGRES_PASSWORD`. |
+| **Portainer com Traefik** (versão única) | `stack.yml` | 1 stack = 1 Postgres + 1 chassi; rede por variável; variáveis em `stack-env.example.txt` (raiz). |
+| **Portainer com Traefik** (Postgres compartilhado) | `stack-postgres-shared.yml` + `stack-chassi-only.yml` | 1 Postgres com N bancos; N stacks só de chassi (um por cliente); ver [Dois modelos de deploy (Portainer)](#dois-modelos-de-deploy-portainer). |
 | **Portainer sem Traefik** | `docker-compose.prod.yml` + `docker-compose.yml` como stack tipo Compose | No Portainer: adicionar stack → Compose → colar conteúdo e usar apenas a porta 80. |
 | **Node.js single-process** (Hostinger, Railway, etc.) | `pnpm build:node` + `node dist/index.js` | Um único processo Node.js serve API + frontend estático; MySQL ou Postgres externo. |
 
@@ -62,19 +65,24 @@ Ideal para: Coolify, Hostinger, VPS com Docker, ou Portainer **sem** Traefik.
 
 Pré-requisitos no servidor:
 
-- Rede overlay: `docker network create --driver overlay traefik-public`
-- Traefik rodando com entrypoints `web` (80) e `websecure` (443)
+- Rede interna do cliente já criada (ex.: `docker network create --driver overlay altrs_net`). O nome é configurável por variável.
+- Traefik na mesma rede, com entrypoints `web` (80) e `websecure` (443) e certresolver (ex.: `letsencryptresolver`).
 
 No Portainer:
 
 1. **Stacks** → **Add stack**
 2. Cole o conteúdo de [stack.yml](../../stack.yml) (ou importe o arquivo).
-3. Defina as variáveis de ambiente (obrigatórias):
-   - `DOMAIN` — domínio para esta instância (ex.: `sgo.seudominio.com.br`)
-   - `JWT_SECRET` — secret para JWTs
-   - `POSTGRES_PASSWORD` — senha do PostgreSQL
-4. Opcional: `STACK_NAME` (para várias instâncias no mesmo Swarm), `NEXUS_URL` (modo gerenciado).
-5. Deploy. Acesse `https://<DOMAIN>`; no primeiro acesso, conclua o wizard.
+3. Defina as variáveis de ambiente. Use como base [stack-env.example.txt](../../stack-env.example.txt) (raiz do repo); para valores reais (não comitados), use `stack-env.txt` na raiz.
+   - Obrigatórias: `SGO_NETWORK` (nome da rede overlay do cliente), `SGO_DOMAIN`, `SGO_JWT_SECRET`, `SGO_POSTGRES_PASSWORD`.
+   - Opcionais: `SGO_IMAGE_TAG` (ex.: `latest` ou `v4.0.0`), `SGO_STACK_NAME`, `SGO_NEXUS_URL`, `SGO_TLS_RESOLVER`.
+4. Deploy. Acesse `https://<SGO_DOMAIN>`; no primeiro acesso, conclua o wizard.
+
+**Imagens:** vêm do GitHub Container Registry (`ghcr.io/altrsconsult/chassi-backend`, `chassi-frontend`). Para publicar uma nova versão, crie uma tag no Git (ex.: `v4.0.0`); o workflow [release-chassi.yml](../../.github/workflows/release-chassi.yml) faz o build e push com essa tag e `latest`.
+
+#### Dois modelos de deploy (Portainer)
+
+- **Versão única (`stack.yml`):** cada instalação = uma stack com Postgres + backend + frontend. Três clientes = três stacks = três Postgres (sem conflito; isolamento total). Ideal quando cada cliente pode ter seu próprio banco.
+- **Postgres compartilhado:** um único Postgres para todas as instalações SGO do técnico, com um banco por cliente. Deploy **uma vez** de [stack-postgres-shared.yml](../../stack-postgres-shared.yml) (ex.: nome da stack `sgo-pg`), criar os bancos (ex.: `CREATE DATABASE sgo_cliente_a;`) e **por cliente** deploy de [stack-chassi-only.yml](../../stack-chassi-only.yml) com `SGO_DATABASE_URL=postgresql://sgo:senha@sgo-pg_postgres:5432/sgo_cliente_a`. No Swarm o hostname do serviço de outra stack é `<nome_da_stack>_<nome_do_servico>`. Variáveis para os dois cenários em [stack-env.example.txt](../../stack-env.example.txt) (raiz).
 
 ### 3. Node.js single-process — Hostinger, Railway e similares
 
@@ -143,22 +151,73 @@ Use o mesmo fluxo do cenário “uma porta só”, mas no Portainer:
 | `CHASSIS_URL` | Não | URL pública do chassi (links, e-mails) | `https://sgo.seudominio.com.br` |
 | `DOMAIN` | Sim só com `stack.yml` | Domínio para Traefik | `sgo.seudominio.com.br` |
 | `STACK_NAME` | Não | Nome da stack (múltiplas instâncias) | `sgo` |
+| `SGO_ADMIN_USERNAME` | Não (recomendado instalação limpa) | Usuário do primeiro admin; na primeira subida sem admins, cria esse usuário | `admin` |
+| `SGO_ADMIN_PASSWORD` | Não (recomendado com USERNAME) | Senha do primeiro admin | senha forte |
+| `SGO_ADMIN_EMAIL` | Não | E-mail do admin | `admin@empresa.com` |
+| `SGO_ADMIN_NAME` | Não | Nome do admin | `Administrador` |
 
 Referência completa com comentários: [.env.example](../../.env.example) na raiz do repositório.
 
 ---
 
-## Primeiro acesso e wizard
+## Primeiro acesso e instalação
 
-Após subir os containers:
+### Instalação limpa (recomendado): admin por variáveis de ambiente
+
+Se for uma **instalação do zero** (sem dados a preservar), defina o admin nas variáveis da stack antes do primeiro deploy:
+
+| Variável | Obrigatória | Uso |
+| -------- | ----------- | --- |
+| `SGO_ADMIN_USERNAME` | Sim* | Usuário do primeiro admin |
+| `SGO_ADMIN_PASSWORD` | Sim* | Senha do primeiro admin |
+| `SGO_ADMIN_EMAIL` | Não | E-mail (default: `{username}@example.com`) |
+| `SGO_ADMIN_NAME` | Não | Nome (default: Administrador) |
+
+\* Se ambas estiverem definidas, o backend cria esse admin na **primeira subida** (quando ainda não existe nenhum admin no banco). Não é necessário passar pelo wizard; acesse a URL e faça login com esse usuário e senha.
+
+Exemplo no Portainer (stack): adicione `SGO_ADMIN_USERNAME` e `SGO_ADMIN_PASSWORD` junto com `SGO_JWT_SECRET`, `SGO_POSTGRES_PASSWORD`, etc. A credencial fica documentada na própria stack.
+
+### Alternativa: wizard de setup
+
+Se **não** definir `SGO_ADMIN_*`, após subir os containers:
 
 1. Acesse `https://<dominio>` (com Traefik) ou `http://<ip>:80` (compose uma porta).
-2. Se o sistema ainda não foi instalado, o frontend redireciona para a tela de **setup** (`/setup`).
-3. O wizard usa:
-   - `GET /api/setup/status` — verifica se já existe admin
-   - `POST /api/setup/install` — cria o primeiro usuário admin e opcionalmente o nome da aplicação (whitelabel)
-4. Preencha: usuário e senha do admin, e-mail, nome da aplicação (opcional).
-5. **Modo standalone** (padrão): `NEXUS_URL` vazio; o sistema funciona sozinho. **Modo gerenciado:** defina `NEXUS_URL` e o chassi se registra no Nexus; o admin pode ser provisionado pelo Nexus.
+2. O frontend redireciona para a tela de **setup** (`/setup`).
+3. O wizard usa `GET /api/setup/status` e `POST /api/setup/install` para criar o primeiro admin manualmente.
+4. Preencha usuário, senha, e-mail e nome da aplicação (opcional).
+
+**Modo standalone** (padrão): `NEXUS_URL` vazio. **Modo gerenciado:** defina `NEXUS_URL` e o chassi se registra no Nexus.
+
+---
+
+## Credenciais do admin e reset de senha
+
+- **Onde ficam:** usuário e senha (hash bcrypt) ficam na tabela `users` do banco. O primeiro admin pode ser criado por: **(1)** variáveis de ambiente (`SGO_ADMIN_USERNAME` + `SGO_ADMIN_PASSWORD`) na primeira subida; **(2)** wizard (`POST /api/setup/install`); ou **(3)** em desenvolvimento, pelo seed (`admin` / `admin123`) quando não existe admin.
+- **Instalação limpa:** defina `SGO_ADMIN_*` na stack e o admin é criado no primeiro start; a credencial fica nas env. Se a senha foi perdida ou o login não funciona (ex.: JWT_SECRET mudou e o token antigo invalida), use o **reset por segredo**:
+
+### Reset de senha do admin (ambiente online)
+
+1. No Portainer (ou onde as variáveis do backend estão), adicione temporariamente:
+   ```env
+   SGO_RESET_ADMIN_SECRET=uma_string_secreta_forte_que_voce_escolher
+   ```
+2. Reinicie o container do backend para carregar a variável.
+3. Chame a API (Postman, curl ou no navegador via console):
+   ```bash
+   curl -X POST https://<seu-dominio>/api/setup/reset-admin-password \
+     -H "Content-Type: application/json" \
+     -d '{"secret":"uma_string_secreta_forte_que_voce_escolher","newPassword":"SuaNovaSenha123"}'
+   ```
+   Se tiver mais de um admin e quiser alterar um em específico:
+   ```json
+   {"secret":"...","newPassword":"...","username":"admin"}
+   ```
+4. Remova a variável `SGO_RESET_ADMIN_SECRET` das env do backend e reinicie de novo (recomendado por segurança).
+5. Entre com o usuário admin e a nova senha.
+
+| Variável | Uso |
+| -------- | --- |
+| `SGO_RESET_ADMIN_SECRET` | Quando definida, habilita `POST /api/setup/reset-admin-password`. Use só para reset; depois remova. |
 
 ---
 

@@ -44,6 +44,9 @@ Thumbs.db
 
 # Deploy packages (gerados localmente)
 deploy/*.zip
+# Variáveis Portainer (valores reais por cliente) — stacks e exemplo na raiz
+stack-env.txt
+deploy/stack-env.txt
 
 # Artefatos de módulos — gerados no CI/release; não versionar (Scorecard: Binary-Artifacts)
 modules/**/*.zip
@@ -51,7 +54,5 @@ modules/**/*.zip
 # Nexus simulator (apenas dev)
 nexus-simulator.html
 
-# Lab de módulos (clientes) — não sobe no repo público; pode ter repo privado próprio
-modules-lab/*
-!modules-lab/.gitignore
-!modules-lab/README.md
+# Lab de módulos (clientes) — pasta totalmente oculta no repo público
+modules-lab/

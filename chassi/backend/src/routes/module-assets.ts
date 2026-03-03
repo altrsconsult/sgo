@@ -70,6 +70,22 @@ moduleAssetsRoutes.get('*', async (c) => {
     });
   } catch (err: unknown) {
     if ((err as NodeJS.ErrnoException)?.code === 'ENOENT') {
+      // Fallback: extração antiga (Windows) criou 1 arquivo com barra invertida no nome (ex.: dist\assets\remoteEntry.js)
+      const fallbackRelative = rest.replace(/\//g, '\\');
+      const fallbackPath = path.join(baseDir, fallbackRelative);
+      const fallbackResolved = path.resolve(fallbackPath);
+      if (fallbackResolved.startsWith(baseDir) && !rest.includes('..')) {
+        try {
+          const buf = await fs.readFile(fallbackPath);
+          const ext = path.extname(fallbackPath);
+          const contentType = MIME[ext] ?? 'application/octet-stream';
+          return new Response(buf, {
+            headers: { 'Content-Type': contentType },
+          });
+        } catch {
+          // mantém 404
+        }
+      }
       return c.json({ error: 'Não encontrado' }, 404);
     }
     throw err;

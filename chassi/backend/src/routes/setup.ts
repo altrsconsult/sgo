@@ -72,3 +72,47 @@ setupRoutes.post('/reinstall', async (c) => {
 
   return c.json({ message: 'Sistema reinstalado' });
 });
+
+// POST /api/setup/reset-admin-password — reset de senha do admin em produção
+// Requer SGO_RESET_ADMIN_SECRET nas variáveis de ambiente e body: { secret, newPassword [, username ] }
+// Uso: defina SGO_RESET_ADMIN_SECRET no Portainer, chame esta rota, depois remova a variável.
+setupRoutes.post('/reset-admin-password', async (c) => {
+  if (!env.resetAdminSecret) {
+    return c.json({ error: 'Reset de admin não configurado (defina SGO_RESET_ADMIN_SECRET)' }, 503);
+  }
+
+  let body: { secret?: string; newPassword?: string; username?: string };
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: 'Body JSON inválido' }, 400);
+  }
+
+  const { secret, newPassword, username } = body;
+  if (secret !== env.resetAdminSecret) {
+    return c.json({ error: 'Segredo inválido' }, 403);
+  }
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+    return c.json({ error: 'newPassword é obrigatório e deve ter no mínimo 6 caracteres' }, 400);
+  }
+
+  const admins = await db.query.users.findMany({
+    where: eq(users.role, 'admin'),
+    columns: { id: true, username: true },
+  });
+  if (admins.length === 0) {
+    return c.json({ error: 'Nenhum usuário admin encontrado' }, 404);
+  }
+
+  const target = username
+    ? admins.find((a) => a.username === username)
+    : admins[0];
+  if (!target) {
+    return c.json({ error: `Admin com username "${username}" não encontrado` }, 404);
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  await db.update(users).set({ password: hashed, updatedAt: new Date() }).where(eq(users.id, target.id));
+
+  return c.json({ message: 'Senha do admin atualizada com sucesso', username: target.username });
+});

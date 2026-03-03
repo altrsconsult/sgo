@@ -1,0 +1,73 @@
+# stack-chassi-only.yml — Chassi (backend + frontend) sem Postgres
+#
+# Use quando o Postgres for compartilhado (stack-postgres-shared.yml).
+# Um técnico com 3 clientes: 1x stack-postgres-shared (1 Postgres, 3 bancos)
+# e 3x stack-chassi-only (cada um com SGO_DATABASE_URL em um banco diferente).
+#
+# Pré-requisitos:
+#   - Rede interna do cliente (mesma do Postgres compartilhado).
+#   - Postgres já rodando (stack sgo-pg ou outro). Criar o banco deste cliente
+#     no Postgres (ex.: CREATE DATABASE sgo_cliente_a;).
+#   - SGO_DATABASE_URL completa, ex.: postgresql://sgo:senha@sgo-pg_postgres:5432/sgo_cliente_a
+#     (no Swarm o hostname do serviço de outra stack é <nome_da_stack>_<nome_do_servico>)
+# Rede: se não for altrs_net, use Localizar e Substituir no YAML.
+
+services:
+  chassi-backend:
+    image: ghcr.io/altrsconsult/chassi-backend:latest
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: ${SGO_DATABASE_URL}
+      JWT_SECRET: ${SGO_JWT_SECRET}
+      NEXUS_URL: ${SGO_NEXUS_URL:-}
+      CHASSIS_URL: https://${SGO_DOMAIN}
+      DOCKER_ENV: "true"
+    volumes:
+      - chassi-modules:/app/modules_storage
+      - chassi-uploads:/app/uploads
+    networks:
+      - altrs_net
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  chassi-frontend:
+    image: ghcr.io/altrsconsult/chassi-frontend:latest
+    networks:
+      - altrs_net
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.rule=Host(`${SGO_DOMAIN}`)
+        - traefik.http.services.${SGO_STACK_NAME:-sgo}.loadbalancer.server.port=80
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.service=${SGO_STACK_NAME:-sgo}
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls.certresolver=${SGO_TLS_RESOLVER:-letsencryptresolver}
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.entrypoints=websecure
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls=true
+
+networks:
+  altrs_net:
+    external: true
+
+volumes:
+  chassi-modules:
+    driver: local
+  chassi-uploads:
+    driver: local

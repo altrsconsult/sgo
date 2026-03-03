@@ -1,0 +1,35 @@
+# stack-postgres-shared.yml — Postgres único para N instalações SGO
+#
+# O técnico sobe esta stack UMA vez. Depois cria um banco por cliente
+# (ex.: sgo_cliente_a, sgo_cliente_b) e usa stack-chassi-only.yml por cliente,
+# cada um com SGO_DATABASE_URL apontando para esse Postgres e o banco correspondente.
+#
+# Pré-requisitos: rede do cliente criada. Se não for altrs_net: Localizar e Substituir no YAML.
+# No Portainer: deploy desta stack com nome fixo (ex.: sgo-pg) para o hostname ser estável.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${SGO_POSTGRES_USER:-sgo}
+      POSTGRES_PASSWORD: ${SGO_POSTGRES_PASSWORD}
+      TZ: ${SGO_TZ:-UTC}
+    networks:
+      - altrs_net
+    volumes:
+      - sgo-postgres-data:/var/lib/postgresql/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2048M
+
+networks:
+  altrs_net:
+    external: true
+
+volumes:
+  sgo-postgres-data:
+    driver: local

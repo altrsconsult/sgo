@@ -32,6 +32,8 @@ import { startNexusPulse } from './services/nexusPulse.js';
 import { reportToNexusCentral } from './services/nexusReport.js';
 import { seedDevData } from './db/seed.js';
 import { db } from './db/index.js';
+import { users } from './db/schema.js';
+import bcrypt from 'bcryptjs';
 
 const app = new Hono();
 
@@ -83,14 +85,30 @@ if (env.serveStatic) {
   });
 }
 
-// Em dev: garante seed antes de aceitar conexões para /api/setup/status retornar installed
-async function ensureDevSeed() {
-  if (env.nodeEnv === 'production') return;
+// Cria o primeiro admin a partir de variáveis de ambiente (dev ou produção)
+async function ensureAdminFromEnv() {
   const adminCount = await db.query.users.findMany({ where: (u, { eq }) => eq(u.role, 'admin') });
-  if (adminCount.length === 0) {
-    await seedDevData();
-    console.log('Dados de desenvolvimento criados (admin/admin123).');
-  }
+  if (adminCount.length > 0) return;
+  if (!env.adminUsername || !env.adminPassword) return;
+
+  const hashed = await bcrypt.hash(env.adminPassword, 10);
+  await db.insert(users).values({
+    username: env.adminUsername,
+    password: hashed,
+    name: env.adminName || 'Administrador',
+    email: env.adminEmail || `${env.adminUsername}@example.com`,
+    role: 'admin',
+  });
+  console.log(`Admin criado a partir de env (usuário: ${env.adminUsername}).`);
+}
+
+// Em dev: se ainda não houver admin, roda seed completo (admin + usuário exemplo + settings)
+async function ensureDevSeed() {
+  const adminCount = await db.query.users.findMany({ where: (u, { eq }) => eq(u.role, 'admin') });
+  if (adminCount.length > 0) return;
+  if (env.nodeEnv === 'production') return;
+  await seedDevData();
+  console.log('Dados de desenvolvimento criados (admin/admin123).');
 }
 
 async function initializeAsync() {
@@ -111,6 +129,7 @@ async function initializeAsync() {
 }
 
 async function main() {
+  await ensureAdminFromEnv();
   await ensureDevSeed();
   serve({ fetch: app.fetch, port: env.port }, () => {
     console.log(`Chassi backend rodando na porta ${env.port} [${env.nodeEnv}]`);
