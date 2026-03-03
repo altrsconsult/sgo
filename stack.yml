@@ -8,7 +8,7 @@
 # Ver deploy/stack-env.example.txt e docs/guides/DEPLOY.md.
 #
 # Pré-requisitos: rede overlay do cliente; Traefik na mesma rede.
-# Rede: se não for altrs_net, use Localizar e Substituir (altrs_net → nome_da_rede_do_cliente).
+# Variáveis: SGO_STACK_NAME (router Traefik), SGO_NETWORK (nome da rede overlay). Defaults neutros: sgo, sgo_net.
 # Sem placement constraint (roda em qualquer nó). Imagens em :latest; para versão específica use Localizar e Substituir (latest → v4.0.5).
 # Portainer: Stacks → Add stack → colar YAML e preencher variáveis (stack-env.example.txt).
 
@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: ${SGO_POSTGRES_PASSWORD}
       TZ: ${SGO_TZ:-UTC}
     networks:
-      - altrs_net
+      - sgo_net
     volumes:
       - chassi-db-data:/var/lib/postgresql/data
     deploy:
@@ -49,7 +49,7 @@ services:
       - chassi-modules:/app/modules_storage
       - chassi-uploads:/app/uploads
     networks:
-      - altrs_net
+      - sgo_net
     deploy:
       mode: replicated
       replicas: 1
@@ -67,7 +67,7 @@ services:
   chassi-frontend:
     image: ghcr.io/altrsconsult/chassi-frontend:latest
     networks:
-      - altrs_net
+      - sgo_net
     deploy:
       mode: replicated
       replicas: 1
@@ -76,23 +76,24 @@ services:
           cpus: "0.5"
           memory: 256M
       labels:
-        # Router/service sgo-eduka (Localizar e Substituir se stack tiver outro nome)
+        # Router/service = SGO_STACK_NAME (ex.: sgo, sgo-eduka); rede = SGO_NETWORK
         - traefik.enable=true
-        - traefik.http.routers.sgo-eduka.rule=Host(`${SGO_DOMAIN}`)
-        - traefik.http.services.sgo-eduka.loadbalancer.server.port=80
-        - traefik.http.routers.sgo-eduka.service=sgo-eduka
-        - traefik.http.routers.sgo-eduka.tls.certresolver=${SGO_TLS_RESOLVER:-letsencryptresolver}
-        - traefik.http.routers.sgo-eduka.entrypoints=websecure
-        - traefik.http.routers.sgo-eduka.tls=true
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.rule=Host(`${SGO_DOMAIN}`)
+        - traefik.http.services.${SGO_STACK_NAME:-sgo}.loadbalancer.server.port=80
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.service=${SGO_STACK_NAME:-sgo}
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls.certresolver=${SGO_TLS_RESOLVER:-letsencryptresolver}
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.entrypoints=websecure
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls=true
         # HTTP -> HTTPS redirect
-        - traefik.http.routers.sgo-eduka-http.rule=Host(`${SGO_DOMAIN}`)
-        - traefik.http.routers.sgo-eduka-http.entrypoints=web
-        - traefik.http.routers.sgo-eduka-http.middlewares=sgo-eduka-redirect
-        - traefik.http.middlewares.sgo-eduka-redirect.redirectscheme.scheme=https
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.rule=Host(`${SGO_DOMAIN}`)
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.entrypoints=web
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.middlewares=${SGO_STACK_NAME:-sgo}-redirect
+        - traefik.http.middlewares.${SGO_STACK_NAME:-sgo}-redirect.redirectscheme.scheme=https
 
 networks:
-  # Nome da rede do cliente (Localizar e Substituir se não for altrs_net)
-  altrs_net:
+  # Nome da rede overlay = SGO_NETWORK (default: sgo_net). Serviços referenciam pela chave "sgo_net".
+  sgo_net:
+    name: ${SGO_NETWORK:-sgo_net}
     external: true
 
 volumes:

@@ -4,11 +4,10 @@
 name: Scorecard analysis
 
 on:
-  push:
-    branches: [main, master]
   schedule:
-    # Semanal (sábado)
-    - cron: '30 1 * * 6'
+    # Mensal (dia 1 às 02:00 UTC)
+    - cron: '0 2 1 * *'
+  workflow_dispatch:  # permite rodar manualmente no GitHub Actions
 
 permissions: read-all
 

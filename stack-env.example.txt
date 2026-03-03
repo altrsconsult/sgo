@@ -4,14 +4,14 @@
 
 # ========== CENÁRIO 1: Versão única — 1 stack = 1 Postgres + 1 chassi ==========
 # stack.yml: labels fixas (sgo-core). stack2.yml: labels via SGO_STACK_NAME (multi-domínio no mesmo Traefik).
-# Rede: no YAML está altrs_net; se for outra, use Localizar e Substituir (altrs_net → nome_da_rede).
-
 # --- Domínio e TLS ---
 SGO_DOMAIN=sgo.seudominio.com.br
 SGO_TLS_RESOLVER=letsencryptresolver
 
-# --- Stack (stack2.yml: router Traefik único por instância; stack.yml ignora, usa sgo-core) ---
+# --- Stack e rede (router Traefik = SGO_STACK_NAME; rede overlay = SGO_NETWORK) ---
 SGO_STACK_NAME=sgo
+# Nome da rede overlay (crie com: docker network create sgo_net ou use a do seu ambiente)
+SGO_NETWORK=sgo_net
 
 # --- Imagem: no YAML está :latest; para v4.0.5 use Localizar e Substituir ---
 
@@ -38,13 +38,13 @@ SGO_NEXUS_URL=
 # Técnico sobe stack-postgres-shared.yml UMA vez (ex.: nome da stack "sgo-pg"), cria um banco
 # por cliente (CREATE DATABASE sgo_cliente_a; etc.) e usa stack-chassi-only.yml por cliente.
 
-# --- Variáveis para stack-postgres-shared.yml (deploy uma vez; rede = altrs_net no YAML) ---
+# --- Variáveis para stack-postgres-shared.yml (deploy uma vez; rede = SGO_NETWORK) ---
 # SGO_POSTGRES_USER=sgo
 # SGO_POSTGRES_PASSWORD=senha_forte_unica
 # SGO_TZ=America/Sao_Paulo
 
 # --- Variáveis para stack-chassi-only.yml (uma por cliente; hostname Swarm = <stack>_<servico>) ---
-# Ex.: Postgres na stack "sgo-pg" → host sgo-pg_postgres. Rede = altrs_net no YAML (ou Localizar e Substituir).
+# Ex.: Postgres na stack "sgo-pg" → host sgo-pg_postgres. Use SGO_NETWORK com o nome da rede do Swarm.
 # SGO_DOMAIN=sgo-cliente-a.seudominio.com.br
 # SGO_STACK_NAME=sgo_cliente_a
 # SGO_IMAGE_TAG=latest
