@@ -1,6 +1,9 @@
 # Snippet de variáveis para colar no Portainer (Stack → Editor → variáveis de ambiente)
 # Copie para stack-env.txt na raiz e preencha; stack-env.txt não é comitado.
-# Stacks (stack.yml, stack2.yml, stack-postgres-shared.yml, stack-chassi-only.yml) ficam na raiz.
+# Stacks (stack.yml, stack-postgres-shared.yml, stack-chassi-only.yml) ficam na raiz.
+#
+# Importante: no Portainer use valores SEM aspas (ex.: altrs_net, não "altrs_net").
+# Docker usa o valor literal; aspas no valor quebram rede/serviços (ex.: network "\"altrs_net\"" not found).
 
 # ========== CENÁRIO 1: Versão única — 1 stack = 1 Postgres + 1 chassi ==========
 # stack.yml: labels fixas (sgo-core). stack2.yml: labels via SGO_STACK_NAME (multi-domínio no mesmo Traefik).
