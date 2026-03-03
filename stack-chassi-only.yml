@@ -10,7 +10,7 @@
 #     no Postgres (ex.: CREATE DATABASE sgo_cliente_a;).
 #   - SGO_DATABASE_URL completa, ex.: postgresql://sgo:senha@sgo-pg_postgres:5432/sgo_cliente_a
 #     (no Swarm o hostname do serviço de outra stack é <nome_da_stack>_<nome_do_servico>)
-# Rede: se não for altrs_net, use Localizar e Substituir no YAML.
+# Variáveis: SGO_STACK_NAME (router Traefik), SGO_NETWORK (rede overlay). Defaults: sgo, sgo_net.
 
 services:
   chassi-backend:
@@ -27,7 +27,7 @@ services:
       - chassi-modules:/app/modules_storage
       - chassi-uploads:/app/uploads
     networks:
-      - altrs_net
+      - sgo_net
     deploy:
       mode: replicated
       replicas: 1
@@ -45,7 +45,7 @@ services:
   chassi-frontend:
     image: ghcr.io/altrsconsult/chassi-frontend:latest
     networks:
-      - altrs_net
+      - sgo_net
     deploy:
       mode: replicated
       replicas: 1
@@ -61,9 +61,14 @@ services:
         - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls.certresolver=${SGO_TLS_RESOLVER:-letsencryptresolver}
         - traefik.http.routers.${SGO_STACK_NAME:-sgo}.entrypoints=websecure
         - traefik.http.routers.${SGO_STACK_NAME:-sgo}.tls=true
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.rule=Host(`${SGO_DOMAIN}`)
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.entrypoints=web
+        - traefik.http.routers.${SGO_STACK_NAME:-sgo}-http.middlewares=${SGO_STACK_NAME:-sgo}-redirect
+        - traefik.http.middlewares.${SGO_STACK_NAME:-sgo}-redirect.redirectscheme.scheme=https
 
 networks:
-  altrs_net:
+  sgo_net:
+    name: ${SGO_NETWORK:-sgo_net}
     external: true
 
 volumes:

@@ -4,8 +4,8 @@
 # (ex.: sgo_cliente_a, sgo_cliente_b) e usa stack-chassi-only.yml por cliente,
 # cada um com SGO_DATABASE_URL apontando para esse Postgres e o banco correspondente.
 #
-# Pré-requisitos: rede do cliente criada. Se não for altrs_net: Localizar e Substituir no YAML.
-# No Portainer: deploy desta stack com nome fixo (ex.: sgo-pg) para o hostname ser estável.
+# Pré-requisitos: rede overlay criada (ex.: docker network create sgo_net).
+# Variável SGO_NETWORK = nome real da rede (default: sgo_net). Deploy com nome fixo (ex.: sgo-pg) para hostname estável.
 
 services:
   postgres:
@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: ${SGO_POSTGRES_PASSWORD}
       TZ: ${SGO_TZ:-UTC}
     networks:
-      - altrs_net
+      - sgo_net
     volumes:
       - sgo-postgres-data:/var/lib/postgresql/data
     deploy:
@@ -27,7 +27,8 @@ services:
           memory: 2048M
 
 networks:
-  altrs_net:
+  sgo_net:
+    name: ${SGO_NETWORK:-sgo_net}
     external: true
 
 volumes:
