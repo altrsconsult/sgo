@@ -1,28 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
 import path from 'path';
 
 /**
- * Vite config do chassi — HOST do Module Federation
- * Consome módulos remotos descobertos dinamicamente pelo backend em runtime.
+ * Vite config do chassi.
+ * No 4.5.0+, módulos são carregados via iframe (sem plugin de federation no host).
  */
 export default defineConfig({
-  plugins: [
-    react(),
-    federation({
-      name: 'chassi',
-      remotes: {},
-      // singleton garante uma única instância de React entre host e remotes
-      shared: {
-        react: { singleton: true, requiredVersion: '^19.0.0' },
-        'react-dom': { singleton: true, requiredVersion: '^19.0.0' },
-        'react-router-dom': { singleton: true, requiredVersion: '^7.0.0' },
-        '@tanstack/react-query': { singleton: true, requiredVersion: '^5.0.0' },
-        zustand: { singleton: true, requiredVersion: '^5.0.0' },
-      } as unknown as Record<string, { singleton: boolean; requiredVersion: string }>,
-    }),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
