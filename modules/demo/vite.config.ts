@@ -1,31 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
 import path from 'path';
 
 /**
- * Vite config do módulo demo (Refatorado para Module Federation).
- * Expõe App e Widget para o chassi consumir.
+ * Vite config do módulo demo.
+ * Padrão standalone para iframe: gera dist/index.html consumido pelo chassi.
  */
 export default defineConfig({
-  plugins: [
-    react(),
-    federation({
-      name: 'demo',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './App': './src/App.tsx',
-      },
-      // Shared deve espelhar exatamente o chassi para evitar duplicação
-      shared: {
-        react: { singleton: true, requiredVersion: '^19.0.0' },
-        'react-dom': { singleton: true, requiredVersion: '^19.0.0' },
-        '@tanstack/react-query': { singleton: true, requiredVersion: '^5.0.0' },
-        zustand: { singleton: true, requiredVersion: '^5.0.0' },
-        'react-router-dom': { singleton: true, requiredVersion: '^7.1.1' },
-      } as unknown as Record<string, { singleton: boolean; requiredVersion: string }>,
-    }),
-  ],
+  plugins: [react()],
+  // Base relativa para funcionar dentro de /modules-assets/<slug>/dist/
+  base: "./",
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

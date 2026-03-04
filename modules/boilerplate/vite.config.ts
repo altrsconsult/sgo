@@ -9,6 +9,8 @@ import path from 'path';
  */
 export default defineConfig({
   plugins: [react()],
+  // Base relativa para funcionar dentro de /modules-assets/<slug>/dist/
+  base: "./",
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
