@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, MemoryRouter } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Button, Skeleton } from "@sgo/ui";
@@ -309,9 +309,16 @@ export function ModuleViewerPage() {
     );
   }
 
+  // Path que o módulo remoto enxerga (evita useContext null quando o remote usa outra instância de react-router-dom)
+  const remotePath = location.pathname + location.search + location.hash;
+
   return (
     <div className="flex flex-col w-full min-w-0 h-[calc(100vh-8rem)] min-h-[400px] outline-none focus:outline-none">
-      {Component && <Component />}
+      {Component && (
+        <MemoryRouter initialEntries={[remotePath]} initialIndex={0} key={remotePath}>
+          <Component />
+        </MemoryRouter>
+      )}
     </div>
   );
 }
