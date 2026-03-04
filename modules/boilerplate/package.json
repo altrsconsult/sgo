@@ -1,6 +1,6 @@
 {
   "name": "@sgo/module-boilerplate",
-  "version": "1.0.0",
+  "version": "4.5.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,7 +19,6 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
-    "@originjs/vite-plugin-federation": "^1.3.6",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

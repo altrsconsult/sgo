@@ -54,8 +54,8 @@ Altere apenas o `name`:
 
 ### 2c. `modules/meu-modulo/vite.config.ts`
 
-- `federation({ name: 'meu-modulo', ... })` — mesmo valor que `slug`.
 - `server: { port: 5001, host: true, allowedHosts: true, cors: true }` (dev com Docker: ver docs/DEV-DOCKER-LOCAL.md).
+- Build padrão standalone para iframe (`dist/index.html` como entrada do módulo).
 
 Se a porta estiver em uso, use 5002, 5003, etc.
 
@@ -168,6 +168,8 @@ O ZIP gerado (`meu-modulo-v1.0.0.zip`) inclui:
 - `dist/` — frontend buildado
 - `manifest.json` — contrato do módulo
 - `migrations/` — migrations SQL por dialeto (se existir)
+
+> No chassi 4.5.0+, módulos são renderizados via iframe; o entry do módulo é o `dist/index.html`.
 
 > **Windows sem `zip` nativo:** o script usa PowerShell como fallback. Para melhor compatibilidade, use Git Bash ou WSL.
 

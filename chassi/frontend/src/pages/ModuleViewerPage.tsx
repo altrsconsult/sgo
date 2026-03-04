@@ -1,11 +1,11 @@
-import { useParams, useNavigate, useLocation, MemoryRouter } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { Button, Skeleton } from "@sgo/ui";
-import { useRemoteModule, ModuleLoadingFallback, ModuleErrorFallback } from "@/hooks/useRemoteModule.js";
+import { ModuleErrorFallback } from "@/hooks/useRemoteModule.js";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 /**
  * Busca os dados de um módulo pelo slug.
@@ -27,19 +27,7 @@ async function fetchModule(slug: string) {
 }
 
 /**
- * Detecta a view apropriada baseada no contexto.
- */
-function detectViewContext(): string {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
-  const isEmbed = window.self !== window.top;
-
-  if (isEmbed) return "./Embed";
-  if (isMobile) return "./Mobile";
-  return "./App";
-}
-
-/**
- * Página que renderiza um módulo remoto via Module Federation.
+ * Página que renderiza módulos instaláveis via iframe.
  * Rota: /app/:moduleSlug/*
  */
 export function ModuleViewerPage() {
@@ -49,10 +37,6 @@ export function ModuleViewerPage() {
   const { resolvedTheme } = useTheme();
   const { user } = useAuth();
 
-  // Estado para controlar qual view carregar (fallback pattern)
-  const [currentView, setCurrentView] = useState(detectViewContext());
-  const [hasTriedFallback, setHasTriedFallback] = useState(false);
-
   // Busca metadados do módulo
   const { data: moduleData, isLoading: isLoadingMeta, error: metaError } = useQuery({
     queryKey: ["module", moduleSlug],
@@ -60,29 +44,11 @@ export function ModuleViewerPage() {
     enabled: !!moduleSlug,
   });
 
-  // URL do módulo: remoteEntry (Federation), remoteUrl (Standalone iframe), ou fallback
-  const rawPath = moduleData?.remoteEntry ?? moduleData?.remoteUrl ?? null;
-  const remoteUrl = rawPath?.startsWith("http") ? rawPath : (rawPath ? `${window.location.origin}${rawPath}` : null);
-  // Módulos instalados (ZIP) podem ser Standalone (index.html) ou Federation (remoteEntry.js)
-  // Mas evitamos iframe se for Federation (endsWith remoteEntry.js)
-  const isStandalone = !!(rawPath?.endsWith(".html") || (rawPath?.endsWith("/") && !rawPath?.includes("remoteEntry.js")));
   const isDev = import.meta.env.DEV && !import.meta.env.PROD;
-  const devServerUrl = moduleData?.devServerUrl ?? null;
-  const isDevStandalone =
-    isDev &&
-    !!remoteUrl &&
-    /^https?:\/\/localhost:\d+\/remoteEntry\.js$/.test(remoteUrl);
-  const useDevServerForIframe = isDev && !!devServerUrl;
-  const useIframe = (isStandalone || isDevStandalone || useDevServerForIframe) && (!!remoteUrl || !!devServerUrl);
-  const scope = (moduleData?.slug ?? "").replace(/-/g, "_") || moduleData?.slug;
-  const remoteConfig =
-    !useIframe && remoteUrl && scope
-      ? { url: remoteUrl, scope, module: currentView }
-      : null;
+  const devServerUrl = typeof moduleData?.devServerUrl === "string" ? moduleData.devServerUrl : null;
+  const rawModuleUrl = typeof moduleData?.remoteUrl === "string" ? moduleData.remoteUrl : typeof moduleData?.remoteEntry === "string" ? moduleData.remoteEntry : null;
 
-  const { Component, isLoading: isLoadingModule, error: moduleError } = useRemoteModule(remoteConfig);
-
-  // Refs para o iframe (sempre declarados para manter ordem de Hooks)
+  // Refs do iframe para sincronizar tema/token/usuário com o módulo.
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const iframeOriginRef = useRef<string | null>(null);
   const onIframeLoad = useCallback(() => {
@@ -123,15 +89,6 @@ export function ModuleViewerPage() {
     return () => window.removeEventListener("message", handler);
   }, [navigate]);
 
-  // Lógica de Fallback: Se falhar Mobile ou Embed, tenta App (Desktop)
-  useEffect(() => {
-    if (moduleError && !hasTriedFallback && currentView !== "./App") {
-      console.warn(`Falha ao carregar view '${currentView}', tentando fallback para './App'...`);
-      setCurrentView("./App");
-      setHasTriedFallback(true);
-    }
-  }, [moduleError, currentView, hasTriedFallback]);
-
   // Loading inicial
   if (isLoadingMeta) {
     return (
@@ -158,9 +115,27 @@ export function ModuleViewerPage() {
     );
   }
 
-  // Se o módulo não tem URL remota (path ou remoteUrl), mostra placeholder
-  // remoteUrl já foi calculado acima: path absoluto usa como-is, relativo usa origin
-  if (!remoteUrl) {
+  // Resolve URL base do módulo para iframe-only:
+  // - Em dev, prioriza devServerUrl (HMR).
+  // - Em produção, usa remoteUrl/remoteEntry legado ou fallback para /modules-assets/<slug>/dist/index.html.
+  const normalizedRawUrl =
+    isDev && devServerUrl
+      ? devServerUrl
+      : rawModuleUrl || `/modules-assets/${moduleData.slug}/dist/index.html`;
+  const absoluteRawUrl = normalizedRawUrl.startsWith("http")
+    ? normalizedRawUrl
+    : `${window.location.origin}${normalizedRawUrl.startsWith("/") ? "" : "/"}${normalizedRawUrl}`;
+
+  let baseUrl = absoluteRawUrl;
+  if (absoluteRawUrl.endsWith("/assets/remoteEntry.js")) {
+    baseUrl = absoluteRawUrl.replace(/\/assets\/remoteEntry\.js$/, "");
+  } else if (absoluteRawUrl.endsWith("index.html")) {
+    baseUrl = absoluteRawUrl.replace(/\/index\.html$/, "");
+  } else {
+    baseUrl = absoluteRawUrl.replace(/\/$/, "");
+  }
+
+  if (!baseUrl) {
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-4">
@@ -204,121 +179,27 @@ export function ModuleViewerPage() {
     );
   }
 
-  // Loading do módulo remoto (só Federation; standalone e dev-standalone usam iframe direto)
-  if (!useIframe && isLoadingModule) {
-    return (
-      <div className="space-y-2">
-        <div className="shrink-0 h-8 flex items-center">
-          <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={() => navigate("/")} aria-label="Voltar">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        </div>
-        <ModuleLoadingFallback />
-      </div>
-    );
+  const subpath = location.pathname.replace(new RegExp(`^/app/${moduleSlug || ""}`), "") || "";
+  const iframePath = subpath ? (subpath.startsWith("/") ? subpath : `/${subpath}`) : "/";
+  const iframeSrc = `${baseUrl}${iframePath}${location.search}${location.hash}`;
+
+  try {
+    iframeOriginRef.current = new URL(baseUrl).origin;
+  } catch {
+    iframeOriginRef.current = null;
   }
-
-  // Erro ao carregar módulo remoto (só Federation)
-  if (!useIframe && moduleError && (currentView === "./App" || hasTriedFallback)) {
-    const isDevRemote = remoteUrl && remoteUrl.includes("localhost");
-    return (
-      <div className="space-y-2">
-        <div className="shrink-0 h-8 flex items-center">
-          <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={() => navigate("/")} aria-label="Voltar">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        </div>
-        <ModuleErrorFallback 
-          error={moduleError} 
-          retry={() => {
-            setHasTriedFallback(false);
-            setCurrentView(detectViewContext());
-          }}
-        />
-        {isDevRemote && (
-          <p className="text-sm text-muted-foreground mt-2">
-            Para o Chassi carregar o módulo, use <code className="bg-muted px-1 rounded">pnpm dev:remote</code> em{" "}
-            <code className="bg-muted px-1 rounded">modules/{moduleData.slug}</code> (build + preview na porta da URL). O <code className="bg-muted px-1 rounded">pnpm dev</code> não expõe <code className="bg-muted px-1 rounded">remoteEntry.js</code> no path esperado.
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // Standalone ou Dev: iframe (standalone = build; dev = servidor do módulo para HMR)
-  // Nunca usar URL da rota do app (/app/:slug) nem same-origin /modules-assets/ como src — evita cascata
-  if (useIframe && (remoteUrl || devServerUrl)) {
-    const origin = window.location.origin;
-    let base: string;
-    if (useDevServerForIframe && devServerUrl) {
-      base = devServerUrl.replace(/\/$/, "");
-    } else if (isDevStandalone && remoteUrl) {
-      // Dev com Federation: base é a origin do dev server (ex.: http://localhost:5001)
-      try {
-        base = new URL(remoteUrl).origin;
-      } catch {
-        base = remoteUrl.replace(/\/remoteEntry\.js$/, "").replace(/\/$/, "") || remoteUrl;
-      }
-    } else if (remoteUrl) {
-      base = remoteUrl.replace(/\/$/, "");
-      const sameOrigin = base.startsWith(origin);
-      const pathPart = sameOrigin ? base.slice(origin.length) || "/" : base;
-      if (sameOrigin && (pathPart.startsWith("/app/") || pathPart.startsWith("/modules-assets/"))) {
-        base = devServerUrl ? devServerUrl.replace(/\/$/, "") : `${origin}/modules-assets/${moduleSlug || ""}/dist`;
-      }
-    } else {
-      base = "";
-    }
-    if (!base) return null;
-    if (isDev && base.startsWith(origin) && base.includes("/modules-assets/")) {
-      // Em dev, evita fallback por slug/porta fixa para manter o core desacoplado.
-      return (
-        <div className="space-y-2 flex flex-col h-[calc(100vh-8rem)]">
-          <div className="shrink-0 flex items-center min-h-8">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 -ml-2" onClick={() => navigate("/")} aria-label="Voltar">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="rounded-lg border bg-amber-500/10 border-amber-500/30 p-6 text-amber-800 dark:text-amber-200">
-            <p className="font-medium">Modo dev: use o servidor do módulo para evitar aninhamento.</p>
-            <p className="text-sm mt-2">Em outro terminal: <code className="bg-muted px-1 rounded">cd modules/{moduleData.slug} ; pnpm dev</code>. Depois recarregue esta página.</p>
-          </div>
-        </div>
-      );
-    }
-    const subpath = location.pathname.replace(new RegExp(`^/app/${moduleSlug || ""}`), "") || "";
-    const iframeSrc = subpath ? `${base}${subpath.startsWith("/") ? subpath : `/${subpath}`}` : `${base}/`;
-    try {
-      iframeOriginRef.current = new URL(base).origin;
-    } catch {
-      iframeOriginRef.current = null;
-    }
-
-    return (
-      <div className="flex flex-col w-full min-w-0 h-[calc(100vh-8rem)] outline-none focus:outline-none focus-within:outline-none">
-        <iframe
-          ref={iframeRef}
-          title={moduleData.name}
-          src={iframeSrc}
-          className="w-full flex-1 min-h-[400px] border-0 rounded-lg bg-transparent outline-none focus:outline-none focus-visible:ring-0"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-          allow="clipboard-write"
-          onLoad={onIframeLoad}
-        />
-      </div>
-    );
-  }
-
-  // Path que o módulo remoto enxerga (evita useContext null quando o remote usa outra instância de react-router-dom)
-  const remotePath = location.pathname + location.search + location.hash;
 
   return (
-    <div className="flex flex-col w-full min-w-0 h-[calc(100vh-8rem)] min-h-[400px] outline-none focus:outline-none">
-      {Component && (
-        <MemoryRouter initialEntries={[remotePath]} initialIndex={0} key={remotePath}>
-          <Component />
-        </MemoryRouter>
-      )}
+    <div className="flex flex-col w-full min-w-0 h-[calc(100vh-8rem)] outline-none focus:outline-none focus-within:outline-none">
+      <iframe
+        ref={iframeRef}
+        title={moduleData.name}
+        src={iframeSrc}
+        className="w-full flex-1 min-h-[400px] border-0 rounded-lg bg-transparent outline-none focus:outline-none focus-visible:ring-0"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+        allow="clipboard-write"
+        onLoad={onIframeLoad}
+      />
     </div>
   );
 }

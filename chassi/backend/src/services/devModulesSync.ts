@@ -61,20 +61,6 @@ async function tryFetchManifest(port: number): Promise<Record<string, unknown> |
   }
 }
 
-/** Verifica se o módulo expõe remoteEntry.js (Federation). Se 404, é standalone (iframe). */
-async function hasRemoteEntry(port: number): Promise<boolean> {
-  const host = getDiscoveryHost();
-  try {
-    const res = await fetch(`http://${host}:${port}/assets/remoteEntry.js`, {
-      signal: AbortSignal.timeout(1000),
-      method: 'HEAD',
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
 // Roda uma varredura de portas e registra/atualiza módulos dev (só slugs em modules/ e modules-lab/ quando configurado)
 async function runSync(): Promise<void> {
   const foundSlugs: string[] = [];
@@ -89,12 +75,8 @@ async function runSync(): Promise<void> {
       if (allowedSlugs !== null && !allowedSlugs.has(parsed.slug)) continue; // só aceitar módulos do repo
       foundSlugs.push(parsed.slug);
 
-      // Só trata como Federation se o manifest tiver "exposes" (Module Federation) e o entry existir
-      const manifestHasExposes = !!(manifest as Record<string, unknown>).exposes;
-      const hasFederation = manifestHasExposes && (await hasRemoteEntry(port));
-      const remoteEntry = hasFederation
-        ? `http://localhost:${port}/assets/remoteEntry.js`
-        : `http://localhost:${port}/`;
+      // Padrão 4.5.0: módulo dev é sempre carregado como app standalone em iframe.
+      const remoteEntry = `http://localhost:${port}/`;
 
       await db.insert(modules).values({
         slug: parsed.slug,
@@ -116,7 +98,7 @@ async function runSync(): Promise<void> {
           updatedAt: new Date(),
         } as never,
       });
-      console.log(`[devModulesSync] Módulo dev registrado: ${parsed.slug} (porta ${port}, ${hasFederation ? 'Federation' : 'iframe'})`);
+      console.log(`[devModulesSync] Módulo dev registrado: ${parsed.slug} (porta ${port}, iframe)`);
     } catch (err) {
       if (env.nodeEnv !== 'production') {
         console.warn(`[devModulesSync] Manifest inválido na porta ${port}:`, err instanceof Error ? err.message : err);
