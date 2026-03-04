@@ -70,6 +70,25 @@ moduleAssetsRoutes.get('*', async (c) => {
     });
   } catch (err: unknown) {
     if ((err as NodeJS.ErrnoException)?.code === 'ENOENT') {
+      // Fallback SPA: quando rota amigável não existe fisicamente (ex.: /dist/config),
+      // tenta subir diretórios até achar um index.html (normalmente /dist/index.html).
+      if (rest && path.extname(rest) === '') {
+        let currentDir = path.dirname(resolved);
+        while (currentDir.startsWith(baseDir)) {
+          const spaIndexPath = path.join(currentDir, 'index.html');
+          try {
+            const buf = await fs.readFile(spaIndexPath);
+            return new Response(buf, {
+              headers: { 'Content-Type': 'text/html' },
+            });
+          } catch {
+            // Continua subindo até a raiz do módulo.
+          }
+          if (currentDir === baseDir) break;
+          currentDir = path.dirname(currentDir);
+        }
+      }
+
       // Fallback: extração antiga (Windows) criou 1 arquivo com barra invertida no nome (ex.: dist\assets\remoteEntry.js)
       const fallbackRelative = rest.replace(/\//g, '\\');
       const fallbackPath = path.join(baseDir, fallbackRelative);
