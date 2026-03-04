@@ -25,6 +25,7 @@ import { uploadModuleRoutes } from './routes/upload-module.js';
 import { installFromLinkRoutes } from './routes/install-from-link.js';
 import { healthRoutes } from './routes/health.js';
 import { moduleAssetsRoutes } from './routes/module-assets.js';
+import { moduleWebhookRoutes } from './routes/module-webhook.js';
 
 import { loadInstalledModules } from './services/moduleLoader.js';
 import { devModulesSync } from './services/devModulesSync.js';
@@ -46,6 +47,8 @@ app.route('/api/health', healthRoutes);
 
 // Assets de módulos instalados (ZIP) — iframe standalone; sem auth para o browser carregar
 app.route('/modules-assets', moduleAssetsRoutes);
+// Webhooks públicos de módulos (ingestão externa)
+app.route('/api/webhook', moduleWebhookRoutes);
 
 // Rotas públicas (sem auth)
 app.route('/api/public', publicRoutes);
