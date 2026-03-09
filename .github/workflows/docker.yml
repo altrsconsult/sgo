@@ -48,7 +48,7 @@ jobs:
 
       - name: Build e Push (amd64)
         id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: chassi/Dockerfile.backend
@@ -104,7 +104,7 @@ jobs:
 
       - name: Build e Push (amd64)
         id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: chassi/Dockerfile.frontend

@@ -49,7 +49,7 @@ jobs:
 
       - name: Build and Push — Backend
         id: build-backend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: chassi/Dockerfile.backend
@@ -85,7 +85,7 @@ jobs:
 
       - name: Build and Push — Frontend
         id: build-frontend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: chassi/Dockerfile.frontend
