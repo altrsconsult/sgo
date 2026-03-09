@@ -38,7 +38,7 @@ jobs:
 
       - name: Docker Metadata (tag + latest)
         id: meta-backend
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend
           tags: |
@@ -74,7 +74,7 @@ jobs:
 
       - name: Docker Metadata (tag + latest)
         id: meta-frontend
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend
           tags: |
