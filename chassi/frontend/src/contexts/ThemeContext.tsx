@@ -45,10 +45,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       })
       .then((data) => {
         // Se houver um tema configurado no servidor, usa ele
-        // Isso garante que a escolha na instalação/admin seja respeitada
+        // "default" no admin = seguir preferência do sistema (prefers-color-scheme)
         if (data.ui_theme) {
-          setThemeState(data.ui_theme as Theme);
-          localStorage.setItem(STORAGE_KEY, data.ui_theme);
+          const serverTheme = data.ui_theme === "default" ? "system" : (data.ui_theme as Theme);
+          setThemeState(serverTheme);
+          localStorage.setItem(STORAGE_KEY, serverTheme);
         }
       })
       .catch((err) => {
@@ -62,11 +63,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const updateThemeLogic = () => {
-      // 1. Determina Light/Dark
+      // 1. Determina Light/Dark — "system" e "default" seguem prefers-color-scheme do navegador
       if (theme === "system") {
         setResolvedTheme(mediaQuery.matches ? "dark" : "light");
       } else if (theme === "dark" || theme === "group") {
-        // Group é sempre dark-ish por padrão, mas vamos tratar como dark mode base
         setResolvedTheme("dark");
       } else if (theme === "light") {
         setResolvedTheme("light");

@@ -69,8 +69,8 @@
   --space-2xl: 32px;
   --space-3xl: 48px;
 
-  /* TIPOGRAFIA */
-  --font-family-base: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  /* TIPOGRAFIA — alinhado ao @sgo/ui (DM Sans) */
+  --font-family-base: 'DM Sans', 'Segoe UI', sans-serif;
   --font-family-mono: 'Fira Code', 'Courier New', monospace;
 
   --font-size-xs: 12px;

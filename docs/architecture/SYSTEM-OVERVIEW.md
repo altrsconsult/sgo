@@ -38,7 +38,7 @@
 4. **React** carrega, chama `/api/public/settings` (whitelabel)
 5. **React** chama `/api/auth/verify` para checar sessão
 6. **React** chama `/api/modules` para listar módulos ativos
-7. **Module Federation** carrega `remoteEntry.js` de cada módulo instalado
+7. **Frontend** carrega o módulo em iframe via `remoteUrl` (`/modules-assets/<slug>/dist/`)
 
 ## Banco de Dados
 

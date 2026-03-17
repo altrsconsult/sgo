@@ -1,16 +1,19 @@
-import { Outlet, useSearchParams } from "react-router-dom";
+import { Outlet, useSearchParams, useLocation } from "react-router-dom";
 import { ShellLayout } from "@/layouts/ShellLayout";
 
 /**
- * Quando a URL tem ?embed=true, renderiza apenas o conteúdo (Outlet) sem o Shell
- * (sem topbar, sem sidebar). Usado para embeds em iframe: só o módulo aparece.
- * Caso contrário, usa o ShellLayout normal.
+ * Quando a URL tem ?embed=true e a rota é de módulo (/app/:slug), renderiza apenas
+ * o conteúdo (Outlet) sem o Shell — para embed de um único módulo em iframe.
+ * Na home (/) ou em qualquer outra rota com ?embed=true, mantém o Shell (header)
+ * para o header não sumir quando o chassi inteiro está em iframe.
  */
 export function ShellOrEmbedLayout() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const isEmbed = searchParams.get("embed") === "true";
+  const isModuleRoute = location.pathname.startsWith("/app/");
 
-  if (isEmbed) {
+  if (isEmbed && isModuleRoute) {
     return (
       <div className="min-h-screen w-full min-w-0 bg-background">
         <Outlet />

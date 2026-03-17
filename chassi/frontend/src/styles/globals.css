@@ -48,9 +48,10 @@ main:has(iframe) [contenteditable="true"] {
   gap: calc(var(--space-lg) + var(--space-sm));
 }
 
-/* Card de módulo no Launcher */
+/* Card de módulo no Launcher — transição suave sem alterar estrutura */
 .module-card {
-  @apply transition-all duration-200 cursor-pointer;
+  @apply cursor-pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .module-card:hover {

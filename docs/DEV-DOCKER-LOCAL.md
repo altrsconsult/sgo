@@ -27,7 +27,8 @@ Backend e banco no **Docker**. Frontend e módulos no host com **pnpm dev** (Vit
 
 - **`public/manifest.json`** (cópia do manifest) para GET /manifest.json.
 - **vite.config.ts** — `server: { host: true, allowedHosts: true, cors: true }`.
-- **Standalone vs Federation:** o backend só registra como Federation se o manifest tiver campo **`exposes`** e existir `/assets/remoteEntry.js`. Sem `exposes` → iframe (standalone).
+- **Iframe-only:** módulo deve rodar standalone (sem Federation), com `dist/index.html` como entry.
+- **Base relativa no build:** `base: "./"` no `vite.config.ts` para evitar 404 de `/assets/*` em `/modules-assets/<slug>/dist/`.
 
 ## Comportamento
 
@@ -38,3 +39,9 @@ Backend e banco no **Docker**. Frontend e módulos no host com **pnpm dev** (Vit
 ## Resumo
 
 Docker = backend (3001) + banco. `pnpm dev` na raiz = só frontend (5173). `pnpm dev` na pasta do módulo = descoberta automática e iframe com HMR.
+
+## Rotas importantes no dev
+
+- `GET /modules-assets/:slug/*` — serve frontend/assets do módulo.
+- Subrotas de SPA do módulo (ex.: `/config`) usam fallback para `index.html`.
+- `POST /api/webhook/:moduleSlug/:hookSlug` — entrada pública opcional para payload externo do módulo.

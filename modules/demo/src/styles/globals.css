@@ -1,5 +1,7 @@
 /* Estilos globais do módulo demo — tokens dark do @sgo/ui */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* Quando embutido no chassi (iframe): fundo transparente — cobre light e dark mode. */
 html.in-chassis,
 html.in-chassis body,
@@ -21,7 +23,6 @@ html.in-chassis #root,
 html.in-chassis #root > * {
   min-height: 100%;
 }
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;

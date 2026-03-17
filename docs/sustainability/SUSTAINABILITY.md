@@ -4,7 +4,7 @@ Este documento descreve como o SGO se posiciona em relação a **uso de recursos
 
 ## Stack enxuto
 
-- **Frontend:** React 19, Vite 6, Module Federation. Build otimizado; dependências controladas via pnpm. Design system (@sgo/ui) com Tailwind e componentes Shadcn/Radix — sem runtime pesado adicional.
+- **Frontend:** React 19, Vite 6, módulos iframe-first. Build otimizado; dependências controladas via pnpm. Design system (@sgo/ui) com Tailwind e componentes Shadcn/Radix — sem runtime pesado adicional.
 - **Backend:** Hono (runtime leve), Drizzle ORM, PostgreSQL ou MySQL. Poucas dependências de produção; sem framework monolítico pesado.
 - **Infra:** imagens Docker multi-stage (Node Alpine); um único processo Node pode servir API + frontend estático (modo `SERVE_STATIC`), reduzindo número de containers quando desejado.
 

@@ -56,6 +56,7 @@ Altere apenas o `name`:
 
 - `server: { port: 5001, host: true, allowedHosts: true, cors: true }` (dev com Docker: ver docs/DEV-DOCKER-LOCAL.md).
 - Build padrão standalone para iframe (`dist/index.html` como entrada do módulo).
+- Defina `base: "./"` para os assets funcionarem em `/modules-assets/<slug>/dist/`.
 
 Se a porta estiver em uso, use 5002, 5003, etc.
 
@@ -170,6 +171,25 @@ O ZIP gerado (`meu-modulo-v1.0.0.zip`) inclui:
 - `migrations/` — migrations SQL por dialeto (se existir)
 
 > No chassi 4.5.0+, módulos são renderizados via iframe; o entry do módulo é o `dist/index.html`.
+
+### Webhook de entrada (opcional)
+
+Se o módulo receber payload externo, declare em `manifest.json`:
+
+```json
+{
+  "webhooks": [
+    {
+      "slug": "capture",
+      "path": "/api/webhook/meu-modulo/capture",
+      "method": "POST",
+      "entityType": "lead"
+    }
+  ]
+}
+```
+
+Endpoint público no chassi: `POST /api/webhook/:moduleSlug/:hookSlug`.
 
 > **Windows sem `zip` nativo:** o script usa PowerShell como fallback. Para melhor compatibilidade, use Git Bash ou WSL.
 

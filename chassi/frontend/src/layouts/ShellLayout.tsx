@@ -159,9 +159,9 @@ export function ShellLayout() {
         </div>
       )}
 
-      {/* TopBar — fixo quando sidebar */}
+      {/* TopBar — 48px (h-12) como no widget Assistente; fixo quando sidebar */}
       <header className={`z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isSidebar ? "flex-shrink-0" : "sticky top-0"}`}>
-        <div className="w-full flex h-16 items-center justify-between px-4 sm:px-6 transition-all duration-200">
+        <div className="w-full flex h-12 items-center justify-between px-4 sm:px-6 transition-all duration-200">
           {/* Hamburger mobile — aparece apenas em telas pequenas com sidebar ativa */}
           {isSidebar && (
             <Button

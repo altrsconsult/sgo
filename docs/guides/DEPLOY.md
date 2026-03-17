@@ -10,6 +10,7 @@ O SGO foi pensado para **sem lock-in**: você escolhe onde rodar (VPS, Coolify, 
 
 - **Com Traefik:** o proxy roteia por host/path; frontend e backend são expostos ao Traefik; HTTPS automático (Let's Encrypt) via labels.
 - **Sem Traefik:** um único ponto de entrada (porta 80 do frontend); o **Nginx dentro do container do frontend** faz proxy de `/api` e `/modules-assets` para o backend.
+- **Módulos iframe:** frontend abre módulos por `/modules-assets/<slug>/dist/`; subrotas (ex.: `/config`) dependem do fallback SPA do backend para `index.html`.
 
 ```mermaid
 flowchart LR
@@ -155,6 +156,11 @@ Use o mesmo fluxo do cenário “uma porta só”, mas no Portainer:
 | `SGO_ADMIN_PASSWORD` | Não (recomendado com USERNAME) | Senha do primeiro admin | senha forte |
 | `SGO_ADMIN_EMAIL` | Não | E-mail do admin | `admin@empresa.com` |
 | `SGO_ADMIN_NAME` | Não | Nome do admin | `Administrador` |
+
+### Rotas públicas de módulo em produção
+
+- `GET /modules-assets/:slug/*` — entrega frontend/assets do módulo instalado.
+- `POST /api/webhook/:moduleSlug/:hookSlug` — ingestão pública de webhook do módulo (hook precisa estar declarado no `manifest.json` do módulo ativo).
 
 Referência completa com comentários: [.env.example](../../.env.example) na raiz do repositório.
 

@@ -49,7 +49,7 @@ O mercado de sistemas de gestão cobra assinatura mensal pelo **direito de usar*
 |---|-----------|-----------------|
 | 01 | **Propriedade Total** | Após a implantação, sistema e dados pertencem ao negócio do cliente. Sem dependência de terceiros. |
 | 02 | **Pronto para Operar** | Autenticação, usuários, permissões e painel admin funcionam antes de escrever uma linha de módulo. O integrador foca no que é vertical do cliente. |
-| 03 | **Cresce Sem Reescrever** | Cada funcionalidade nova entra como módulo independente via Module Federation. O que já funciona continua intacto — sem refatoração cara. |
+| 03 | **Cresce Sem Reescrever** | Cada funcionalidade nova entra como módulo instalável (iframe + contrato de API/webhook). O que já funciona continua intacto — sem refatoração cara. |
 
 ---
 
@@ -130,7 +130,7 @@ Você já entrega sistemas open-source ao cliente — omnichannel, automação, 
 **O que você ganha:**
 - Base pronta: não escreva auth nem controle de acesso do zero
 - Whitelabel nativo: cada cliente com nome, logo e cores próprias
-- Module Federation: seus módulos entram sem tocar no chassi
+- Módulos instaláveis por ZIP: frontend standalone em iframe sem acoplamento no chassi
 - IA-friendly: [`AGENTS.md`](docs/AGENTS.md) descreve a arquitetura para LLMs; o agente gera o boilerplate, você revisa e entrega
 
 </td>
@@ -175,7 +175,7 @@ Acesse `http://localhost:3000` — o wizard de instalação aparece no primeiro 
 
 | Camada | Tecnologia |
 |--------|-----------|
-| **Frontend** | React 19 · Vite 6 · Module Federation · Tailwind CSS · Shadcn UI (`@sgo/ui`) |
+| **Frontend** | React 19 · Vite 6 · iframe-first para módulos · Tailwind CSS · Shadcn UI (`@sgo/ui`) |
 | **Backend** | Hono · Drizzle ORM · PostgreSQL (ou MySQL) |
 | **Infra** | Docker · Docker Swarm · Traefik · GitHub Actions |
 | **Imagens** | `ghcr.io/altrsconsult/` — build com attestation Sigstore |

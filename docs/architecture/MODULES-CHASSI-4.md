@@ -1,87 +1,72 @@
-# Módulos no Chassi 4.0 — Análise e Compatibilidade
+# Módulos no Chassi 4.x — Iframe-first
 
-> **Contexto:** Módulos prontos e homologados do chassi antigo (sgo-core) precisam funcionar no chassi 4.0 sem alteração de frontend (leads-intake, enroll-manage). Este doc descreve o estado atual e o que foi ajustado no chassi para suportá-los.
+> Estado atual: o chassi opera com módulos instaláveis em **iframe standalone**. Este documento descreve o contrato em produção e desenvolvimento.
 
 ---
 
 ## Visão geral
 
-- **Chassi antigo (sgo-core):** Node.js/Express, módulos em `modules/` com build **standalone** (iframe) ou Module Federation.
-- **Chassi 4.0:** Hono + Drizzle, mesmo conceito: módulos podem ser
-  1. **Instalados via ZIP** → extraídos em `modules_storage/<slug>/` e servidos pelo backend em `/modules-assets/<slug>/...`
-  2. **Dev (pnpm dev na pasta do módulo)** → backend descobre pela varredura de portas 5001–5099 e registra; frontend carrega via iframe (standalone) ou Module Federation (remoteEntry.js).
+- **Instalado (ZIP):** módulo é extraído em `modules_storage/<slug>/` e servido em `/modules-assets/<slug>/...`.
+- **Dev (HMR):** backend descobre módulos em `5001–5099` e registra URL de dev server para abrir no iframe.
+- **Renderização no frontend:** rota `/app/<slug>` abre iframe com subrota preservada (`/config`, etc.).
 
 ---
 
-## Formas de rodar um módulo no 4.0
+## Contrato operacional do módulo
 
-| Forma | Como | Onde aparece |
-|-------|------|--------------|
-| **ZIP** | Upload em Admin → Módulos ou `POST /api/upload-module` | `type: 'installed'`, assets em `modules_storage/<slug>/dist/` |
-| **Dev (HMR)** | `pnpm dev` na pasta do módulo (ex.: `modules/leads-intake`) | `type: 'dev'`, URL do dev server (iframe ou remoteEntry) |
+1. Build gera `dist/index.html` + `dist/assets/*`.
+2. `vite.config.ts` deve usar `base: "./"` para assets relativos.
+3. `manifest.json` define metadados e webhooks de entrada.
+4. Módulo deve suportar roteamento interno SPA (o chassi faz fallback para `index.html` em subrotas).
 
-Em ambos os casos o módulo deve aparecer no menu lateral e abrir em `/app/<slug>` (iframe para standalone, Module Federation quando houver `remoteEntry.js`).
+Campos principais de `manifest.json`:
 
----
-
-## Módulos standalone vs Federation
-
-- **Standalone:** build gera `dist/index.html` + assets; o chassi exibe em **iframe** (URL = dev server ou `/modules-assets/<slug>/dist/index.html`).
-- **Federation:** módulo expõe `remoteEntry.js`; o chassi carrega o componente via `useRemoteModule` (sem iframe).
-
-Os módulos **leads-intake** e **enroll-manage** são **standalone** (sem Module Federation). Nenhuma alteração neles é necessária: apenas garantir que o chassi (backend + sync) trate standalone corretamente.
+- `slug`, `name`, `version`, `description`, `icon`, `color`
+- `permissions`, `hasWidget`, `serverPort` (opcionais)
+- `webhooks` (opcional) com `slug`, `path`, `method`, `entityType`
 
 ---
 
-## Contrato do manifest.json
+## Rotas críticas do chassi para módulos
 
-O backend valida com `ModuleManifestSchema` (@sgo/sdk). Campos usados no registro:
+- `GET /modules-assets/:slug/*`  
+  Serve frontend do módulo e assets.
 
-- `slug`, `name`, `description` (opcional), `version`, `icon`, `color`, `permissions` (opcional), `hasWidget` (opcional), `serverPort` (opcional).
+- `GET /api/modules`  
+  Retorna `remoteUrl` para módulos instalados (ex.: `/modules-assets/<slug>/dist/index.html`).
 
-Campos extras (ex.: `title`, `author`, `webhooks`, `config`) são **ignorados** pelo Zod na parse (não quebram). Os manifests atuais de leads-intake e enroll-manage são compatíveis.
-
----
-
-## Ajustes feitos no chassi (sem tocar nos módulos)
-
-1. **Backend — servir assets de módulos instalados**  
-   Rota `GET /modules-assets/:slug/*` que sirve arquivos estáticos de `modules_storage/<slug>/`, permitindo abrir `/modules-assets/<slug>/dist/index.html` no iframe.
-
-2. **Backend — URL usável para instalados**  
-   Em `GET /api/modules` (e quando aplicável em respostas por id/slug), para módulos com `type: 'installed'` é preenchido `remoteUrl: '/modules-assets/<slug>/dist/index.html'`, para o frontend usar no iframe sem depender de `path` (filesystem).
-
-3. **devModulesSync — standalone vs Federation em dev**  
-   Só registra como Federation se o manifest tiver campo **`exposes`** e existir GET `/assets/remoteEntry.js`. Caso contrário registra `remoteEntry = 'http://localhost:N/'` (iframe). O dev server do módulo precisa de `host: true` e `allowedHosts: true` no Vite para o backend no Docker acessar via `host.docker.internal`. Ver `docs/DEV-DOCKER-LOCAL.md`.
+- `POST /api/webhook/:moduleSlug/:hookSlug`  
+  Ingestão pública de webhook por módulo (valida declaração no manifest do módulo ativo).
 
 ---
 
 ## Fluxo resumido
 
-```
+```text
 Módulo instalado (ZIP):
-  Backend extrai em modules_storage/<slug>/
-  → GET /api/modules retorna remoteUrl = '/modules-assets/<slug>/dist/index.html'
-  → Frontend abre iframe com origin + remoteUrl
-  → Backend atende GET /modules-assets/<slug>/dist/index.html (e demais assets)
+  Upload -> extração em modules_storage/<slug>
+  -> /api/modules informa remoteUrl
+  -> frontend abre iframe em /modules-assets/<slug>/dist/
+  -> subrotas (/config etc.) caem no fallback SPA do backend
 
-Módulo em dev (pnpm dev):
-  Backend a cada 5s varre 5001–5099, lê manifest.json
-  → Se manifest tem "exposes" e /assets/remoteEntry.js 200: remoteEntry = '.../assets/remoteEntry.js' (Federation)
-  → Senão: remoteEntry = 'http://localhost:N/' (iframe)
-  → Frontend usa remoteEntry para iframe ou useRemoteModule
+Módulo em dev:
+  pnpm dev no módulo (porta 5001+)
+  -> backend descobre /manifest.json
+  -> registra URL de dev server
+  -> frontend abre iframe com HMR
 ```
 
 ---
 
-Dev (manifest, Vite, portas): ver **docs/DEV-DOCKER-LOCAL.md**.
+## modules-lab (privado)
+
+A pasta `modules-lab/` é intencionalmente privada (não publicada no repo principal).  
+Ela é usada para módulos de cliente e pode ter versionamento separado.
 
 ---
 
-## Lab de módulos (módulos de clientes)
+Referências de operação:
 
-A pasta **`modules-lab/`** existe para módulos que **não devem ir ao repositório público** (ex.: clientes como Edukaead). Ela está no `pnpm-workspace.yaml` e no `.gitignore` do repo público: só `modules-lab/.gitignore` e `modules-lab/README.md` são versionados. O conteúdo (cópias edukaead-leads-intake, edukaead-enroll-manage, edukaead-gestao-repasses) fica apenas local ou em um **repositório Git privado** clonado nesse caminho. Veja `modules-lab/README.md`.
-
-## Referência do sistema antigo
-
-Para comparar ou copiar módulos do chassi antigo: **c:/git 2/sgo-core** (não modificar; usar só como referência).
+- `docs/DEV-DOCKER-LOCAL.md`
+- `docs/guides/CREATE-MODULE.md`
+- `docs/guides/DEPLOY.md`

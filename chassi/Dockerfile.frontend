@@ -11,6 +11,10 @@ COPY packages/ packages/
 # Copia o frontend e suas dependências
 COPY chassi/frontend/ chassi/frontend/
 
+# Versão injetada pelo CI a partir do tag (ex.: v4.5.6 → 4.5.6); garante login/badge corretos na imagem
+ARG VERSION
+RUN if [ -n "$VERSION" ]; then node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('chassi/frontend/package.json','utf8')); p.version='$VERSION'; fs.writeFileSync('chassi/frontend/package.json', JSON.stringify(p, null, 2));"; fi
+
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @sgo/chassi-frontend build
 

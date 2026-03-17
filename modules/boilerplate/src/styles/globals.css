@@ -16,6 +16,8 @@
    - Sem estilos inline: tudo centralizado aqui
    ============================================================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 /* [OBRIGATÓRIO] Transparência quando embutido no chassi (iframe).
    Garante que o fundo do chassi apareça — funciona em light e dark. */
 html.in-chassis,
@@ -38,10 +40,6 @@ html.in-chassis #root,
 html.in-chassis #root > * {
   min-height: 100%;
 }
-
-/* [PERSONALIZAR] Fonte do módulo — substitua por Google Fonts do cliente.
-   Exemplo EdukaEAD: Nunito | Exemplo genérico: Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;

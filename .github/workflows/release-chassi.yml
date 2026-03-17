@@ -83,6 +83,10 @@ jobs:
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
+      - name: Versão do tag (sem prefixo v)
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
       - name: Build and Push — Frontend
         id: build-frontend
         uses: docker/build-push-action@v6
@@ -93,6 +97,8 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
+          build-args: |
+            VERSION=${{ steps.version.outputs.VERSION }}
 
       - name: Attest build provenance (frontend)
         uses: actions/attest-build-provenance@v3
