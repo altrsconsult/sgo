@@ -39,7 +39,7 @@ jobs:
 
       - name: Extrair metadata Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-backend
           tags: |
@@ -95,7 +95,7 @@ jobs:
 
       - name: Extrair metadata Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/chassi-frontend
           tags: |
